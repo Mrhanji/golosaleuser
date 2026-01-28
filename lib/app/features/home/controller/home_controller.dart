@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/home/model/banner_model.dart';
+import '/app/features/home/model/CategoryModel.dart';
+import '/app/features/home/model/banner_model.dart';
 import '/app/features/auth/model/user_model.dart';
 import '/app/features/city/model/city_model.dart';
 import '../../../../database/local_db.dart';
@@ -11,12 +12,14 @@ class HomeController extends GetxController {
 
   UserModel userModel=UserModel();
   CityModel cityModel=CityModel();
+  CategoryModel categoryModel=CategoryModel();
   BannerModel bannerModel=BannerModel();
   final RxInt selectedIndex = 0.obs;
   final RxBool isCityLoading=true.obs;
   late  CityData defaultCity=CityData();
   final RxBool defaultCityIsEmpty=true.obs;
   final RxBool isBannerLoading=true.obs;
+  final RxBool isCategoryLoading=true.obs;
 
 
   void setNavIndex(int i) => selectedIndex.value = i;
@@ -81,9 +84,18 @@ class HomeController extends GetxController {
 
   }
 
+
+  getCategory()async{
+    isCategoryLoading.value=true;
+    categoryModel=await HomeServices().getCategory();
+    isCategoryLoading.value=false;
+    update();
+  }
+
   _callAllFunctions(){
     _getDefaultCity();
     getCities();
+    getCategory();
     getBanners();
   }
 
@@ -94,5 +106,6 @@ class HomeController extends GetxController {
     _getDefaultCity();
     getCities();
     getBanners();
+    getCategory();
   }
 }

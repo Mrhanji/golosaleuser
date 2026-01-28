@@ -1,3 +1,4 @@
+import '/app/features/home/model/CategoryModel.dart';
 import '/app/features/auth/model/user_model.dart';
 import '/app/features/home/model/banner_model.dart';
 import '/app/features/city/model/city_model.dart';
@@ -23,6 +24,15 @@ class HomeServices{
     var response=await DioService().getService(endPoint: EndPoints.getCityBanners(cityId));
     return BannerModel.fromJson(response.data);
   }
+
+
+  Future<CategoryModel>getCategory()async {
+
+    var response=await DioService().getService(endPoint: EndPoints.getCategory);
+    return CategoryModel.fromJson(response.data);
+
+  }
+
 
 
 

@@ -120,19 +120,27 @@ class homeView extends StatelessWidget {
             ),
           ),
 
-          Container(
-              height: Get.height*0.23,
-              width: Get.width,
-              padding: EdgeInsets.only(left: 5, right: 5),
-              child:ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemCount: 15,
-                  itemBuilder: (i,data)=> Padding(
-                    padding: const EdgeInsets.only(right: 4.0,left: 4),
-                    child: categoryCard(data),
-                  )
-              )),
+       Obx((){
+         if(controller.isCategoryLoading.value){
+           return CircularProgressIndicator();
+         }
+         if(controller.categoryModel.data!.isEmpty){
+           return Text("No category found");
+         }
+         return    Container(
+             height: Get.height*0.23,
+             width: Get.width,
+             padding: EdgeInsets.only(left: 5, right: 5),
+             child:ListView.builder(
+                 scrollDirection: Axis.horizontal,
+                 shrinkWrap: true,
+                 itemCount: controller.categoryModel.data?.length,
+                 itemBuilder: (i,data)=> Padding(
+                   padding: const EdgeInsets.only(right: 4.0,left: 4),
+                   child: categoryCard(controller.categoryModel.data![data]),
+                 )
+             ));
+       }),
 
 
           /// Popular items
