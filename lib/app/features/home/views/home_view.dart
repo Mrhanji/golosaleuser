@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/search/model/products_model.dart';
 import '/utils/end_points.dart';
 import '/app/routes/app_routes.dart';
 import '/app/features/home/controller/home_controller.dart';
@@ -167,7 +168,7 @@ class homeView extends StatelessWidget {
                   itemCount: 15,
                   itemBuilder: (i,data)=> Padding(
                     padding: const EdgeInsets.only(right: 4.0,left: 4),
-                    child: productCard(data),
+                    child: productCard(ProductData()),
                   )
               )),
 

@@ -92,7 +92,10 @@ class AppTranslations extends Translations {
       'cash_on_delivery':'Cash on Delivery',
       'payment_method':'Payment Method',
       'total':'Total',
-      'add_to_cart':'Add to Cart'
+      'add_to_cart':'Add to Cart',
+      'not_found':'Not Found',
+      'search_something':'Search Something',
+
 
 
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
+import '/app/features/search/model/products_model.dart';
 import '/app/features/home/model/CategoryModel.dart';
 import '/app/features/home/model/banner_model.dart';
 import '/app/features/auth/model/user_model.dart';
@@ -13,6 +14,7 @@ class HomeController extends GetxController {
   UserModel userModel=UserModel();
   CityModel cityModel=CityModel();
   CategoryModel categoryModel=CategoryModel();
+  ProductsModel productsModel=ProductsModel();
   BannerModel bannerModel=BannerModel();
   final RxInt selectedIndex = 0.obs;
   final RxBool isCityLoading=true.obs;
@@ -20,6 +22,7 @@ class HomeController extends GetxController {
   final RxBool defaultCityIsEmpty=true.obs;
   final RxBool isBannerLoading=true.obs;
   final RxBool isCategoryLoading=true.obs;
+  final RxBool isCategoryItemLoading=true.obs;
 
 
   void setNavIndex(int i) => selectedIndex.value = i;
@@ -91,6 +94,18 @@ class HomeController extends GetxController {
     isCategoryLoading.value=false;
     update();
   }
+
+
+  getCategoryItem(categoryId)async{
+    isCategoryItemLoading.value=true;
+    productsModel=ProductsModel();
+    update();
+    productsModel=await HomeServices().getCategoryProducts(categoryId);
+    isCategoryItemLoading.value=false;
+    update();
+
+  }
+
 
   _callAllFunctions(){
     _getDefaultCity();

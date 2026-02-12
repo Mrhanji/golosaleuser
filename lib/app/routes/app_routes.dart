@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '/app/features/home/views/category_products_screen.dart';
 import '../features/order/views/order_details_screen.dart';
 import '../features/order/views/order_history_screen.dart';
 import '/app/features/notifications/views/notification_screen.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String notificationScreen="/notificationScreen";
   static const String orderHistoryScreen='/orderHistoryScreen';
   static const String orderDetailsScreen='/orderDetailsScreen';
+  static const String categoryProductScreen='/categoryProductScreen';
 }
 
 class AppPages {
@@ -55,6 +57,8 @@ class AppPages {
 
     GetPage(name: AppRoutes.orderHistoryScreen, page:()=>OrderHistoryScreen()),
 
-    GetPage(name: AppRoutes.orderDetailsScreen, page: ()=>OrderDetailsScreen())
+    GetPage(name: AppRoutes.orderDetailsScreen, page: ()=>OrderDetailsScreen()),
+
+    GetPage(name: AppRoutes.categoryProductScreen, page: ()=>CategoryProductsScreen())
   ];
 }

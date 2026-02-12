@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../utils/end_points.dart';
+import '../../search/model/products_model.dart';
 import '/app/routes/app_routes.dart';
 import '/utils/app_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-Widget productCard(data){
+Widget productCard(ProductData data){
   return Container(
     height: Get.height*0.25,
     width: Get.width*0.37,
@@ -16,6 +18,7 @@ Widget productCard(data){
         //border: BoxBorder.all(color: Colors.black38)
       ),
     child:Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
         Container(
@@ -27,19 +30,20 @@ Widget productCard(data){
           child: Stack(
             children: [
               Positioned(child: InkWell(
-                onTap: ()=>Get.toNamed(AppRoutes.productScreen,arguments: "Product Name"),
+                onTap: ()=>Get.toNamed(AppRoutes.productScreen,arguments: data.productId),
                 child: Padding(
                   padding: const EdgeInsets.all(6.0),
                   child: CachedNetworkImage(
-                    imageUrl: "https://milma.com/storage/products//April2023//OcDXueDoR1F5XgXwaUkT.png",
+                    imageUrl: EndPoints.mediaUrl(data.productThumbnail.toString()),
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
                             image: imageProvider,
                             fit: BoxFit.fill,
-                            colorFilter:
-                            ColorFilter.mode(Colors.red, BlendMode.colorBurn)),
+                          //
+                          //  colorFilter: ColorFilter.mode(Colors.red, BlendMode.colorBurn)
+                        ),
                       ),
                     ),
                     height: Get.height*0.15,
@@ -91,22 +95,22 @@ Widget productCard(data){
                   ),
                 ]
               ),
-                child: Text('${AppConstants.currencySymbol}'+"77",
+                child: Text('${AppConstants.currencySymbol}'+data.productPrice.toString(),
                 style: GoogleFonts.aBeeZee(color: Colors.white,
                   fontWeight: FontWeight.w700,
                   fontSize: Get.height*0.018
                 ),)),
             SizedBox(width: Get.width*0.02,),
-            Text("${AppConstants.currencySymbol}88",style: GoogleFonts.poppins(decoration: TextDecoration.lineThrough,
+            Text("${AppConstants.currencySymbol}${data.productMrp}",style: GoogleFonts.poppins(decoration: TextDecoration.lineThrough,
             fontSize: Get.height*0.015),)
           ],
         ),
 
         InkWell(
-          onTap: ()=>Get.toNamed(AppRoutes.productScreen,arguments: "Product Name"),
+          onTap: ()=>Get.toNamed(AppRoutes.productScreen,arguments: data.productId),
           child: Padding(
-            padding: const EdgeInsets.only(left: 8.0,top: 5),
-            child: Text("Product Name here with extra details & some",
+            padding: const EdgeInsets.only(left: 5.0,top: 5),
+            child: Text("${data.productTitle}",
               style: GoogleFonts.poppins(fontSize: Get.height*0.015,fontWeight: FontWeight.w500),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,),
@@ -117,7 +121,7 @@ Widget productCard(data){
           padding: const EdgeInsets.only(left: 8.0),
           child: Row(
             children: [
-              Text("1 pc (500ml)",style: GoogleFonts.poppins(
+              Text("${data.productUnitTag}",style: GoogleFonts.poppins(
                 color: Colors.grey,
                 fontSize: Get.height*0.012
               ),),

@@ -1,3 +1,5 @@
+import 'package:golosaleuser/app/features/search/model/products_model.dart';
+
 import '/app/features/home/model/CategoryModel.dart';
 import '/app/features/auth/model/user_model.dart';
 import '/app/features/home/model/banner_model.dart';
@@ -36,6 +38,24 @@ class HomeServices{
 
 
 
+  Future<ProductsModel> searchProduct(String title)async{
+    var response=await DioService().getService(endPoint: EndPoints.searchProduct(title));
+    return ProductsModel.fromJson(response.data);
+    }
 
+
+
+
+   Future<ProductsModel>getSingleProductById(String productId)async{
+    var response=await DioService().getService(endPoint: EndPoints.getSingleProductById(productId));
+    print(response.data);
+    return ProductsModel.fromJson(response.data);
+   }
+
+
+   Future<ProductsModel>getCategoryProducts(String categoryId)async{
+    var response=await DioService().getService(endPoint: EndPoints.searchProductByCategory(categoryId));
+    return ProductsModel.fromJson(response.data);
+   }
 
 }

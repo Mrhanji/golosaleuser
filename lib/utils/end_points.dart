@@ -8,6 +8,11 @@ class EndPoints{
   static const String updateProfile="";
   static const String getAddress="";
   static  String getCityBanners(String cityId)=>"/banners/bannersByCity?cityId=$cityId";
+  static String searchProduct(String query)=>"/product/search?productTitle=$query";
+  static String searchProductByCategory(String categoryId)=>"/product/search?categoryId=$categoryId";
+  static String getSingleProductById(String productId)=>"/product/search?productId=$productId";
+
+
 
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controller/product_controller.dart';
 import '/utils/app_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -7,34 +8,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 
-/// ================= CONTROLLER =================
-
-class ProductController extends GetxController {
-  int quantity = 1;
-  bool isSubscription = false;
-  String selectedPlan = "";
-
-  void increment() {
-    quantity++;
-    update();
-  }
-
-  void decrement() {
-    if (quantity > 1) quantity--;
-    update();
-  }
-
-  void toggleSubscription(bool value) {
-    isSubscription = value;
-    selectedPlan = "";
-    update();
-  }
-
-  void selectPlan(String plan) {
-    selectedPlan = plan;
-    update();
-  }
-}
 
 /// ================= SCREEN =================
 
@@ -55,17 +28,25 @@ class ProductScreen extends StatelessWidget {
     "1 Month",
   ];
 
-  final double price = 58;
+ 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF5F6FA),
-      body: CustomScrollView(
-        slivers: [
-          _sliverAppBar(),
-          SliverToBoxAdapter(child: _content()),
-        ],
+      body: GetBuilder(
+        init: controller,
+        builder: (context) {
+          if(controller.isProductLoading.value==true){
+            return Center(child: CircularProgressIndicator(),);
+          }else
+          return CustomScrollView(
+            slivers: [
+              _sliverAppBar(),
+              SliverToBoxAdapter(child: _content()),
+            ],
+          );
+        }
       ),
       bottomNavigationBar: _bottomBar(),
     );
@@ -111,8 +92,8 @@ class ProductScreen extends StatelessWidget {
           _productInfo(),
           const SizedBox(height: 16),
           _quantityCard(),
-          const SizedBox(height: 16),
-          _purchaseTypeCard(),
+          controller.productsModel.data!.first.hasSubscriptionModel==1?const SizedBox(height: 16):Container(),
+          controller.productsModel.data!.first.hasSubscriptionModel==1?_purchaseTypeCard():Container(),
           const SizedBox(height: 120),
         ],
       ),
@@ -124,7 +105,7 @@ class ProductScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Fresh Cow Milk",
+          "${controller.productsModel.data!.first.productTitle}",
           style: GoogleFonts.poppins(
             fontSize: 22,
             fontWeight: FontWeight.w600,
@@ -132,7 +113,7 @@ class ProductScreen extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          "₹$price / 1 Litre",
+          "${controller.productsModel.data!.first.productUnitTag}",
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -141,7 +122,7 @@ class ProductScreen extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          "Pure, farm-fresh cow milk sourced daily from trusted local dairies. Hygienically processed and quality-checked to retain its natural taste and nutrients. Buy instantly when needed or subscribe for hassle-free daily doorstep delivery—fresh, reliable, and perfect for your family’s everyday needs.",
+          "${controller.productsModel.data!.first.productInfo}",
           style: GoogleFonts.poppins(color: Colors.grey.shade700),
         ),
       ],
@@ -276,7 +257,7 @@ class ProductScreen extends StatelessWidget {
   Widget _bottomBar() {
     return GetBuilder<ProductController>(
       builder: (controller) {
-        final total = price * controller.quantity;
+        final total = double.parse(controller.productsModel.data!.first.productPrice.toString()) * controller.quantity;
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
@@ -293,7 +274,7 @@ class ProductScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Total",
+                    "total".tr,
                     style: GoogleFonts.poppins(color: Colors.grey),
                   ),
                   Text(

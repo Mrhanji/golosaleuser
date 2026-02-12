@@ -59,4 +59,13 @@ class SecurePreferenceStorage {
     return true;
   }
 
+  Future<bool>setRecentSearchProduct(String product)async{
+    await _storage.write(key: "recentSearch", value: product);
+    return true;
+  }
+
+  Future<String>getRecentSearchProduct()async{
+    return await _storage.read(key: "recentSearch")??'';
+  }
+
 }
