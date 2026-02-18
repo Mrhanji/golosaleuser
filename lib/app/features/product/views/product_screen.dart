@@ -257,7 +257,10 @@ class ProductScreen extends StatelessWidget {
   Widget _bottomBar() {
     return GetBuilder<ProductController>(
       builder: (controller) {
-        final total = double.parse(controller.productsModel.data!.first.productPrice.toString()) * controller.quantity;
+        double total=0;
+        if(controller.isProductLoading.value==false){
+          total = double.parse(controller.productsModel.data!.first.productPrice.toString()) * controller.quantity;
+        }
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
