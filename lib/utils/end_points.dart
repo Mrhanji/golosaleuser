@@ -7,10 +7,17 @@ class EndPoints{
   static const String getCategory="/category/getCategories";
   static const String updateProfile="";
   static const String getAddress="";
-  static  String getCityBanners(String cityId)=>"/banners/bannersByCity?cityId=$cityId";
+  static const String updateCart="/cart/update";
+  static const String addCart="/cart/add";
+
+
+  static String getCartItems(String userId)=>"/cart/getCart?userId=$userId";
+  static String removeCartItem(String cartId)=>"/cart/remove?cartId=$cartId";
+  static String getCityBanners(String cityId)=>"/banners/bannersByCity?cityId=$cityId";
   static String searchProduct(String query)=>"/product/search?productTitle=$query";
   static String searchProductByCategory(String categoryId)=>"/product/search?categoryId=$categoryId";
   static String getSingleProductById(String productId)=>"/product/search?productId=$productId";
+
 
 
 

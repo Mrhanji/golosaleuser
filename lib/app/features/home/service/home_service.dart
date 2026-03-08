@@ -1,5 +1,7 @@
-import 'package:golosaleuser/app/features/search/model/products_model.dart';
+import 'package:dio/dio.dart';
 
+import '/app/features/cart/model/cart_model.dart';
+import '/app/features/search/model/products_model.dart';
 import '/app/features/home/model/CategoryModel.dart';
 import '/app/features/auth/model/user_model.dart';
 import '/app/features/home/model/banner_model.dart';
@@ -56,6 +58,26 @@ class HomeServices{
    Future<ProductsModel>getCategoryProducts(String categoryId)async{
     var response=await DioService().getService(endPoint: EndPoints.searchProductByCategory(categoryId));
     return ProductsModel.fromJson(response.data);
+   }
+
+
+
+   Future<CartModel>getCart(String userId)async{
+    var response=await DioService().getService(endPoint: EndPoints.getCartItems(userId));
+    return CartModel.fromJson(response.data);
+   }
+
+
+   Future<dynamic>addToCart(Map<String,dynamic>body)async {
+     var response = await DioService().postService(endPoint: EndPoints.addCart,dataBody: body);
+     return response.data;
+
+   }
+
+   Future<dynamic>updateToCart(Map<String,dynamic>body)async {
+    print(body);
+     var response = await DioService().putService(endPoint: EndPoints.updateCart,dataBody: body);
+     return response.data;
    }
 
 }

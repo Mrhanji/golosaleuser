@@ -292,6 +292,9 @@ class ProductScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // TODO: Add to cart / Subscribe logic
+                  if(!controller.isAddedIntoCart){
+                  controller.addToCart();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -299,11 +302,12 @@ class ProductScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
+                  backgroundColor: controller.isAddedIntoCart?Colors.amber:Colors.blue.shade50
                 ),
                 child: Text(
                   controller.isSubscription
-                      ? "Subscribe"
-                      : "Add to Cart",
+                      ? "subscribe".tr:
+                      controller.isAddedIntoCart?"added".tr: "add_to_cart".tr,
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                   ),

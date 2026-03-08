@@ -1,49 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/home/controller/home_controller.dart';
+import '../model/cart_model.dart';
+import '/app/features/home/controller/home_controller.dart';
+import '../controller/cart_controller.dart';
 import '/utils/app_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-enum PaymentType { cod, online }
 
-class CartController extends GetxController {
-  int quantity = 2;
-
-  double subTotal = 23;
-  double deliveryCharge = 45;
-  double discount = 0;
-
-  bool couponApplied = false;
-  PaymentType paymentType = PaymentType.cod;
-
-  void incrementQty() {
-    quantity++;
-    update();
-  }
-
-  void decrementQty() {
-    if (quantity > 1) quantity--;
-    update();
-  }
-
-  void applyCoupon() {
-    discount = 10;
-    couponApplied = true;
-    update();
-  }
-
-  void selectPayment(PaymentType? type) {
-    if (type == null) return;
-    paymentType = type;
-    update();
-  }
-
-  double get total =>
-      subTotal + deliveryCharge - discount;
-}
 
 class CartScreen extends StatelessWidget {
   final HomeController homeController;
@@ -65,26 +31,56 @@ class CartScreen extends StatelessWidget {
         leading: Text(''),
       ),
 
-      bottomNavigationBar: _checkoutBar(),
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _addressSection(),
-            const SizedBox(height: 12),
-            _cartItems(),
-            const SizedBox(height: 16),
-            _couponSection(),
-            const SizedBox(height: 16),
-            _invoiceSection(),
-            const SizedBox(height: 16),
-            _paymentSection(),
-            const SizedBox(height: 120),
-          ],
-        ),
+      bottomNavigationBar: GetBuilder(
+        init: controller,
+        builder: (context) {
+          if(controller.currentCartState==CartState.itemFound){
+          return _checkoutBar();
+        }else{
+            return Text("");
+          }
+        }
       ),
+
+      body: GetBuilder(
+          init: controller,
+          builder: (context){
+        switch (controller.currentCartState) {
+          case CartState.loading:
+            return Center(child: CircularProgressIndicator(),);
+          case CartState.noItem:
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset("assets/images/empty-cart.png",),
+                Text("no_item_found".tr),
+              ],
+            );
+          case CartState.itemFound:
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _addressSection(),
+                  const SizedBox(height: 12),
+                  _cartItems(),
+                  const SizedBox(height: 16),
+                  _couponSection(),
+                  const SizedBox(height: 16),
+                  _invoiceSection(),
+                  const SizedBox(height: 16),
+                  _paymentSection(),
+                  const SizedBox(height: 120),
+                ],
+              ),
+            );
+          case CartState.error:
+            // TODO: Handle this case.
+            throw UnimplementedError();
+        }
+
+      }),
     );
   }
 
@@ -132,15 +128,18 @@ class CartScreen extends StatelessWidget {
 
   // ================= CART ITEMS =================
 
-  Widget _cartItems() {
-    return GetBuilder<CartController>(
-      builder: (_) => Column(
-        children: List.generate(2, (_) => _cartItemCard()),
-      ),
-    );
-  }
+Widget _cartItems() {
+  return ListView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: controller.cartModel.data!.length,
+    itemBuilder: (context, index) {
+      return _cartItemCard( controller.cartModel.data![index]);
+    },
+  );
+}
 
-  Widget _cartItemCard() {
+  Widget _cartItemCard(CartData cartData) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
@@ -169,14 +168,14 @@ class CartScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Fresh Cow Milk",
+                  "${cartData.productDetails!.productTitle}",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "1 Litre",
+                  "${cartData.productDetails!.productUnitTag}",
                   style: GoogleFonts.poppins(
                     fontSize: 12,
                     color: Colors.grey,
@@ -184,7 +183,7 @@ class CartScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  "${AppConstants.currencySymbol}58",
+                  "${AppConstants.currencySymbol}${cartData.productDetails!.productPrice}",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                   ),
@@ -193,37 +192,35 @@ class CartScreen extends StatelessWidget {
             ),
           ),
 
-          _quantityStepper(),
+          _quantityStepper(cartData),
         ],
       ),
     );
   }
 
-  Widget _quantityStepper() {
-    return GetBuilder<CartController>(
-      builder: (_) => Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.indigo),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            _qtyBtn(CupertinoIcons.minus, controller.decrementQty),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                controller.quantity.toString(),
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-              ),
+  Widget _quantityStepper(CartData cartData) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.indigo),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          _qtyBtn(CupertinoIcons.minus, ()=>controller.decrementQty(cartData.cartId)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              cartData.productQty.toString(),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
             ),
-            _qtyBtn(CupertinoIcons.plus, controller.incrementQty),
-          ],
-        ),
+          ),
+          _qtyBtn(CupertinoIcons.plus, ()=>controller.incrementQty(cartData.cartId)),
+        ],
       ),
     );
   }
 
-  Widget _qtyBtn(IconData icon, VoidCallback onTap) {
+  Widget _qtyBtn(IconData icon,  onTap) {
     return InkWell(
       onTap: onTap,
       child: Padding(

@@ -38,4 +38,16 @@ class DioService {
       throw Exception(e);
     }
   }
+
+  /// Put Service
+
+  Future<Response>putService({required String endPoint,required Map<String,dynamic> dataBody})async{
+    try{
+      print("FullUrl:- ${AppConstants.apiUrl}$endPoint");
+      return await dio.put(endPoint,data: dataBody);
+    }catch(e) {
+      throw Exception(e);
+    }
+  }
+
 }
