@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:golosaleuser/app/features/cart/model/address_model.dart';
 
 import '/app/features/cart/model/cart_model.dart';
 import '/app/features/search/model/products_model.dart';
@@ -79,5 +79,15 @@ class HomeServices{
      var response = await DioService().putService(endPoint: EndPoints.updateCart,dataBody: body);
      return response.data;
    }
+
+   Future<dynamic>removeCart(String cartId)async{
+    var response=await DioService().getService(endPoint: EndPoints.removeCartItem(cartId));
+    return response.data;
+   }
+
+   Future<AddressModel>getAddress(userId)async{
+    var response=await DioService().getService(endPoint: EndPoints.getAddress(userId));
+    return AddressModel.fromJson(response.data);
+}
 
 }

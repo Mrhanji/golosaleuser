@@ -95,6 +95,7 @@ class AppTranslations extends Translations {
       'add_to_cart':'Add to Cart',
       'not_found':'Not Found',
       'search_something':'Search Something',
+      'address':'Address'
 
 
 

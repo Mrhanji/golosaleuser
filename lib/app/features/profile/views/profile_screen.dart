@@ -62,6 +62,11 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
 
+                  _menuTile(icon: CupertinoIcons.location_solid,
+                      title: 'address'.tr,
+                  onTap:()=>Get.toNamed(AppRoutes.addressScreen)
+                  ),
+
                   const SizedBox(height: 24),
                   _sectionTitle("settings".tr),
                   _menuTile(

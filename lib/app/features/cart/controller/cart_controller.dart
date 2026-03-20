@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/home/controller/home_controller.dart';
+import '/app/features/home/controller/home_controller.dart';
 import '../../home/service/home_service.dart';
 import '/app/features/cart/model/cart_model.dart';
 
@@ -14,7 +14,7 @@ class CartController extends GetxController {
   double discount = 0;
   CartModel cartModel = CartModel();
   CartState currentCartState = CartState.loading;
-
+  var userId;
   bool couponApplied = false;
   PaymentType paymentType = PaymentType.cod;
 
@@ -30,18 +30,32 @@ class CartController extends GetxController {
     update();
   }
 
-  void decrementQty(cartId) {
-    if (quantity > 1) {
-      quantity--;
-      cartModel.data!
-              .firstWhere((element) => element.cartId == cartId)
-              .productQty =
-          quantity;
-      int? updatedQty=cartModel.data!.firstWhere((element)=>element.cartId==cartId).productQty;
-      _saveCart(cartId, updatedQty!);
-      update();
+ Future<void> decrementQty(String cartId) async {
+      final item = cartModel.data!.firstWhere((element) => element.cartId == cartId);
+      final currentQty = item.productQty ?? 0;
+
+      if (currentQty > 1) {
+        item.productQty = currentQty - 1;
+        _saveCart(cartId, item.productQty!);
+        update();
+      } else {
+        // remove item locally
+        cartModel.data!.removeWhere((element) => element.cartId == cartId);
+
+        // send update to server indicating removal (productQty = 0)
+        try {
+          await HomeServices().updateToCart({"cartId": cartId, "productQty": 0});
+        } catch (_) {
+          // ignore errors for now
+        }
+
+        // update cart state if no items remain
+        if (cartModel.data!.isEmpty) {
+          currentCartState = CartState.noItem;
+        }
+        update();
+      }
     }
-  }
 
   void applyCoupon() {
     discount = 10;
@@ -58,15 +72,30 @@ class CartController extends GetxController {
   double get total => subTotal + deliveryCharge - discount;
 
   getCart() async {
-    cartModel = await HomeServices().getCart(
-      Get.put(HomeController()).userModel.data!.userId.toString(),
-    );
+    userId=Get.put(HomeController()).userModel.data!.userId.toString();
+
+    cartModel = await HomeServices().getCart(userId);
     if (cartModel.data!.isEmpty) {
       currentCartState = CartState.noItem;
     } else {
       currentCartState = CartState.itemFound;
+      //calculate total here
+   final sum = cartModel.data!
+       .fold<double>(0.0, (acc, e) {
+         final price = double.tryParse(e.productDetails?.productPrice?.toString() ?? '0') ?? 0.0;
+         final qty = e.productQty ?? 0;
+         return acc + price * qty;
+       });
+   subTotal = double.parse(sum.toStringAsFixed(2));
+
+
     }
     update();
+  }
+
+
+  getAddress()async{
+
   }
 
   _saveCart(String cartId, int qty) async {

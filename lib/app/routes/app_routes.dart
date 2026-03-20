@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
+import '/app/features/address/views/address_screen.dart';
 import '/app/features/home/views/category_products_screen.dart';
 import '../features/order/views/order_details_screen.dart';
 import '../features/order/views/order_history_screen.dart';
 import '/app/features/notifications/views/notification_screen.dart';
 import '/app/features/profile/views/edit_profile_screen.dart';
 import '/app/features/search/views/search_screen.dart';
-import '/app/features/refer/views/refer_screen.dart';
 import '/app/features/auth/views/otp_screen.dart';
 import '/app/features/home/views/home_screen.dart';
 import '/app/features/product/views/product_screen.dart';
@@ -30,6 +30,7 @@ class AppRoutes {
   static const String orderHistoryScreen='/orderHistoryScreen';
   static const String orderDetailsScreen='/orderDetailsScreen';
   static const String categoryProductScreen='/categoryProductScreen';
+  static const String addressScreen='/addressScreen';
 }
 
 class AppPages {
@@ -59,6 +60,8 @@ class AppPages {
 
     GetPage(name: AppRoutes.orderDetailsScreen, page: ()=>OrderDetailsScreen()),
 
-    GetPage(name: AppRoutes.categoryProductScreen, page: ()=>CategoryProductsScreen())
+    GetPage(name: AppRoutes.categoryProductScreen, page: ()=>CategoryProductsScreen()),
+
+    GetPage(name: AppRoutes.addressScreen, page: ()=>AddressScreen()),
   ];
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/utils/end_points.dart';
 import '../model/cart_model.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../controller/cart_controller.dart';
@@ -97,6 +98,7 @@ class CartScreen extends StatelessWidget {
             text: "Home • 123 Main Road, Delhi",
           ),
           _addressChip(
+
             icon: CupertinoIcons.add,
             text: "Add Address",
           ),
@@ -154,7 +156,7 @@ Widget _cartItems() {
         children: [
           CachedNetworkImage(
             imageUrl:
-            "https://milma.com/storage/products//April2023//OcDXueDoR1F5XgXwaUkT.png",
+            "${EndPoints.mediaUrl(cartData.productDetails!.productThumbnail.toString())}",
             height: 70,
             width: 70,
             fit: BoxFit.contain,
@@ -206,7 +208,7 @@ Widget _cartItems() {
       ),
       child: Row(
         children: [
-          _qtyBtn(CupertinoIcons.minus, ()=>controller.decrementQty(cartData.cartId)),
+          _qtyBtn(CupertinoIcons.minus, ()=>controller.decrementQty(cartData.cartId.toString())),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(

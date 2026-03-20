@@ -21,6 +21,7 @@ class DioService {
   /// GET request
   Future<Response> getService({required String endPoint}) async {
     try {
+      print(endPoint);
       return await dio.get(endPoint);
     } on DioException catch (e) {
       throw Exception(e.response?.data ?? e.message);
@@ -46,6 +47,18 @@ class DioService {
       print("FullUrl:- ${AppConstants.apiUrl}$endPoint");
       return await dio.put(endPoint,data: dataBody);
     }catch(e) {
+      throw Exception(e);
+    }
+  }
+
+
+  /// Delete Service
+
+  Future<dynamic>deleteService(endPoint)async{
+    try{
+      print("FullUrl:- ${AppConstants.apiUrl}$endPoint");
+      return await dio.delete(endPoint);
+    }catch(e){
       throw Exception(e);
     }
   }
