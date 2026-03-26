@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/routes/app_routes.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../controller/order_controller.dart';
+import '../model/order_history_model.dart';
 import 'order_details_screen.dart';
 
 class OrderHistoryScreen extends StatelessWidget {
-  const OrderHistoryScreen({super.key});
+   OrderHistoryScreen({super.key});
+  OrderHistoryController controller=Get.put(OrderHistoryController());
+
 
   @override
   Widget build(BuildContext context) {
@@ -13,23 +18,37 @@ class OrderHistoryScreen extends StatelessWidget {
       backgroundColor: const Color(0xffF5F6FA),
       appBar: AppBar(
         title: Text(
-          "Order History",
+          "order_history".tr,
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: 5,
-        itemBuilder: (_, index) => _orderCard(index),
+      body: GetBuilder(
+        init: controller,
+        builder: (context) {
+          if(controller.currentOrderHistoryState==OrderHistoryState.loading) {
+            return Center(child: CircularProgressIndicator());
+          }else if(controller.currentOrderHistoryState==OrderHistoryState.noItem){
+            return Center(child: Text("no_item_found".tr));
+          }else
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: controller.orderHistoryModel.data!.orders!.length,
+            itemBuilder: (_, index) {
+              Orders order = controller.orderHistoryModel.data!.orders![index];
+              return _orderCard(order);
+            },
+          );
+        }
       ),
     );
   }
 
-  Widget _orderCard(int index) {
+  Widget _orderCard(Orders order) {
     return InkWell(
       onTap: () {
-        Get.to(() => OrderDetailsScreen());
+        Get.toNamed(AppRoutes.orderDetailsScreen,arguments: order);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -49,13 +68,13 @@ class OrderHistoryScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Order #ODR1023$index",
+                  "Order #ODR-${order.orderNumber}",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  "₹168.00",
+                  "₹${order.grandTotal}",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                   ),
@@ -66,7 +85,7 @@ class OrderHistoryScreen extends StatelessWidget {
 
             // Date
             Text(
-              "12 Sep 2025 • 7:30 AM",
+              "${order.createdOn}",
               style: GoogleFonts.poppins(
                 fontSize: 12,
                 color: Colors.grey,
@@ -77,7 +96,7 @@ class OrderHistoryScreen extends StatelessWidget {
 
             // Items preview
             Text(
-              "Items: Fresh Cow Milk, Curd, Butter",
+              "Total Items - ${order.totalItems}",
               style: GoogleFonts.poppins(
                 fontSize: 13,
                 color: Colors.grey.shade700,

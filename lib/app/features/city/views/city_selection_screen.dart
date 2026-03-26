@@ -53,6 +53,7 @@ class CitySelectionScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           CachedNetworkImage(
+                            height: Get.height*0.2,
                             imageUrl: EndPoints.mediaUrl(homeController.cityModel.data![index].cityImageId.toString()),
                             errorWidget: (context, url, error) => Icon(Icons.error),
                             placeholder: (context, url) => Center(child: CupertinoActivityIndicator()),

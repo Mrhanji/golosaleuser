@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/order/model/order_history_model.dart';
+import 'package:golosaleuser/utils/end_points.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -8,18 +10,19 @@ class OrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Orders orderDetails=Get.arguments;
     return Scaffold(
       backgroundColor: const Color(0xffF5F6FA),
       appBar: AppBar(
         title: Text(
-          "Order Details",
+          "order_details".tr,
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
             onPressed: null, // disabled for now
             icon: const Icon(Icons.download),
-            tooltip: "Download Invoice",
+            tooltip: "download_invoice".tr,
           )
         ],
       ),
@@ -28,11 +31,11 @@ class OrderDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _orderHeader(),
+            _orderHeader(orderDetails),
             const SizedBox(height: 12),
-            _itemsList(),
+            _itemsList(orderDetails),
             const SizedBox(height: 16),
-            _billSection(),
+            _billSection(orderDetails),
             const SizedBox(height: 40),
           ],
         ),
@@ -42,7 +45,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   // ================= HEADER =================
 
-  Widget _orderHeader() {
+  Widget _orderHeader(Orders orderDetails) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -56,7 +59,7 @@ class OrderDetailsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Order #ODR10231",
+            "Order #ODR-${orderDetails.orderNumber}",
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w600,
               fontSize: 16,
@@ -64,7 +67,7 @@ class OrderDetailsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            "Delivered • 12 Sep 2025, 7:30 AM",
+            "${orderDetails.orderStatus}",
             style: GoogleFonts.poppins(
               fontSize: 13,
               color: Colors.green,
@@ -77,13 +80,14 @@ class OrderDetailsScreen extends StatelessWidget {
 
   // ================= ITEMS =================
 
-  Widget _itemsList() {
+  Widget _itemsList(Orders orderDetails) {
     return Column(
-      children: List.generate(3, (_) => _itemTile()),
-    );
+      children:[
+        ...orderDetails.orderItems!.map((e) => _itemTile(e)).toList(),
+      ]);
   }
 
-  Widget _itemTile() {
+  Widget _itemTile(OrderItems item) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
@@ -98,7 +102,7 @@ class OrderDetailsScreen extends StatelessWidget {
         children: [
           CachedNetworkImage(
             imageUrl:
-            "https://milma.com/storage/products//April2023//OcDXueDoR1F5XgXwaUkT.png",
+            EndPoints.mediaUrl(item.product!.productThumbnail.toString()),
             height: 60,
             width: 60,
             fit: BoxFit.contain,
@@ -109,13 +113,13 @@ class OrderDetailsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Fresh Cow Milk",
+                  "${item.product!.productTitle}",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  "1 Litre × 2",
+                  "${item.product!.productUnitTag} x ${item.qty}",
                   style: GoogleFonts.poppins(
                     fontSize: 12,
                     color: Colors.grey,
@@ -125,7 +129,7 @@ class OrderDetailsScreen extends StatelessWidget {
             ),
           ),
           Text(
-            "₹116",
+            "₹${item.product!.productPrice}",
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w600,
             ),
@@ -137,7 +141,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   // ================= BILL =================
 
-  Widget _billSection() {
+  Widget _billSection(Orders orderDetails) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -151,20 +155,20 @@ class OrderDetailsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Bill Summary",
+            "bill_summary".tr,
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
           ),
           const Divider(height: 24),
-          _billRow("Item Total", "₹140"),
-          _billRow("Delivery Charge", "₹20"),
-          _billRow("Discount", "-₹10", green: true),
+          _billRow("Item Total", "₹${orderDetails.subTotal}"),
+          _billRow("Delivery Charge", "₹${orderDetails.deliveryFee}"),
+          _billRow("Discount", "-₹${orderDetails.couponPercent}", green: true),
           const Divider(height: 24),
           _billRow(
             "Total Paid",
-            "₹150",
+            "₹${orderDetails.grandTotal}",
             bold: true,
           ),
         ],

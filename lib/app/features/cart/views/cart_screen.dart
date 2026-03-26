@@ -279,6 +279,7 @@ Widget _cartItems() {
 
   Widget _invoiceSection() {
     return GetBuilder<CartController>(
+      init: controller,
       builder: (_) => _card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,6 +339,7 @@ Widget _cartItems() {
 
             RadioListTile<PaymentType>(
               value: PaymentType.cod,
+              enabled: controller.isCodAvailable,
               groupValue: controller.paymentType,
               onChanged: controller.selectPayment,
               title:  Text("cash_on_delivery".tr),
@@ -381,6 +383,7 @@ Widget _cartItems() {
                 // 👉 Razorpay integration here
               } else {
                 // 👉 Place COD order
+                controller.placeOrder();
               }
             },
             child: Text(

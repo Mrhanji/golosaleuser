@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/cart/controller/cart_controller.dart';
 import 'package:golosaleuser/app/features/home/controller/home_controller.dart';
 import '../../../../database/local_db.dart';
 import '../../home/service/home_service.dart';
@@ -52,6 +53,7 @@ class ProductController extends GetxController {
     update();
     print(body);
     var response=await HomeServices().addToCart(body);
+    Get.put(CartController()).getCart();
     print(response);
     Get.snackbar("cart_added".tr, '${response['message']}');
 

@@ -1,5 +1,7 @@
-import 'package:golosaleuser/app/features/cart/model/address_model.dart';
+import 'package:golosaleuser/app/features/order/model/order_history_model.dart';
 
+import '/app/features/home/model/settings_model.dart';
+import '/app/features/cart/model/address_model.dart';
 import '/app/features/cart/model/cart_model.dart';
 import '/app/features/search/model/products_model.dart';
 import '/app/features/home/model/CategoryModel.dart';
@@ -89,5 +91,27 @@ class HomeServices{
     var response=await DioService().getService(endPoint: EndPoints.getAddress(userId));
     return AddressModel.fromJson(response.data);
 }
+
+
+Future<SettingsModel>getAppSettings()async{
+    var response=await
+
+    DioService().getService(endPoint: EndPoints.appSetting);
+    print(response.data);
+    return SettingsModel.fromJson(response.data);
+
+  }
+  
+  
+  Future<dynamic>placeOrder(dataBody)async{
+    var response=await DioService().postService(endPoint: EndPoints.placeOrder, dataBody: dataBody);
+    return response.data;
+  }
+
+
+  Future<OrderHistoryModel>getOrderHistory(userId)async{
+    var response=await DioService().getService(endPoint: EndPoints.getOrderHistory(userId));
+    return OrderHistoryModel.fromJson(response.data);
+  }
 
 }

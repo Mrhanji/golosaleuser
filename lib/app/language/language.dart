@@ -95,7 +95,27 @@ class AppTranslations extends Translations {
       'add_to_cart':'Add to Cart',
       'not_found':'Not Found',
       'search_something':'Search Something',
-      'address':'Address'
+      'address':'Address',
+      'under_maintenance':'Under Maintenance',
+      'maintenance_mode_subtitle':'We are currently under maintenance. Please try again later',
+      'contact_us':'Contact Us',
+      'exit_app':'Exit App',
+      'exit_app_msg':'Are you sure you want to exit?',
+      'exit_app_cancel':'Cancel',
+      'exit_app_exit':'Exit',
+      'no_item_found':'No Item Found',
+      'select_city':'Select City',
+      'order_details':'Order Details',
+      'download_invoice':'Download Invoice',
+      'cart_added':'Cart Added',
+      'cart_added_msg':'Item added to cart successfully',
+      'added':'Added',
+      'bill_summary':'Bill Summary',
+      'item_total':'Item Total',
+      'total_paid':'Total Paid',
+      'order_status':'Order Status'
+
+
 
 
 

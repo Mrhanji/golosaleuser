@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/home/model/settings_model.dart';
+import 'package:golosaleuser/app/routes/app_routes.dart';
 import '/app/features/search/model/products_model.dart';
 import '/app/features/home/model/CategoryModel.dart';
 import '/app/features/home/model/banner_model.dart';
@@ -16,6 +18,7 @@ class HomeController extends GetxController {
   CategoryModel categoryModel=CategoryModel();
   ProductsModel productsModel=ProductsModel();
   BannerModel bannerModel=BannerModel();
+  SettingsModel settingsModel=SettingsModel();
   final RxInt selectedIndex = 0.obs;
   final RxBool isCityLoading=true.obs;
   late  CityData defaultCity=CityData();
@@ -114,13 +117,32 @@ class HomeController extends GetxController {
     getBanners();
   }
 
+
+  getSettings()async{
+    settingsModel=await HomeServices().getAppSettings();
+    if(settingsModel.data?.first.maintenanceMode ==1){
+      Get.offAllNamed(AppRoutes.maintenanceModeScreen);
+    }
+  }
+
+
+  checkPermissions()async{
+    //Check here allow user permission for location and notifications if not allowed then ask for allow these permission if user not allow then cloes app.
+
+
+
+  }
+
+
   @override
   void onInit() {
     super.onInit();
+    getSettings();
     getUser();
     _getDefaultCity();
     getCities();
     getBanners();
     getCategory();
+
   }
 }

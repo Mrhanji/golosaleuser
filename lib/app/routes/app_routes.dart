@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '/app/features/maintenance/views/maintenance_screen.dart';
 import '/app/features/address/views/address_screen.dart';
 import '/app/features/home/views/category_products_screen.dart';
 import '../features/order/views/order_details_screen.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const String orderDetailsScreen='/orderDetailsScreen';
   static const String categoryProductScreen='/categoryProductScreen';
   static const String addressScreen='/addressScreen';
+  static const String maintenanceModeScreen='/maintenanceModeScreen';
 }
 
 class AppPages {
@@ -63,5 +65,7 @@ class AppPages {
     GetPage(name: AppRoutes.categoryProductScreen, page: ()=>CategoryProductsScreen()),
 
     GetPage(name: AppRoutes.addressScreen, page: ()=>AddressScreen()),
+
+    GetPage(name: AppRoutes.maintenanceModeScreen, page: ()=>MaintenanceScreen())
   ];
 }

@@ -10,7 +10,11 @@ class EndPoints{
   static const String updateCart="/cart/update";
   static const String addCart="/cart/add";
   static const String addAddress="/address/add";
+  static const String appSetting='/settings/get';
 
+  static const String placeOrder="/orders/order-history";
+
+  static String getOrderHistory(String userId)=>"/orders/order-history?userId=$userId";
   static String getAddress(String userId)=>"/address/list?userId=$userId";
   static String getCartItems(String userId)=>"/cart/getCart?userId=$userId";
   static String removeCartItem(String cartId)=>"/cart/remove?cartId=$cartId";
