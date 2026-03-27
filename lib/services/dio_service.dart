@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:golosaleuser/utils/end_points.dart';
 import '/utils/app_constants.dart';
 
 class DioService {
@@ -60,6 +63,37 @@ class DioService {
       return await dio.delete(endPoint);
     }catch(e){
       throw Exception(e);
+    }
+  }
+
+
+  /// 🚀 Upload Image
+  Future<Response?> uploadMedia(File file,endPoint) async {
+    try {
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(
+          file.path,
+          filename: file.path.split('/').last,
+        ),
+      });
+
+      Response response = await dio.post(
+       endPoint, // your API
+        data: formData,
+        options: Options(
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        ),
+      );
+
+      /// ✅ Print Full Response
+      print("STATUS CODE: ${response.statusCode}");
+      print("RESPONSE DATA: ${response.data}");
+
+      return response;
+    } catch (e) {
+      print("UPLOAD ERROR: $e");
     }
   }
 

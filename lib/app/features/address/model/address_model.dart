@@ -1,17 +1,17 @@
 
-class AddressModel {
+class AddressHistoryModel {
   String? status;
   int? statusCode;
   String? message;
-  List<Data>? data;
+  List<AddressData>? data;
 
-  AddressModel({this.status, this.statusCode, this.message, this.data});
+  AddressHistoryModel({this.status, this.statusCode, this.message, this.data});
 
-  AddressModel.fromJson(Map<String, dynamic> json) {
+  AddressHistoryModel.fromJson(Map<String, dynamic> json) {
     status = json["status"];
     statusCode = json["statusCode"];
     message = json["message"];
-    data = json["data"] == null ? null : (json["data"] as List).map((e) => Data.fromJson(e)).toList();
+    data = json["data"] == null ? null : (json["data"] as List).map((e) => AddressData.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -26,7 +26,7 @@ class AddressModel {
   }
 }
 
-class Data {
+class AddressData {
   String? addressId;
   String? userId;
   String? holderName;
@@ -42,9 +42,9 @@ class Data {
   String? createdOn;
   String? updatedOn;
 
-  Data({this.addressId, this.userId, this.holderName, this.building, this.landmark, this.cityId, this.setAsDefault, this.latitude, this.longitude, this.houseImage, this.addressType, this.status, this.createdOn, this.updatedOn});
+  AddressData({this.addressId, this.userId, this.holderName, this.building, this.landmark, this.cityId, this.setAsDefault, this.latitude, this.longitude, this.houseImage, this.addressType, this.status, this.createdOn, this.updatedOn});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  AddressData.fromJson(Map<String, dynamic> json) {
     addressId = json["addressId"];
     userId = json["userId"];
     holderName = json["holderName"];

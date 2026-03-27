@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/home/model/settings_model.dart';
-import 'package:golosaleuser/app/routes/app_routes.dart';
+import '/app/features/home/model/settings_model.dart';
+import '/app/routes/app_routes.dart';
 import '/app/features/search/model/products_model.dart';
 import '/app/features/home/model/CategoryModel.dart';
 import '/app/features/home/model/banner_model.dart';

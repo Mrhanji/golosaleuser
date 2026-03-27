@@ -1,7 +1,5 @@
-import 'package:golosaleuser/app/features/order/model/order_history_model.dart';
-
+import '/app/features/order/model/order_history_model.dart';
 import '/app/features/home/model/settings_model.dart';
-import '/app/features/cart/model/address_model.dart';
 import '/app/features/cart/model/cart_model.dart';
 import '/app/features/search/model/products_model.dart';
 import '/app/features/home/model/CategoryModel.dart';
@@ -87,10 +85,6 @@ class HomeServices{
     return response.data;
    }
 
-   Future<AddressModel>getAddress(userId)async{
-    var response=await DioService().getService(endPoint: EndPoints.getAddress(userId));
-    return AddressModel.fromJson(response.data);
-}
 
 
 Future<SettingsModel>getAppSettings()async{

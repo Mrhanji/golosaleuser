@@ -11,7 +11,7 @@ class EndPoints{
   static const String addCart="/cart/add";
   static const String addAddress="/address/add";
   static const String appSetting='/settings/get';
-
+  static const String updateAddress='/address/update';
   static const String placeOrder="/orders/order-history";
 
   static String getOrderHistory(String userId)=>"/orders/order-history?userId=$userId";
@@ -30,4 +30,5 @@ class EndPoints{
 
   /// Media Url
   static  String mediaUrl(String mediaId)=>"${AppConstants.apiUrl}/media/getMediaById?mediaId=$mediaId";
+  static  const uploadMedia="/media/uploadMedia?tag=address";
 }

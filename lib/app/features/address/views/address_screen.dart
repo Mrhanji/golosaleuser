@@ -1,125 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/address/model/address_model.dart';
+import 'package:golosaleuser/utils/end_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:image_picker/image_picker.dart';
 
-class AddressModel {
 
-  String id;
-  String holderName;
-  String building;
-  String landmark;
-  int setAsDefault;
-  double latitude;
-  double longitude;
-  String addressType;
-  String? houseImage;
+import '../controller/address_controller.dart';
 
-  AddressModel({
-    required this.id,
-    required this.holderName,
-    required this.building,
-    required this.landmark,
-    required this.setAsDefault,
-    required this.latitude,
-    required this.longitude,
-    required this.addressType,
-    this.houseImage,
-  });
-}
 
-class AddressController extends GetxController {
 
-  RxList<AddressModel> addressList = <AddressModel>[].obs;
 
-  Rx<LatLng> selectedLocation = const LatLng(28.6139, 77.2090).obs;
-
-  Rx<File?> selectedImage = Rx<File?>(null);
-
-  GoogleMapController? mapController;
-
-  final ImagePicker picker = ImagePicker();
-
-  @override
-  void onInit() {
-    super.onInit();
-
-    addressList.add(
-      AddressModel(
-        id: "1",
-        holderName: "Rahul Sharma",
-        building: "A-45 Green Apartment",
-        landmark: "Near Metro Station",
-        setAsDefault: 1,
-        latitude: 28.6139,
-        longitude: 77.2090,
-        addressType: "home",
-      ),
-    );
-  }
-
-  Future pickImage() async {
-
-    final XFile? image =
-    await picker.pickImage(source: ImageSource.camera);
-
-    if (image != null) {
-      selectedImage.value = File(image.path);
-    }
-  }
-
-  void setLocation(LatLng latLng) {
-    selectedLocation.value = latLng;
-  }
-
-  Future getCurrentLocation() async {
-
-    LocationPermission permission =
-    await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    Position position =
-    await Geolocator.getCurrentPosition();
-
-    selectedLocation.value =
-        LatLng(position.latitude, position.longitude);
-
-    mapController?.animateCamera(
-      CameraUpdate.newLatLng(selectedLocation.value),
-    );
-  }
-
-  void addAddress(AddressModel model) {
-
-    if (model.setAsDefault == 1) {
-      for (var e in addressList) {
-        e.setAsDefault = 0;
-      }
-    }
-
-    addressList.add(model);
-  }
-
-  void updateAddress(AddressModel model) {
-
-    int index =
-    addressList.indexWhere((e) => e.id == model.id);
-
-    if (index != -1) {
-      addressList[index] = model;
-      addressList.refresh();
-    }
-  }
-
-  void deleteAddress(String id) {
-    addressList.removeWhere((e) => e.id == id);
-  }
-}
 
 class AddressScreen extends StatelessWidget {
 
@@ -389,12 +280,9 @@ class AddressScreen extends StatelessWidget {
                       );
 
                       if (model == null) {
-                        controller
-                            .addAddress(newModel);
+                      //  controller.addAddress(newModel);
                       } else {
-                        controller
-                            .updateAddress(
-                            newModel);
+                       // controller.updateAddress(newModel);
                       }
 
                       Get.back();
@@ -412,7 +300,7 @@ class AddressScreen extends StatelessWidget {
     ));
   }
 
-  Widget addressCard(AddressModel model) {
+  Widget addressCard(AddressData model) {
 
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -440,7 +328,7 @@ class AddressScreen extends StatelessWidget {
             children: [
 
               Text(
-                model.holderName,
+                model.holderName.toString(),
                 style: const TextStyle(
                     fontWeight:
                     FontWeight.bold,
@@ -451,7 +339,7 @@ class AddressScreen extends StatelessWidget {
 
               Chip(
                   label:
-                  Text(model.addressType)),
+                  Text(model.addressType.toString())),
 
               if (model.setAsDefault == 1)
                 const Padding(
@@ -467,11 +355,11 @@ class AddressScreen extends StatelessWidget {
 
           const SizedBox(height: 5),
 
-          Text(model.building),
+          Text(model.building.toString()),
 
           Text("Landmark: ${model.landmark}"),
 
-          if (model.houseImage != null)
+          if (model.houseImage != '')
             Padding(
               padding:
               const EdgeInsets.only(
@@ -480,8 +368,8 @@ class AddressScreen extends StatelessWidget {
                 borderRadius:
                 BorderRadius.circular(
                     10),
-                child: Image.file(
-                  File(model.houseImage!),
+                child: Image.network(
+                  EndPoints.mediaUrl(model.houseImage.toString()),
                   height: 120,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -496,9 +384,10 @@ class AddressScreen extends StatelessWidget {
 
               TextButton.icon(
                 onPressed: () =>
-                    openAddressForm(
-                        Get.context!,
-                        model: model),
+                    // openAddressForm(
+                    //     Get.context!,
+                    //     model: model),
+                    null,
                 icon:
                 const Icon(Icons.edit),
                 label:
@@ -508,7 +397,7 @@ class AddressScreen extends StatelessWidget {
               TextButton.icon(
                 onPressed: () =>
                     controller.deleteAddress(
-                        model.id),
+                        model.addressId.toString()),
                 icon: const Icon(
                     Icons.delete,
                     color: Colors.red),
@@ -541,17 +430,22 @@ class AddressScreen extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
 
-      body: Obx(() {
+      body: GetBuilder(
+          init: controller,
+          builder: (context){
 
+        if(controller.fetchingState.value==AddressFetchingState.loading){
+          return const Center(child: CircularProgressIndicator(),);
+
+        }else if(controller.fetchingState.value==AddressFetchingState.notFound){
+          return const Center(child: Text("No Address Found"),);
+        }else
         return ListView.builder(
-          itemCount:
-          controller.addressList.length,
+          itemCount: controller.addressHistoryModel.data!.length,
           itemBuilder:
               (context, index) {
 
-            return addressCard(
-                controller
-                    .addressList[index]);
+            return addressCard(controller.addressHistoryModel.data![index]);
           },
         );
       }),

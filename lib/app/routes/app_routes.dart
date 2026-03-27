@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../features/wallet/views/transactions_screen.dart';
 import '/app/features/maintenance/views/maintenance_screen.dart';
 import '/app/features/address/views/address_screen.dart';
 import '/app/features/home/views/category_products_screen.dart';
@@ -21,22 +22,24 @@ class AppRoutes {
   static const String home = '/home';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
-  static const String otpScreen="/otpScreen";
-  static const String productScreen="/productScreen";
-  static const String subscriptionsScreen="/subscriptionsScreen";
-  static const String referScreen="/referScreen";
-  static const String searchScreen="/searchScreen";
-  static const String editProfile="/editProfileScreen";
-  static const String notificationScreen="/notificationScreen";
-  static const String orderHistoryScreen='/orderHistoryScreen';
-  static const String orderDetailsScreen='/orderDetailsScreen';
-  static const String categoryProductScreen='/categoryProductScreen';
-  static const String addressScreen='/addressScreen';
-  static const String maintenanceModeScreen='/maintenanceModeScreen';
+  static const String otpScreen = "/otpScreen";
+  static const String productScreen = "/productScreen";
+  static const String subscriptionsScreen = "/subscriptionsScreen";
+  static const String referScreen = "/referScreen";
+  static const String searchScreen = "/searchScreen";
+  static const String editProfile = "/editProfileScreen";
+  static const String notificationScreen = "/notificationScreen";
+  static const String orderHistoryScreen = '/orderHistoryScreen';
+  static const String orderDetailsScreen = '/orderDetailsScreen';
+  static const String categoryProductScreen = '/categoryProductScreen';
+  static const String addressScreen = '/addressScreen';
+  static const String maintenanceModeScreen = '/maintenanceModeScreen';
+  static const String walletTransactionScreen = '/walletTransactionScreen';
 }
 
 class AppPages {
   static final routes = [
+
     GetPage(name: AppRoutes.splash,page: () => SplashScreen()),
 
     GetPage(name: AppRoutes.onboarding,page: () => OnBoardingScreen(),),
@@ -50,7 +53,6 @@ class AppPages {
     GetPage(name: AppRoutes.productScreen, page: ()=>ProductScreen()),
 
     GetPage(name: AppRoutes.subscriptionsScreen, page: ()=>SubscriptionsScreen()),
-
 
     GetPage(name: AppRoutes.searchScreen, page: ()=>SearchScreen()),
 
@@ -66,6 +68,9 @@ class AppPages {
 
     GetPage(name: AppRoutes.addressScreen, page: ()=>AddressScreen()),
 
-    GetPage(name: AppRoutes.maintenanceModeScreen, page: ()=>MaintenanceScreen())
+    GetPage(name: AppRoutes.maintenanceModeScreen, page: ()=>MaintenanceScreen()),
+
+    GetPage(name: AppRoutes.walletTransactionScreen, page:()=>TransactionsScreen())
+
   ];
 }

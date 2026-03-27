@@ -39,7 +39,8 @@ class ProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                 // _walletCard(),
+                  SizedBox(height: 10,),
+                  _walletCard(),
                   const SizedBox(height: 24),
 
                   _sectionTitle("account".tr),
@@ -255,7 +256,7 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Wallet",
+            "wallet".tr,
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -269,10 +270,10 @@ class ProfileScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Balance",
+                  Text("balance".tr,
                       style: GoogleFonts.poppins(color: Colors.grey)),
                   Text(
-                    "₹ 420.50",
+                    "₹ ${homeController.userModel.data!.walletAmount}",
                     style: GoogleFonts.poppins(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -283,7 +284,7 @@ class ProfileScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.add),
-                label: const Text("Add Money"),
+                label:  Text("add_money".tr),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -293,11 +294,19 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
 
-          const Divider(height: 30),
+          const Divider(height: 10),
 
-          Text(
-            "Recent Transactions",
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "recent_transactions".tr,
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+              ),
+
+              TextButton(onPressed: ()=>Get.toNamed(AppRoutes.walletTransactionScreen),
+                  child: Text('see_all'.tr))
+            ],
           ),
           const SizedBox(height: 10),
 
@@ -324,6 +333,7 @@ class ProfileScreen extends StatelessWidget {
     required String amount,
     required bool isDebit,
   }) {
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
@@ -336,6 +346,7 @@ class ProfileScreen extends StatelessWidget {
       ),
       title: Text(title, style: GoogleFonts.poppins()),
       subtitle: Text(date),
+
       trailing: Text(
         amount,
         style: GoogleFonts.poppins(

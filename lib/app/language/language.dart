@@ -113,7 +113,12 @@ class AppTranslations extends Translations {
       'bill_summary':'Bill Summary',
       'item_total':'Item Total',
       'total_paid':'Total Paid',
-      'order_status':'Order Status'
+      'order_status':'Order Status',
+      'wallet':'Wallet',
+      'balance':'Balance',
+      'recent_transactions':'Recent Transactions',
+      'add_money':'Add Money',
+      'see_all':'See All'
 
 
 

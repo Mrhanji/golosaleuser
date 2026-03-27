@@ -1,6 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:get/get.dart';
+import '/app/features/address/model/address_model.dart';
+import '/app/features/address/service/address_service.dart';
+import '/app/features/home/controller/home_controller.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../database/local_db.dart';
+import '../../city/model/city_model.dart';
 
 class AddressModel {
 
@@ -13,6 +21,8 @@ class AddressModel {
   double longitude;
   String? houseImage;
   String addressType;
+  String? cityId;
+  String? status;
 
   AddressModel({
     required this.id,
@@ -24,44 +34,62 @@ class AddressModel {
     required this.longitude,
     this.houseImage,
     required this.addressType,
+    this.cityId,
+    this.status
   });
 }
 
+enum AddressFetchingState {
+  loading,
+  success,
+  notFound,
+  error,
+}
 class AddressController extends GetxController {
 
   RxList<AddressModel> addressList = <AddressModel>[].obs;
-
+  AddressHistoryModel addressHistoryModel=AddressHistoryModel();
   Rx<LatLng> selectedLocation = const LatLng(28.6139, 77.2090).obs;
-
+  Rx<AddressFetchingState> fetchingState = AddressFetchingState.loading.obs;
   GoogleMapController? mapController;
+  final ImagePicker picker = ImagePicker();
+  Rx<File?> selectedImage = Rx<File?>(null);
+  String? mediaId='';
+
+    Future pickImage() async {
+
+    final XFile? image =
+    await picker.pickImage(source: ImageSource.camera);
+
+    if (image != null) {
+      selectedImage.value = File(image.path);
+      var response=await AddressService().uploadAddressImage(File(image.path));
+      print(response['message']);
+      print(response['data'].first['mediaId']);
+      mediaId=response['data'].first['mediaId'];
+    }
+  }
+
+
+  fetchAddress()async{
+      addressHistoryModel=await AddressService().getAddress(Get.put(HomeController()).userModel.data?.userId);
+      if(addressHistoryModel.data!=null){
+        fetchingState=AddressFetchingState.success.obs;
+      }else{
+        fetchingState=AddressFetchingState.notFound.obs;
+      }
+      update();
+  }
+
+
+
 
   /// SAMPLE DATA
   @override
   void onInit() {
     super.onInit();
+fetchAddress();
 
-    addressList.addAll([
-      AddressModel(
-        id: "1",
-        holderName: "Rahul Sharma",
-        building: "A-45 Green Apartment",
-        landmark: "Near Metro Station",
-        setAsDefault: 1,
-        latitude: 28.6139,
-        longitude: 77.2090,
-        addressType: "home",
-      ),
-      AddressModel(
-        id: "2",
-        holderName: "Sagar Sharma",
-        building: "Sky Residency",
-        landmark: "Near Mall",
-        setAsDefault: 0,
-        latitude: 28.57,
-        longitude: 77.32,
-        addressType: "office",
-      ),
-    ]);
   }
 
   void setLocation(LatLng latLng) {
@@ -69,33 +97,38 @@ class AddressController extends GetxController {
   }
 
   /// GET CURRENT LOCATION
-  Future<void> getCurrentLocation() async {
 
-    LocationPermission permission = await Geolocator.checkPermission();
 
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
+  void addAddress(AddressModel model)async {
 
-    Position position = await Geolocator.getCurrentPosition();
-
-    selectedLocation.value =
-        LatLng(position.latitude, position.longitude);
-
-    mapController?.animateCamera(
-      CameraUpdate.newLatLng(selectedLocation.value),
-    );
-  }
-
-  void addAddress(AddressModel model) {
+    var city=await SecurePreferenceStorage().getDefaultCity();
+    var cityData=CityData.fromJson(jsonDecode(city));
 
     if (model.setAsDefault == 1) {
       for (var e in addressList) {
         e.setAsDefault = 0;
       }
     }
+    Map<String,dynamic>dataBody={
+      "userId": Get.put(HomeController()).userModel.data?.userId,
+      "holderName": model.holderName,
+      "building": model.building,
+      "landmark": model.landmark,
+      "cityId":cityData.cityId,
+      "setAsDefault": model.setAsDefault,
+      "latitude": model.latitude,
+      "longitude": model.longitude,
+      "houseImage": mediaId,
+      "addressType": model.addressType,
+      "status": "active"
+    };
 
-    addressList.add(model);
+    var response=await AddressService().addAddress(dataBody);
+    Get.snackbar("Success", response['message']);
+
+    fetchingState=AddressFetchingState.loading.obs;
+
+    fetchAddress();
   }
 
   void updateAddress(AddressModel model) {
@@ -117,5 +150,30 @@ class AddressController extends GetxController {
 
   void deleteAddress(String id) {
     addressList.removeWhere((e) => e.id == id);
+  }
+
+
+
+  Future getCurrentLocation() async {
+
+    LocationPermission permission =
+    await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    Position position =
+    await Geolocator.getCurrentPosition();
+
+    selectedLocation.value =
+        LatLng(position.latitude, position.longitude);
+
+    mapController?.animateCamera(
+      CameraUpdate.newLatLng(selectedLocation.value),
+    );
+  }
+  uploadImage()async{
+
   }
 }
