@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/routes/app_routes.dart';
 import 'package:golosaleuser/utils/end_points.dart';
 import '../model/cart_model.dart';
 import '/app/features/home/controller/home_controller.dart';
@@ -92,15 +93,49 @@ class CartScreen extends StatelessWidget {
       height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: [
-          _addressChip(
-            icon: CupertinoIcons.location_solid,
-            text: "Home • 123 Main Road, Delhi",
-          ),
-          _addressChip(
+        children: controller.addressLoading?[Text('address_loading'.tr)]:[
+          ...controller.addressHistoryModel.data!.map((e) =>
+              Padding(
+                padding: const EdgeInsets.only(left:8.0),
+                child: InkWell(
+                  onTap: (){
+                    controller.selectedAddressId=e.addressId.toString();
+                    controller.update();
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: controller.selectedAddressId==e.addressId?Colors.red:Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black12, blurRadius: 4),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(CupertinoIcons.location_solid, size: 18, color:controller.selectedAddressId==e.addressId?Colors.white: Colors.indigo),
+                        const SizedBox(width: 6),
+                        Text("${e.holderName}, ${e.building},",
+                            style: GoogleFonts.poppins(fontSize: 13,
+                            color:controller.selectedAddressId==e.addressId?Colors.white:Colors.black,
+                              fontWeight: controller.selectedAddressId==e.addressId?FontWeight.bold:FontWeight.normal
 
-            icon: CupertinoIcons.add,
-            text: "Add Address",
+                            )),
+
+                      ],
+                    ),
+                  ),
+                ),
+              )
+          ).toList(),
+
+          InkWell(
+            onTap: ()=>Get.toNamed(AppRoutes.addressScreen),
+            child: _addressChip(
+              icon: CupertinoIcons.add,
+              text: "Add Address",
+            ),
           ),
         ],
       ),
@@ -349,9 +384,19 @@ Widget _cartItems() {
               value: PaymentType.online,
               groupValue: controller.paymentType,
               onChanged: controller.selectPayment,
-              title:  Text("online_payment".tr),
+              title:  Text("₹${controller.userCurrentBalance} "+ "wallet_balance".tr),
             ),
+
+            Visibility(
+              visible: controller.userCurrentBalance<controller.total,
+              child: TextButton(onPressed: ()=>null, child: Text('low_balance_recharge_now'.tr,style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                color: Colors.red
+              ),)),
+            )
+
           ],
+
         ),
       ),
     );
@@ -371,15 +416,16 @@ Widget _cartItems() {
         ),
         child: SafeArea(
           child: ElevatedButton(
+
             style: ElevatedButton.styleFrom(
-              backgroundColor: HexColor(AppConstants.primaryColor),
+              backgroundColor: controller.paymentType==PaymentType.online?controller.userCurrentBalance<controller.total?Colors.grey:HexColor(AppConstants.primaryColor):HexColor(AppConstants.primaryColor),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
             onPressed: () {
-              if (controller.paymentType == PaymentType.online) {
+              if (controller.paymentType == PaymentType.online && controller.userCurrentBalance>=controller.total) {
                 // 👉 Razorpay integration here
               } else {
                 // 👉 Place COD order
@@ -387,7 +433,8 @@ Widget _cartItems() {
               }
             },
             child: Text(
-              "Pay ₹${controller.total}",
+              controller.paymentType==PaymentType.online?"Pay ₹${controller.total}"
+                  :"pay_on_delivery".tr,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
                 fontSize: 16,

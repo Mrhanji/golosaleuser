@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/address/model/address_model.dart';
+import 'package:golosaleuser/app/features/address/service/address_service.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../../home/service/home_service.dart';
 import '/app/features/cart/model/cart_model.dart';
@@ -21,6 +23,10 @@ class CartController extends GetxController {
   var userId;
   bool couponApplied = false;
   PaymentType paymentType = PaymentType.online;
+  double userCurrentBalance=0.0;
+  AddressHistoryModel addressHistoryModel=AddressHistoryModel();
+  bool addressLoading=true;
+  String selectedAddressId="";
 
   void incrementQty(cartId) {
     final item = cartModel.data!.firstWhere((element) => element.cartId == cartId);
@@ -75,6 +81,7 @@ class CartController extends GetxController {
   getCart() async {
     cartModel=CartModel();
     userId=Get.put(HomeController()).userModel.data!.userId.toString();
+    userCurrentBalance=double.tryParse(Get.put(HomeController()).userModel.data!.walletAmount.toString())??0.00;
     deliveryCharge=Get.put(HomeController()).settingsModel.data!.first.deliveryFee??0;
     isCodAvailable=Get.put(HomeController()).settingsModel.data!.first.isCodEnable==1?true:false;
     cartModel = await HomeServices().getCart(userId);
@@ -98,6 +105,13 @@ class CartController extends GetxController {
 
 
   getAddress()async{
+    addressHistoryModel=await AddressService().getAddress(userId);
+    addressLoading=false;
+    if(addressHistoryModel.data!.length!=0){
+      /// find isDefault address in address histoyr and set id to this vairable
+      selectedAddressId=addressHistoryModel.data!.firstWhere((element) => element.setAsDefault==1).addressId.toString();
+    }
+    update();
 
   }
 
@@ -116,7 +130,7 @@ class CartController extends GetxController {
   placeOrder()async{
     Map<String,dynamic>orderBody={
       "userId": userId,
-      "addressId": "addr-001",
+      "addressId": selectedAddressId,
       "isSubscriptionOrder": "no",
       "subTotal": subTotal,
       "grandTotal": total,
@@ -149,5 +163,6 @@ class CartController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     getCart();
+    getAddress();
   }
 }

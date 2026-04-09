@@ -17,4 +17,12 @@ class AuthService{
     return UserModel.fromJson(response.data);
 
   }
+  
+  
+  Future<UserModel>getProfile(userId)async{
+    var response=await DioService().getService(endPoint: EndPoints.getUserProfile(userId));
+    return UserModel.fromJson(response.data);
+
+  }
+  
 }

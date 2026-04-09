@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
+import '/app/features/auth/service/auth_service.dart';
 import '/app/features/home/model/settings_model.dart';
 import '/app/routes/app_routes.dart';
 import '/app/features/search/model/products_model.dart';
@@ -51,6 +52,7 @@ class HomeController extends GetxController {
   getUser()async{
     var user=await SecurePreferenceStorage().getLoginUser();
     userModel=UserModel.fromJson(jsonDecode(user.toString()));
+    userModel=await AuthService().getProfile(userModel.data?.userId);
     print(userModel.data?.firstName);
     update();
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/utils/end_points.dart';
 import '../controller/product_controller.dart';
 import '/utils/app_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,11 +17,7 @@ class ProductScreen extends StatelessWidget {
 
   final ProductController controller = Get.put(ProductController());
 
-  final List<String> images = [
-    "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
-    "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
-  ];
-
+ 
   final List<String> subscriptionPlans = [
     "3 Days",
     "7 Days",
@@ -61,22 +58,30 @@ class ProductScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       iconTheme: const IconThemeData(color: Colors.black),
       flexibleSpace: FlexibleSpaceBar(
-        background: CarouselSlider(
-          items: images.map((img) {
-            return CachedNetworkImage(
-              imageUrl: img,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (_, __) =>
-              const Center(child: CircularProgressIndicator()),
-              errorWidget: (_, __, ___) => const Icon(Icons.error),
-            );
-          }).toList(),
-          options: CarouselOptions(
-            height: 320,
-            viewportFraction: 1,
-          ),
+        background: CachedNetworkImage(
+          imageUrl: EndPoints.mediaUrl(controller.productsModel.data!.first.productThumbnail.toString()),
+          width: double.infinity,
+          fit: BoxFit.cover,
+          placeholder: (_, __) =>
+          const Center(child: CircularProgressIndicator()),
+          errorWidget: (_, __, ___) => const Icon(Icons.error),
         ),
+        // background: CarouselSlider(
+        //   items: images.map((img) {
+        //     return CachedNetworkImage(
+        //       imageUrl: img,
+        //       width: double.infinity,
+        //       fit: BoxFit.cover,
+        //       placeholder: (_, __) =>
+        //       const Center(child: CircularProgressIndicator()),
+        //       errorWidget: (_, __, ___) => const Icon(Icons.error),
+        //     );
+        //   }).toList(),
+        //   options: CarouselOptions(
+        //     height: 320,
+        //     viewportFraction: 1,
+        //   ),
+        // ),
       ),
     );
   }

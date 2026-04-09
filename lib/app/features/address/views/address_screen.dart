@@ -444,7 +444,6 @@ class AddressScreen extends StatelessWidget {
           itemCount: controller.addressHistoryModel.data!.length,
           itemBuilder:
               (context, index) {
-
             return addressCard(controller.addressHistoryModel.data![index]);
           },
         );

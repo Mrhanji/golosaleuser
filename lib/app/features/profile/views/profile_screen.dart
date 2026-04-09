@@ -282,7 +282,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () =>Get.toNamed(AppRoutes.rechargeScreen),
                 icon: const Icon(Icons.add),
                 label:  Text("add_money".tr),
                 style: ElevatedButton.styleFrom(
@@ -308,20 +308,20 @@ class ProfileScreen extends StatelessWidget {
                   child: Text('see_all'.tr))
             ],
           ),
-          const SizedBox(height: 10),
+          //const SizedBox(height: 10),
 
-          _walletTransaction(
-            title: "Order Payment",
-            date: "Today",
-            amount: "- ₹120",
-            isDebit: true,
-          ),
-          _walletTransaction(
-            title: "Wallet Topup",
-            date: "Yesterday",
-            amount: "+ ₹500",
-            isDebit: false,
-          ),
+          // _walletTransaction(
+          //   title: "Order Payment",
+          //   date: "Today",
+          //   amount: "- ₹120",
+          //   isDebit: true,
+          // ),
+          // _walletTransaction(
+          //   title: "Wallet Topup",
+          //   date: "Yesterday",
+          //   amount: "+ ₹500",
+          //   isDebit: false,
+          // ),
         ],
       ),
     );

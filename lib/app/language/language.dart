@@ -118,7 +118,12 @@ class AppTranslations extends Translations {
       'balance':'Balance',
       'recent_transactions':'Recent Transactions',
       'add_money':'Add Money',
-      'see_all':'See All'
+      'see_all':'See All',
+      'wallet_balance':'Wallet Balance',
+      'low_balance_recharge_now':'Low Balance! Recharge Now',
+      'pay_on_delivery':'Pay on Delivery',
+      'address_loading':'Address Loading',
+      'closing_balance':'Closing Balance',
 
 
 

@@ -22,7 +22,8 @@ class EndPoints{
   static String searchProduct(String query)=>"/product/search?productTitle=$query";
   static String searchProductByCategory(String categoryId)=>"/product/search?categoryId=$categoryId";
   static String getSingleProductById(String productId)=>"/product/search?productId=$productId";
-
+  static String getWalletTransactions(String userId, int page, int limit)=>"/auth/userWalletTransaction?userId=$userId&page=$page&limit=$limit";
+  static String getUserProfile(String userId)=>'/auth/userProfile?userId=$userId';
 
 
 
