@@ -1,15 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/address/model/address_model.dart';
-import 'package:golosaleuser/app/features/address/service/address_service.dart';
+import '/app/features/cart/model/coupon_model.dart';
+import '/app/routes/app_routes.dart';
+import 'package:lottie/lottie.dart';
+import '/app/features/address/model/address_model.dart';
+import '/app/features/address/service/address_service.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../../home/service/home_service.dart';
 import '/app/features/cart/model/cart_model.dart';
 
 enum PaymentType { cod, online }
-
 enum CartState { loading, noItem, error, itemFound }
 
 class CartController extends GetxController {
@@ -17,58 +17,167 @@ class CartController extends GetxController {
   double subTotal = 0;
   int deliveryCharge = 0;
   double discount = 0;
+
   CartModel cartModel = CartModel();
   CartState currentCartState = CartState.loading;
+
   bool isCodAvailable = false;
   var userId;
+
+  /// ✅ Coupon
   bool couponApplied = false;
+  bool couponSearching = false;
+  CouponModel couponModel = CouponModel();
+  TextEditingController couponController = TextEditingController();
+
   PaymentType paymentType = PaymentType.online;
-  double userCurrentBalance=0.0;
-  AddressHistoryModel addressHistoryModel=AddressHistoryModel();
-  bool addressLoading=true;
-  String selectedAddressId="";
+
+  double userCurrentBalance = 0.0;
+
+  AddressHistoryModel addressHistoryModel = AddressHistoryModel();
+  bool addressLoading = true;
+  String selectedAddressId = "";
+
+  /// ---------------- QTY ----------------
 
   void incrementQty(cartId) {
-    final item = cartModel.data!.firstWhere((element) => element.cartId == cartId);
-    cartModel.data!.firstWhere((element) => element.cartId == cartId).productQty = item.productQty!+1;
-    int? updatedQty=cartModel.data!.firstWhere((element)=>element.cartId==cartId).productQty;
-    _saveCart(cartId, updatedQty!);
+    final item = cartModel.data!
+        .firstWhere((element) => element.cartId == cartId);
+
+    item.productQty = item.productQty! + 1;
+
+    _saveCart(cartId, item.productQty!);
     update();
   }
 
- Future<void> decrementQty(String cartId) async {
-      final item = cartModel.data!.firstWhere((element) => element.cartId == cartId);
-      final currentQty = item.productQty ?? 0;
+  Future<void> decrementQty(String cartId) async {
+    final item = cartModel.data!
+        .firstWhere((element) => element.cartId == cartId);
 
-      if (currentQty > 1) {
-        item.productQty = currentQty - 1;
-        _saveCart(cartId, item.productQty!);
-        update();
-      } else {
-        // remove item locally
-        cartModel.data!.removeWhere((element) => element.cartId == cartId);
+    final currentQty = item.productQty ?? 0;
 
-        // send update to server indicating removal (productQty = 0)
-        try {
-          await HomeServices().updateToCart({"cartId": cartId, "productQty": 0});
-          await getCart();
-        } catch (_) {
-          // ignore errors for now
-        }
+    if (currentQty > 1) {
+      item.productQty = currentQty - 1;
+      _saveCart(cartId, item.productQty!);
+      update();
+    } else {
+      cartModel.data!.removeWhere((e) => e.cartId == cartId);
 
-        // update cart state if no items remain
-        if (cartModel.data!.isEmpty) {
-          currentCartState = CartState.noItem;
-        }
-        update();
+      try {
+        await HomeServices()
+            .updateToCart({"cartId": cartId, "productQty": 0});
+        await getCart();
+      } catch (_) {}
+
+      if (cartModel.data!.isEmpty) {
+        currentCartState = CartState.noItem;
       }
+      update();
+    }
+  }
+
+  /// ---------------- COUPON ----------------
+
+  Future<void> applyCoupon() async {
+    if (couponController.text.trim().isEmpty) return;
+
+    couponSearching = true;
+    update();
+
+    await fetchCouponInfo();
+  }
+
+  Future<void> fetchCouponInfo() async {
+    try {
+      couponModel =
+      await HomeServices().getCoupon(couponController.text.trim());
+
+      if (couponModel.data != null && couponModel.data!.isNotEmpty) {
+        final coupon = couponModel.data![0];
+
+        couponSearching = false;
+
+        /// ✅ Min Cap Check
+        if (coupon.minCap != null && subTotal < coupon.minCap!) {
+          print("Subtotal is less than MinCap");
+
+          Get.snackbar(
+            "Coupon Not Applicable",
+            "Minimum order should be ₹${coupon.minCap}",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+
+          _resetCoupon();
+          return;
+        }
+
+        /// ✅ Max Cap Check
+        if (coupon.maxCap != null && subTotal > coupon.maxCap!) {
+          print("Subtotal is greater than MaxCap");
+
+          Get.snackbar(
+            "Coupon Not Applicable",
+            "Coupon valid only up to ₹${coupon.maxCap}",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+
+          _resetCoupon();
+          return;
+        }
+
+        /// ✅ Apply only if valid
+        couponApplied = true;
+
+        discount =
+            double.tryParse(coupon.discountPercentage.toString()) ?? 0;
+
+        /// show coupon code back in field
+        couponController.text = coupon.couponCode ?? '';
+
+        /// ✅ Success Snackbar
+        Get.snackbar(
+          "Success",
+          "Coupon applied successfully",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+      } else {
+        _resetCoupon();
+
+        Get.snackbar(
+          "Invalid Coupon",
+          "Please enter a valid coupon code",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      _resetCoupon();
+
+      Get.snackbar(
+        "Error",
+        "Something went wrong. Try again",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
 
-  void applyCoupon() {
-    discount = 10;
-    couponApplied = true;
     update();
   }
+
+  void removeCoupon() {
+    _resetCoupon();
+    couponController.clear();
+    update();
+  }
+
+  void _resetCoupon() {
+    couponModel = CouponModel();
+    couponApplied = false;
+    couponSearching = false;
+    discount = 0;
+    update();
+  }
+
+  /// ---------------- PAYMENT ----------------
 
   void selectPayment(PaymentType? type) {
     if (type == null) return;
@@ -78,89 +187,227 @@ class CartController extends GetxController {
 
   double get total => subTotal + deliveryCharge - discount;
 
+  /// ---------------- CART ----------------
+
   getCart() async {
-    cartModel=CartModel();
-    userId=Get.put(HomeController()).userModel.data!.userId.toString();
-    userCurrentBalance=double.tryParse(Get.put(HomeController()).userModel.data!.walletAmount.toString())??0.00;
-    deliveryCharge=Get.put(HomeController()).settingsModel.data!.first.deliveryFee??0;
-    isCodAvailable=Get.put(HomeController()).settingsModel.data!.first.isCodEnable==1?true:false;
+    cartModel = CartModel();
+    final home = Get.put(HomeController());
+
+    userId = home.userModel.data!.userId.toString();
+
+    userCurrentBalance =
+        double.tryParse(home.userModel.data!.walletAmount.toString()) ?? 0.0;
+
+    deliveryCharge =
+        home.settingsModel.data!.first.deliveryFee ?? 0;
+
+    isCodAvailable =
+        home.settingsModel.data!.first.isCodEnable == 1;
+
     cartModel = await HomeServices().getCart(userId);
+
     if (cartModel.data!.isEmpty) {
       currentCartState = CartState.noItem;
     } else {
       currentCartState = CartState.itemFound;
-      //calculate total here
-   final sum = cartModel.data!
-       .fold<double>(0.0, (acc, e) {
-         final price = double.tryParse(e.productDetails?.productPrice?.toString() ?? '0') ?? 0.0;
-         final qty = e.productQty ?? 0;
-         return acc + price * qty;
-       });
-   subTotal = double.parse(sum.toStringAsFixed(2));
 
+      final sum = cartModel.data!.fold<double>(0.0, (acc, e) {
+        final price = double.tryParse(
+            e.productDetails?.productPrice?.toString() ?? '0') ??
+            0.0;
 
+        final qty = e.productQty ?? 0;
+
+        return acc + price * qty;
+      });
+
+      subTotal = double.parse(sum.toStringAsFixed(2));
     }
+
     update();
   }
 
+  /// ---------------- ADDRESS ----------------
 
-  getAddress()async{
-    addressHistoryModel=await AddressService().getAddress(userId);
-    addressLoading=false;
-    if(addressHistoryModel.data!.length!=0){
-      /// find isDefault address in address histoyr and set id to this vairable
-      selectedAddressId=addressHistoryModel.data!.firstWhere((element) => element.setAsDefault==1).addressId.toString();
+  getAddress() async {
+    addressHistoryModel = await AddressService().getAddress(userId);
+
+    addressLoading = false;
+
+    if (addressHistoryModel.data!.isNotEmpty) {
+      selectedAddressId = addressHistoryModel.data!
+          .firstWhere((e) => e.setAsDefault == 1)
+          .addressId
+          .toString();
     }
-    update();
 
+    update();
   }
+
+  /// ---------------- SAVE CART ----------------
 
   _saveCart(String cartId, int qty) async {
-    /// update cart data to server after delay of 1 sec
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
-    Map<String, dynamic> newBody = {"cartId": cartId, "productQty": qty};
-    await HomeServices().updateToCart(newBody);
+    Map<String, dynamic> body = {
+      "cartId": cartId,
+      "productQty": qty
+    };
+
+    await HomeServices().updateToCart(body);
     getCart();
   }
 
+  /// ---------------- ORDER ----------------
 
-
-
-  placeOrder()async{
-    Map<String,dynamic>orderBody={
+  placeOrder() async {
+    Map<String, dynamic> orderBody = {
       "userId": userId,
       "addressId": selectedAddressId,
       "isSubscriptionOrder": "no",
       "subTotal": subTotal,
       "grandTotal": total,
-      "couponId":'',
-      "couponPercent": 0,
+      "couponId": couponApplied
+          ? couponModel.data![0].couponId ?? ''
+          : '',
+      "couponPercent": couponApplied
+          ? couponModel.data![0].discountPercentage ?? 0
+          : 0,
       "deliveryFee": deliveryCharge,
-      "paymentMode": paymentType.name.toString(),
-      "paymentRefDetails": PaymentType.cod==paymentType?"Cash on delivery":"Online Payment"
+      "paymentMode": paymentType.name,
+      "paymentRefDetails": paymentType == PaymentType.cod
+          ? "Cash on delivery"
+          : "Online Payment"
     };
 
-    print(jsonEncode(orderBody));
+    var response = await HomeServices().placeOrder(orderBody);
 
-    var response=await HomeServices().placeOrder(orderBody);
-    print("================================");
-    print(response);
+    /// ✅ Extract data safely
+    final orderData = response["data"][0];
+    final orderId = orderData["orderId"];
+    final createdOn = DateTime.parse(orderData["createdOn"]);
+
+    /// ✅ Format date nicely
+    final formattedDate =
+        "${createdOn.day}/${createdOn.month}/${createdOn.year} • "
+        "${createdOn.hour}:${createdOn.minute.toString().padLeft(2, '0')}";
+
+    /// ✅ Full Screen Dialog
     Get.dialog(
-      AlertDialog(
-        title: Text("Order Placed"),
-        content: Text("Your order has been placed successfully."),
-      )
+      Dialog(
+        insetPadding: EdgeInsets.zero,
+        backgroundColor: Colors.white,
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            children: [
+              /// ❌ Close Button
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: () => Get.back(),
+                  icon: const Icon(Icons.close),
+                ),
+              ),
+
+              const Spacer(),
+
+              /// 🎉 Lottie Animation
+              SizedBox(
+                height: 180,
+                child: Lottie.asset(
+                  "assets/animations/success.json", // 👈 your file
+                  repeat: false,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// ✅ Success Text
+              Text("order_placed".tr,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              /// 🧾 Order ID
+              Text(
+                "order_id".tr,
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                orderId,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              /// 🕒 Date
+              Text(
+                formattedDate,
+                style: const TextStyle(color: Colors.grey),
+              ),
+
+              const Spacer(),
+
+              /// 🔘 Buttons
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    /// Go to Orders
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                          Get.toNamed(AppRoutes.orderHistoryScreen); // 👈 update route if needed
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child:  Text("view_orders".tr),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    /// Continue Shopping
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child:  Text("continue_shopping".tr),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
     );
 
+    /// 🔄 Refresh data
     getCart();
-
-
+    Get.put(HomeController()).getUser();
   }
+
+  /// ---------------- INIT ----------------
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     getCart();
     getAddress();

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '/app/features/auth/service/auth_service.dart';
 import '/app/features/home/model/settings_model.dart';
@@ -18,14 +19,17 @@ class HomeController extends GetxController {
   CityModel cityModel=CityModel();
   CategoryModel categoryModel=CategoryModel();
   ProductsModel productsModel=ProductsModel();
+  ProductsModel popularProductsModel=ProductsModel();
   BannerModel bannerModel=BannerModel();
   SettingsModel settingsModel=SettingsModel();
   final RxInt selectedIndex = 0.obs;
   final RxBool isCityLoading=true.obs;
   late  CityData defaultCity=CityData();
   final RxBool defaultCityIsEmpty=true.obs;
+  RxInt currentIndex = 0.obs;
   final RxBool isBannerLoading=true.obs;
   final RxBool isCategoryLoading=true.obs;
+  final RxBool isPopularProductLoading=true.obs;
   final RxBool isCategoryItemLoading=true.obs;
 
 
@@ -75,7 +79,9 @@ class HomeController extends GetxController {
   _getDefaultCity()async{
     var city=await SecurePreferenceStorage().getDefaultCity();
     if(city.isNotEmpty){
+      print(city);
       defaultCity=CityData.fromJson(jsonDecode(city));
+      print("Default :${defaultCity.cityName}");
       defaultCityIsEmpty.value=false;
     }else{
       defaultCityIsEmpty.value=true;
@@ -86,7 +92,8 @@ class HomeController extends GetxController {
 
   getBanners()async{
     isBannerLoading.value=true;
-    bannerModel=await HomeServices().getBanners(defaultCity.cityId??'');
+   await _getDefaultCity();
+    bannerModel=await HomeServices().getBanners(defaultCity.cityId.toString());
     isBannerLoading.value=false;
     update();
 
@@ -135,6 +142,22 @@ class HomeController extends GetxController {
 
   }
 
+  updateProfile(body)async{
+    print(jsonEncode(body));
+    var response=await AuthService().updateProfile(body,userModel.data!.userId);
+    print(response);
+    getUser();
+    Get.back();
+    Get.back();
+    Get.snackbar("success".tr, "profile_update_msg".tr,backgroundColor: Colors.white);
+  }
+
+  getPopularProducts()async{
+    popularProductsModel=await HomeServices().getPopularProducts();
+    isPopularProductLoading.value=false;
+    update();
+  }
+
 
   @override
   void onInit() {
@@ -145,6 +168,6 @@ class HomeController extends GetxController {
     getCities();
     getBanners();
     getCategory();
-
+    getPopularProducts();
   }
 }

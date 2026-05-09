@@ -59,18 +59,21 @@ Widget productCard(ProductData data){
               Positioned(
                   bottom: 0,
                   right: 0,
-                  child: Container(
-                height: Get.height*0.05,
-                width: Get.height*0.05,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: BoxBorder.all(
-                      color: HexColor(AppConstants.primaryColor),
-                      style: BorderStyle.solid,width: 2)
-                ),
-                    child: Icon(CupertinoIcons.add,color: HexColor(AppConstants.primaryColor),),
-              ))
+                  child: InkWell(
+                    onTap: ()=>Get.toNamed(AppRoutes.productScreen,arguments: data.productId),
+                    child: Container(
+                                    height: Get.height*0.05,
+                                    width: Get.height*0.05,
+                                    decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: BoxBorder.all(
+                        color: HexColor(AppConstants.primaryColor),
+                        style: BorderStyle.solid,width: 2)
+                                    ),
+                      child: Icon(CupertinoIcons.add,color: HexColor(AppConstants.primaryColor),),
+                                  ),
+                  ))
             ],
           ),
         ),

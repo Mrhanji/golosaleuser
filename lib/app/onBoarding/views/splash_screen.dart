@@ -26,22 +26,51 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _startSplashFlow() async {
-    /// Start fade animation
-    await Future.delayed(const Duration(milliseconds: 300));
-    if (!mounted) return;
-    setState(() => _opacity = 1.0);
-
-    /// Get login status (async)
-    final bool loginStatus = await SecurePreferenceStorage().getLoginStatus();
-
-    /// Keep splash visible
-    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-    /// Navigate safely using GetX
-    if (loginStatus) {
-      Get.offAllNamed(AppRoutes.home);
-    } else {
+    try {
+      /// Start animation (non-blocking safe delay)
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (mounted) {
+        setState(() => _opacity = 1.0);
+      }
+
+      bool isLoggedIn = false;
+
+      try {
+        /// Add timeout so it NEVER hangs
+        isLoggedIn = await SecurePreferenceStorage()
+            .getLoginStatus()
+            .timeout(const Duration(seconds: 2), onTimeout: () {
+          debugPrint("Login status timeout");
+          return false; // fallback
+        });
+      } catch (e, stack) {
+        debugPrint("Error reading login status: $e");
+        debugPrintStack(stackTrace: stack);
+
+        /// fallback → treat as logged out
+        isLoggedIn = false;
+      }
+
+      /// Ensure splash is visible for minimum time
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (!mounted) return;
+
+      /// ALWAYS navigate (no condition where it skips)
+      if (isLoggedIn) {
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.onboarding);
+      }
+    } catch (e, stack) {
+      debugPrint("Critical Splash Error: $e");
+      debugPrintStack(stackTrace: stack);
+
+      if (!mounted) return;
+
+      /// Absolute fallback (never stuck)
       Get.offAllNamed(AppRoutes.onboarding);
     }
   }

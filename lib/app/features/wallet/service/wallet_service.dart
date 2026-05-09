@@ -9,4 +9,9 @@ class WalletService{
     return WalletTransactionsModel.fromJson(response.data);
 
   }
+
+  Future<dynamic>addAmount(body)async{
+    var response=await DioService().postService(endPoint: EndPoints.addWalletAmount, dataBody: body);
+    return response.data;
+  }
 }

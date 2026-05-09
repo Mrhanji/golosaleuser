@@ -17,7 +17,7 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(child: SingleChildScrollView(
         child: Column(children: [
-          SizedBox(height: Get.height*0.3,),
+          SizedBox(height: Get.height*0.17,),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(AppConstants.appLogoOrganic),

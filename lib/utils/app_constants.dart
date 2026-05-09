@@ -12,11 +12,12 @@ class AppConstants{
   static const String aboutUsUrl="https://golosale.com/about";
   static const String apiKey="";
   static const String currencySymbol="₹";
+  static const String razorpayKey="rzp_test_SbO9hyJ5rcWJSZ";
 
 
   /// media files
   static const String appLogo="assets/images/big-logo.png";
-  static const String appLogoOrganic="assets/images/big-logo-organic.png";
+  static const String appLogoOrganic="assets/images/app_logo.png";
   static const String otpVerifyImage="assets/images/otp_verify.png";
   static const String referImage="assets/images/refer.png";
 

@@ -24,5 +24,11 @@ class AuthService{
     return UserModel.fromJson(response.data);
 
   }
+
+  Future<dynamic>updateProfile(data,userId)async{
+    var response=await DioService().postService(endPoint: EndPoints.updateProfile(userId),
+        dataBody: data);
+    return response.data;
+  }
   
 }

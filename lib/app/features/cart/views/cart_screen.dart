@@ -272,38 +272,96 @@ Widget _cartItems() {
   Widget _couponSection() {
     return GetBuilder<CartController>(
       builder: (_) => _card(
-        child: controller.couponApplied
-            ? Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Coupon Applied (SAVE10)",
-              style: GoogleFonts.poppins(color: Colors.green),
+            controller.couponApplied
+                ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.check_circle,
+                        color: Colors.green, size: 18),
+                    const SizedBox(width: 6),
+                    Text(
+                      "Coupon Applied (${controller.couponModel.data?[0].couponCode ?? ''})",
+                      style: GoogleFonts.poppins(
+                        color: Colors.green,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "-₹${controller.discount}",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: controller.removeCoupon,
+                      child: const Icon(Icons.close,
+                          color: Colors.red, size: 20),
+                    ),
+                  ],
+                ),
+              ],
+            )
+                : Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller.couponController,
+                    decoration: InputDecoration(
+                      hintText: "Enter coupon code",
+                      isDense: true,
+                      errorText: (!controller.couponSearching &&
+                          controller.couponController.text.isNotEmpty &&
+                          !controller.couponApplied)
+                          ? "Invalid coupon code"
+                          : null,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: controller.couponSearching
+                      ? null
+                      : controller.applyCoupon,
+                  child: controller.couponSearching
+                      ? const SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                      : const Text("Apply"),
+                ),
+              ],
             ),
-            Text(
-              "-₹${controller.discount}",
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-            ),
-          ],
-        )
-            : Row(
-          children: [
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Enter coupon code",
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+
+            /// ✅ Coupon info (extra UX)
+            if (controller.couponApplied &&
+                controller.couponModel.data != null &&
+                controller.couponModel.data!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  controller.couponModel.data![0].couponInfo ?? '',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.grey,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: controller.applyCoupon,
-              child: const Text("Apply"),
-            ),
           ],
         ),
       ),
@@ -425,12 +483,13 @@ Widget _cartItems() {
               ),
             ),
             onPressed: () {
-              if (controller.paymentType == PaymentType.online && controller.userCurrentBalance>=controller.total) {
-                // 👉 Razorpay integration here
-              } else {
-                // 👉 Place COD order
-                controller.placeOrder();
-              }
+              controller.placeOrder();
+              // if (controller.paymentType == PaymentType.online && controller.userCurrentBalance>=controller.total) {
+              //   // 👉 Razorpay integration here
+              // } else {
+              //   // 👉 Place COD order
+              //   controller.placeOrder();
+              // }
             },
             child: Text(
               controller.paymentType==PaymentType.online?"Pay ₹${controller.total}"

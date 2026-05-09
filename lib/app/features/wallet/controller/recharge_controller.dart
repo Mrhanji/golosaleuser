@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../utils/app_constants.dart';
+import '/app/features/wallet/service/wallet_service.dart';
 import '/app/features/auth/model/user_model.dart';
 import '/app/features/home/controller/home_controller.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -10,7 +12,7 @@ class RechargeController extends GetxController {
   /// 🔑 CONFIG
   ////////////////////////////////////////////
 
-  final String razorpayKey = "rzp_test_SbO9hyJ5rcWJSZ";
+
 
   final Map<String, dynamic> razorpayPrefill = {
     "contact": "9999999999",
@@ -102,7 +104,7 @@ class RechargeController extends GetxController {
       ////////////////////////////////////////////
 
       final options = {
-        "key": razorpayKey,
+        "key": AppConstants.razorpayKey,
         "amount": amount * 100,
         "name": appName,
         "description": paymentDescription,
@@ -129,6 +131,17 @@ class RechargeController extends GetxController {
     print("SUCCESS: ${response.paymentId}");
 
     walletBalance.value += int.parse(amountController.text);
+    Map<String,dynamic>dataBody={
+      'userId':userModel.data!.userId,
+      'amount':int.parse(amountController.text),
+      'transType':'credit',
+      'message':response.paymentId
+    };
+    print(dataBody);
+    var apiResponse=await WalletService().addAmount(dataBody);
+    print(apiResponse);
+    Get.put(HomeController()).getUser();
+    Get.put(HomeController()).update();
 
     _showResultDialog(
       success: true,

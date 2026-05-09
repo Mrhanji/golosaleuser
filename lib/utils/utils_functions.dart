@@ -1,4 +1,5 @@
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 class UtilsFunctions {
   Future<void> launchUrls(String url) async {
@@ -10,5 +11,9 @@ class UtilsFunctions {
     )) {
       throw Exception('Could not launch $url');
     }
+  }
+
+  String formatDate(DateTime date) {
+    return DateFormat('dd-MM-yyyy').format(date);
   }
 }

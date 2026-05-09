@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../features/subscriptions/views/subscribe_cart_screen.dart';
 import '/app/features/wallet/views/recharge_screen.dart';
 import '../features/wallet/views/transactions_screen.dart';
 import '/app/features/maintenance/views/maintenance_screen.dart';
@@ -37,6 +38,7 @@ class AppRoutes {
   static const String maintenanceModeScreen = '/maintenanceModeScreen';
   static const String walletTransactionScreen = '/walletTransactionScreen';
   static const String rechargeScreen="/wallet/rechargeScreen";
+  static const String subscribeCartScreen="/subscribeCartScreen";
 }
 
 class AppPages {
@@ -74,7 +76,9 @@ class AppPages {
 
     GetPage(name: AppRoutes.walletTransactionScreen, page:()=>TransactionsScreen()),
 
-    GetPage(name: AppRoutes.rechargeScreen, page: ()=>RechargeWalletScreen())
+    GetPage(name: AppRoutes.rechargeScreen, page: ()=>RechargeWalletScreen()),
+
+    GetPage(name: AppRoutes.subscribeCartScreen, page: ()=>SubscribeCartScreen()),
 
   ];
 }

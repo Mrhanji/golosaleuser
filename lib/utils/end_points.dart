@@ -5,7 +5,7 @@ class EndPoints{
   static const String verifyOtp="/auth/verifyOtp";
   static const String getCities="/cities/getAllCities";
   static const String getCategory="/category/getCategories";
-  static const String updateProfile="";
+  static const String popularProduct="/product/popular";
 
   static const String updateCart="/cart/update";
   static const String addCart="/cart/add";
@@ -13,6 +13,7 @@ class EndPoints{
   static const String appSetting='/settings/get';
   static const String updateAddress='/address/update';
   static const String placeOrder="/orders/order-history";
+  static const String addWalletAmount="/wallet/addAmount";
 
   static String getOrderHistory(String userId)=>"/orders/order-history?userId=$userId";
   static String getAddress(String userId)=>"/address/list?userId=$userId";
@@ -22,10 +23,10 @@ class EndPoints{
   static String searchProduct(String query)=>"/product/search?productTitle=$query";
   static String searchProductByCategory(String categoryId)=>"/product/search?categoryId=$categoryId";
   static String getSingleProductById(String productId)=>"/product/search?productId=$productId";
-  static String getWalletTransactions(String userId, int page, int limit)=>"/auth/userWalletTransaction?userId=$userId&page=$page&limit=$limit";
+  static String getWalletTransactions(String userId, int page, int limit)=>"/wallet/userWalletTransaction?userId=$userId&page=$page&limit=$limit";
   static String getUserProfile(String userId)=>'/auth/userProfile?userId=$userId';
-
-
+  static String getCouponInfo(String couponCode)=>'/coupon/search?couponCode=$couponCode';
+  static String updateProfile(String userId)=>'/auth/updateProfile?userId=$userId';
 
 
 

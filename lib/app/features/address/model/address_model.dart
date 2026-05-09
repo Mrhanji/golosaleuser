@@ -38,11 +38,12 @@ class AddressData {
   String? longitude;
   String? houseImage;
   String? addressType;
+  int? pinCode;
   String? status;
   String? createdOn;
   String? updatedOn;
 
-  AddressData({this.addressId, this.userId, this.holderName, this.building, this.landmark, this.cityId, this.setAsDefault, this.latitude, this.longitude, this.houseImage, this.addressType, this.status, this.createdOn, this.updatedOn});
+  AddressData({this.addressId, this.userId, this.holderName, this.building, this.landmark, this.cityId, this.setAsDefault, this.latitude, this.longitude, this.houseImage, this.addressType, this.pinCode,this.status, this.createdOn, this.updatedOn});
 
   AddressData.fromJson(Map<String, dynamic> json) {
     addressId = json["addressId"];
@@ -56,6 +57,7 @@ class AddressData {
     longitude = json["longitude"];
     houseImage = json["houseImage"];
     addressType = json["addressType"];
+    pinCode = json["pinCode"];
     status = json["status"];
     createdOn = json["createdOn"];
     updatedOn = json["updatedOn"];

@@ -181,7 +181,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: const EdgeInsets.all(18),
           child: Column(
             children: [
-              _input("name".tr, Icons.person, controller: nameController),
+              _input("first_name".tr, Icons.person, controller: nameController),
               _input("last_name".tr, Icons.person, controller: lastNameController),
               _input("email".tr, Icons.email, controller: emailController, keyboardType: TextInputType.emailAddress),
               _input("mobile".tr, Icons.phone,
@@ -305,16 +305,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           onPressed: () {
-            final Map<String, dynamic> updated = {
-              'name': nameController.text,
-              'email': emailController.text,
-              'phone': phoneController.text,
-              'lastName': lastNameController.text,
-              'gender': selectedGender,
-              'parent_refer_code': referController.text,
-            };
+           /// show a get dialog for confirmation before update
+            Get.dialog(
+              AlertDialog(
+                title: Text("profile_update_msg".tr,style: GoogleFonts.poppins(fontSize: Get.height*0.021),),
+               content: Icon(CupertinoIcons.exclamationmark_triangle_fill,color: Colors.red,),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text("cancel".tr,style: GoogleFonts.poppins(color: Colors.red),),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Map<String,dynamic>body={
+                        "firstName":nameController.text,
+                        "lastName":lastNameController.text,
+                        "userEmail":emailController.text,
+                        "userMobile":phoneController.text,
+                        "gender":selectedGender,
+                        "parentUserReferralCode":referController.text
+                      };
+                        homeController.updateProfile(body);
+                    },
+                    child: Text('update'.tr,style: GoogleFonts.poppins(),),
+                  )]
+            )
+            );
+
             // print map when save clicked
-            debugPrint('Updated profile: $updated');
           },
           child: Text(
             "save_changes".tr,

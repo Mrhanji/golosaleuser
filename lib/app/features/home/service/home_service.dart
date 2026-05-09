@@ -1,3 +1,5 @@
+import 'package:golosaleuser/app/features/cart/model/coupon_model.dart';
+
 import '/app/features/order/model/order_history_model.dart';
 import '/app/features/home/model/settings_model.dart';
 import '/app/features/cart/model/cart_model.dart';
@@ -108,4 +110,16 @@ Future<SettingsModel>getAppSettings()async{
     return OrderHistoryModel.fromJson(response.data);
   }
 
+
+  Future<ProductsModel>getPopularProducts()async{
+    var response=await DioService().getService(endPoint: EndPoints.popularProduct);
+    return ProductsModel.fromJson(response.data);
+  }
+
+
+  Future<CouponModel>getCoupon(couponCode)async{
+    var response=await DioService().getService(endPoint: EndPoints.getCouponInfo(couponCode));
+    return CouponModel.fromJson(response.data);
+
+  }
 }

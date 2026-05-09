@@ -39,7 +39,7 @@ class homeView extends StatelessWidget {
                       color: Colors.deepOrange,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.home, color: Colors.white),
+                    child: Image.asset('assets/images/golo-icon.png'),
                   ),
                   SizedBox(width: Get.width * 0.02),
                   Text("${controller.defaultCity.cityName}",style: GoogleFonts.poppins(fontSize: Get.height*0.02)),
@@ -56,6 +56,7 @@ class homeView extends StatelessWidget {
 
           // Carousel (unchanged)
           Obx(() {
+
             if (controller.isBannerLoading.value) {
               return SizedBox(
                 height: Get.height * 0.3,
@@ -89,24 +90,59 @@ class homeView extends StatelessWidget {
               ),
             );
 
-            return SizedBox(
+            return
+            SizedBox(
               width: Get.width,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CarouselSlider(
-                  items: items,
-                  options: CarouselOptions(
-                    height: Get.height * 0.23,
-                    viewportFraction: 1,
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 3),
+              child: Column(
+                children: [
+
+                  /// ===== CAROUSEL =====
+                  CarouselSlider(
+                    items: items.map((item) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(18),
+                        child: item,
+                      );
+                    }).toList(),
+                    options: CarouselOptions(
+                      height: Get.height * 0.22,
+                      viewportFraction: 0.89,
+                      enlargeCenterPage: true,
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 3),
+                      autoPlayAnimationDuration: const Duration(milliseconds: 600),
+                      onPageChanged: (index, reason) {
+                        controller.currentIndex.value = index;
+                      },
+                    ),
                   ),
-                ),
+
+                  const SizedBox(height: 8),
+
+                  /// ===== DOT INDICATOR =====
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      items.length,
+                          (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: controller.currentIndex.value == index ? 18 : 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: controller.currentIndex.value == index
+                              ? Colors.green
+                              : Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           }),
-
+          const SizedBox(height: 8),
           // Category View
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -158,19 +194,27 @@ class homeView extends StatelessWidget {
             ),
           ),
 
-          Container(
-              height: Get.height*0.26,
-              width: Get.width,
-              padding: EdgeInsets.only(left: 5, right: 5),
-              child:ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemCount: 15,
-                  itemBuilder: (i,data)=> Padding(
-                    padding: const EdgeInsets.only(right: 4.0,left: 4),
-                    child: productCard(ProductData()),
-                  )
-              )),
+         Obx((){
+           if(controller.isPopularProductLoading.value){
+             return Center(child: CupertinoActivityIndicator());
+           }
+           if(controller.popularProductsModel.data!.isEmpty){
+             return Text("No popular product found");
+           }
+           return  Container(
+               height: Get.height*0.26,
+               width: Get.width,
+               padding: EdgeInsets.only(left: 5, right: 5),
+               child:ListView.builder(
+                   scrollDirection: Axis.horizontal,
+                   shrinkWrap: true,
+                   itemCount: controller.popularProductsModel.data!.length,
+                   itemBuilder: (i,data)=> Padding(
+                     padding: const EdgeInsets.only(right: 4.0,left: 4),
+                     child: productCard(controller.popularProductsModel.data![data]),
+                   )
+               ));
+         }),
 
 
           Divider(),

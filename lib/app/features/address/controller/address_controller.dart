@@ -55,7 +55,43 @@ class AddressController extends GetxController {
   final ImagePicker picker = ImagePicker();
   Rx<File?> selectedImage = Rx<File?>(null);
   String? mediaId='';
+  List<int>pinCode=[
+    208001,
+    208002,
+    208003,
+    208004,
+    208005,
+    208006,
+    208007,
+    208008,
+    208009,
+    208010,
+    208011,
+    208012,
+    208013,
+    208014,
+    208015,
+    208016,
+    208017,
+    208018,
+    208019,
+    208020,
+    208021,
+    208022,
+    208023,
+    208024,
+    208025,
+    208026,
+    208027
+  ];
+  int selectedPinCode=208001;
 
+
+
+  selectPinCode(pincode){
+    selectedPinCode=pincode;
+    update();
+  }
     Future pickImage() async {
 
     final XFile? image =
@@ -120,8 +156,10 @@ fetchAddress();
       "longitude": model.longitude,
       "houseImage": mediaId,
       "addressType": model.addressType,
+      "pinCode":selectedPinCode,
       "status": "active"
     };
+    print("DAta body ${dataBody}");
 
     var response=await AddressService().addAddress(dataBody);
     Get.snackbar("Success", response['message']);
