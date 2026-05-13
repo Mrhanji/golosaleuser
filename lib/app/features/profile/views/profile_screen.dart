@@ -2,10 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/home/controller/home_controller.dart';
+import '/app/features/home/controller/home_controller.dart';
 import '../../../../utils/app_constants.dart';
 import '../../../../utils/utils_functions.dart';
-import '../../auth/controller/auth_controller.dart';
 import '/app/routes/app_routes.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../language/language.dart';
@@ -58,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
                     icon: CupertinoIcons.repeat,
                     title: "subscriptions".tr,
                     onTap: () => Get.toNamed(
-                      AppRoutes.subscriptionsScreen,
+                      AppRoutes.subscriptionListScreen,
                       arguments: [],
                     ),
                   ),

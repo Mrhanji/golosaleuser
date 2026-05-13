@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/subscriptions/views/subscriptions_list_screen.dart';
 import '../features/subscriptions/views/subscribe_cart_screen.dart';
 import '/app/features/wallet/views/recharge_screen.dart';
 import '../features/wallet/views/transactions_screen.dart';
@@ -39,6 +40,7 @@ class AppRoutes {
   static const String walletTransactionScreen = '/walletTransactionScreen';
   static const String rechargeScreen="/wallet/rechargeScreen";
   static const String subscribeCartScreen="/subscribeCartScreen";
+  static const String subscriptionListScreen="/subscriptionListScreen";
 }
 
 class AppPages {
@@ -79,6 +81,7 @@ class AppPages {
     GetPage(name: AppRoutes.rechargeScreen, page: ()=>RechargeWalletScreen()),
 
     GetPage(name: AppRoutes.subscribeCartScreen, page: ()=>SubscribeCartScreen()),
+    GetPage(name: AppRoutes.subscriptionListScreen, page: ()=>SubscriptionsListScreen()),
 
   ];
 }

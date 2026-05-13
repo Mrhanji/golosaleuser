@@ -2,7 +2,7 @@
 // App Constants class
 
 class AppConstants{
-  static const String appName = "Goloale";
+  static const String appName = "GoloSale";
   static const String appVersion = "1.0.0";
   static const String appAuthor = "Inno Tech Nova";
   static const String apiUrl="https://api.golosale.com";

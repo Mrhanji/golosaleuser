@@ -73,6 +73,11 @@ class HomeController extends GetxController {
     isCityLoading.value=true;
     cityModel=await HomeServices().getCities();
     isCityLoading.value=false;
+    if(cityModel.data!.length==1){
+      await SecurePreferenceStorage().setDefaultCity(jsonEncode(cityModel.data![0]).toString());
+      defaultCity=cityModel.data![0];
+      defaultCityIsEmpty.value=false;
+    }
     update();
   }
 

@@ -16,6 +16,7 @@ class AuthController extends GetxController{
   TextEditingController otpController = TextEditingController();
   AuthService authService =AuthService();
   UserModel userModel=UserModel();
+  bool otpSending=false;
 
 
 
@@ -32,13 +33,19 @@ class AuthController extends GetxController{
     try{
       print("mobile lenth ${mobileController.text.length}");
       if(mobileController.text.length==10){
+        otpSending=true;
+        update();
        userModel= await AuthService().sendOtp(mobileController.text);
        if(userModel.statusCode==200) {
          Get.snackbar("Success", "Otp sent successfully",
              backgroundColor: Colors.green,colorText: Colors.white,
              snackPosition: SnackPosition.BOTTOM);
+         otpSending=false;
+         update();
          Get.toNamed(AppRoutes.otpScreen);
        }else{
+         otpSending=false;
+         update();
          Get.snackbar("Error", userModel.message.toString(),);
        }
 

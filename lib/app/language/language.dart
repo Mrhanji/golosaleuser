@@ -111,7 +111,7 @@ class AppTranslations extends Translations {
       'download_invoice':'Download Invoice',
       'cart_added':'Cart Added',
       'cart_added_msg':'Item added to cart successfully',
-      'added':'Added',
+      'added':'Added in Cart',
       'bill_summary':'Bill Summary',
       'item_total':'Item Total',
       'total_paid':'Total Paid',
@@ -190,8 +190,76 @@ class AppTranslations extends Translations {
       "address_updated_successfully":
       "Address Updated Successfully",
       "set_default_address":"Set Default Address",
-      "select_pincode":"Select Pin Code"
+      "select_pincode":"Select Pin Code",
+      "error": "Error",
+      "first_name_required": "Please enter holder name",
+      "building_required": "Please enter building / flat",
+      "landmark_required": "Please enter landmark",
+      "pincode_required": "Please select pincode",
+      "location_required": "Please select location",
 
+
+        "my_subscriptions": "My Subscriptions",
+
+        "days_plan": "Days Plan",
+
+        "qty": "Qty",
+
+
+        "subscription_id": "Subscription ID",
+
+        "price": "Price",
+
+        "payment_mode": "Payment Mode",
+
+
+
+        "scheduled": "Scheduled",
+
+        "completed": "Completed",
+
+        "cancelled": "Cancelled",
+
+        "no_subscriptions_found": "No subscriptions found",
+
+        "manage_subscription": "Manage Subscription",
+
+        "manage_subscription_desc":
+        "Pause, resume, track delivery history and manage your subscription schedule easily.",
+        "halt": "Paused",
+        "canceled": "Canceled",
+      "subscription_details": "Subscription Details",
+      "pause_subscription": "Pause Subscription",
+      "delivery_schedule": "Delivery Schedule",
+      "delivery_day": "Delivery Day",
+      "paused_day": "Paused Day",
+      "subscription_amount": "Subscription Amount",
+      "plan_duration": "Plan Duration",
+      "days": "Days",
+      "select_pause_dates": "Select Pause Dates",
+
+      "pause_selected_days": "Pause Selected Days",
+
+      "selected_pause_dates": "Selected Pause Dates",
+
+      "pause_subscription_confirmation_desc": "Your deliveries will be temporarily paused for the selected dates. You can resume anytime later from subscription management.",
+
+      "pause_start_date": "Pause Start Date",
+
+      "pause_end_date": "Pause End Date",
+
+      "submit": "Submit",
+
+      "no_subscription_found": "No Subscription Found",
+      "pause_not_allowed":
+      "Pause Not Allowed",
+
+      "pause_after_cutoff_message":
+      "Today's delivery can no longer be paused after 11:00 PM because processing may already be completed.",
+
+      "pause_cutoff_note":
+      "Same-day pause requests are only accepted before 11:00 PM. Requests submitted after the cutoff time may still be delivered because order processing could already be completed.",
+      "last_day":"Last Day",
 
 
 

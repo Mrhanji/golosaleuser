@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/routes/app_routes.dart';
+import '/app/routes/app_routes.dart';
 import '/app/features/cart/controller/cart_controller.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../../home/service/home_service.dart';
@@ -13,7 +13,7 @@ class ProductController extends GetxController {
   RxBool isProductLoading=true.obs;
   int quantity = 1;
   bool isSubscription = false,isAddedIntoCart=false;
-  String selectedPlan = "";
+  int selectedPlan = 7;
   DateTime? selectedStartDate=DateTime.now();
   DateTime? selectedEndDate=DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+7);
   int subscriptionDays=0;
@@ -39,7 +39,7 @@ class ProductController extends GetxController {
 
   void toggleSubscription(bool value) {
     isSubscription = value;
-    selectedPlan = "";
+    selectedPlan = 7;
     if(isSubscription){
       selectedStartDate=DateTime.now();
       selectedEndDate=DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+7);
@@ -50,6 +50,27 @@ class ProductController extends GetxController {
   }
 
 
+  selectPlan(int plan) {
+
+    selectedPlan = plan;
+
+    subscriptionDays = plan;
+
+    /// PRODUCT PRICE
+    double price = double.parse(productsModel.data!.first.productPrice.toString(),);
+
+    /// TOTAL
+    total = price * subscriptionDays * quantity;
+
+    /// START DATE
+    selectedStartDate =
+        DateTime.now();
+
+    /// END DATE
+    selectedEndDate = selectedStartDate!.add(Duration(days: plan),);
+
+    update();
+  }
 
 
   selectStartDate()async{
@@ -108,7 +129,7 @@ class ProductController extends GetxController {
       'subscriptionDays':subscriptionDays,
       'total':total,
       'productTitle':productsModel.data!.first.productTitle,
-      'productImage':productsModel.data!.first.productThumbnail,
+      'productThumbnail':productsModel.data!.first.productThumbnail,
       'productUnitTag':productsModel.data!.first.productUnitTag,
       'productPrice':productsModel.data!.first.productPrice,
     };
@@ -119,6 +140,8 @@ class ProductController extends GetxController {
 
   getProductInfo()async{
     productsModel=await HomeServices().getSingleProductById(Get.arguments);
+    await Get.put(CartController()).getCart();
+    isAddedIntoCart=Get.put(CartController()).cartModel.data!.where((product)=> product.productId==productsModel.data!.first.productId).isNotEmpty;
     isProductLoading.value=false;
     update();
   }

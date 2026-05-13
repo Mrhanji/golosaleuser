@@ -193,13 +193,25 @@ class SubscribeCartScreen extends StatelessWidget {
             height: 60,
             width: 60,
             color: Colors.grey.shade300,
-            child: CachedNetworkImage(
-              imageUrl: EndPoints.mediaUrl(controller.planDetails.productThumbnail.toString()),
-              width: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (_, __) =>
-              const Center(child: CupertinoActivityIndicator()),
-              errorWidget: (_, __, ___) => const Icon(Icons.error),
+            child: Obx((){
+              if(controller.thumbnailLoading.value==true){
+                return const Center(child: CupertinoActivityIndicator());
+              }else
+              return CachedNetworkImage(
+                imageUrl: EndPoints.mediaUrl(controller.planDetails.productThumbnail.toString()),
+                width: double.infinity,
+                fit: BoxFit.cover,
+                placeholder: (_, __) =>
+                const Center(child: CupertinoActivityIndicator()),
+                errorWidget: (_, __, ___) {
+                  print("error ${controller.planDetails.productThumbnail}");
+                  return const Icon(Icons.error);
+                },
+              );
+            }
+
+
+
             ),
           ),
           const SizedBox(width: 10),
@@ -336,25 +348,25 @@ class SubscribeCartScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            RadioListTile<int>(
-              value: 0,
-              groupValue: controller.selectedPayment,
-              onChanged: isEnabled
-                  ? (val) =>
-              controller.changePaymentMethod(val!): null,
-              title: Text(
-                  "${"wallet".tr} (₹${controller.walletBalance})"),
-            ),
-
-            if (!isEnabled)
-              Padding(
-                padding: const EdgeInsets.only(left: 16),
-                child: Text(
-                  "insufficient_balance".tr,
-                  style: const TextStyle(
-                      color: Colors.red, fontSize: 12),
-                ),
-              ),
+            // RadioListTile<int>(
+            //   value: 0,
+            //   groupValue: controller.selectedPayment,
+            //   onChanged: isEnabled
+            //       ? (val) =>
+            //   controller.changePaymentMethod(val!): null,
+            //   title: Text(
+            //       "${"wallet".tr} (₹${controller.walletBalance})"),
+            // ),
+            //
+            // if (!isEnabled)
+            //   Padding(
+            //     padding: const EdgeInsets.only(left: 16),
+            //     child: Text(
+            //       "insufficient_balance".tr,
+            //       style: const TextStyle(
+            //           color: Colors.red, fontSize: 12),
+            //     ),
+            //   ),
 
             RadioListTile<int>(
               value: 1,

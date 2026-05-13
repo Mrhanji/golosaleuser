@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:get/get.dart';
+import 'package:golosaleuser/utils/utils_functions.dart';
 import '/app/features/address/model/address_model.dart';
 import '/app/features/address/service/address_service.dart';
 import '/app/features/home/controller/home_controller.dart';
@@ -135,59 +136,178 @@ fetchAddress();
   /// GET CURRENT LOCATION
 
 
-  void addAddress(AddressModel model)async {
+  void addAddress(AddressModel model) async {
 
-    var city=await SecurePreferenceStorage().getDefaultCity();
-    var cityData=CityData.fromJson(jsonDecode(city));
+    try {
 
-    if (model.setAsDefault == 1) {
-      for (var e in addressList) {
-        e.setAsDefault = 0;
-      }
-    }
-    Map<String,dynamic>dataBody={
-      "userId": Get.put(HomeController()).userModel.data?.userId,
-      "holderName": model.holderName,
-      "building": model.building,
-      "landmark": model.landmark,
-      "cityId":cityData.cityId,
-      "setAsDefault": model.setAsDefault,
-      "latitude": model.latitude,
-      "longitude": model.longitude,
-      "houseImage": mediaId,
-      "addressType": model.addressType,
-      "pinCode":selectedPinCode,
-      "status": "active"
-    };
-    print("DAta body ${dataBody}");
+      var city =
+      await SecurePreferenceStorage()
+          .getDefaultCity();
 
-    var response=await AddressService().addAddress(dataBody);
-    Get.snackbar("Success", response['message']);
-
-    fetchingState=AddressFetchingState.loading.obs;
-
-    fetchAddress();
-  }
-
-  void updateAddress(AddressModel model) {
-
-    int index = addressList.indexWhere((e) => e.id == model.id);
-
-    if (index != -1) {
+      var cityData =
+      CityData.fromJson(
+        jsonDecode(city),
+      );
 
       if (model.setAsDefault == 1) {
+
         for (var e in addressList) {
           e.setAsDefault = 0;
         }
       }
 
-      addressList[index] = model;
-      addressList.refresh();
+      Map<String, dynamic> dataBody = {
+
+        "userId":
+        Get.put(HomeController())
+            .userModel
+            .data
+            ?.userId,
+
+        "holderName":
+        model.holderName,
+
+        "building":
+        model.building,
+
+        "landmark":
+        model.landmark,
+
+        "cityId":
+        cityData.cityId,
+
+        "setAsDefault":
+        model.setAsDefault,
+
+        "latitude":
+        model.latitude,
+
+        "longitude":
+        model.longitude,
+
+        "houseImage":
+        mediaId,
+
+        "addressType":
+        model.addressType,
+
+        "pinCode":
+        selectedPinCode,
+
+        "status":
+        "active"
+      };
+
+      print("DAta body $dataBody");
+
+      var response =
+      await AddressService()
+          .addAddress(dataBody);
+
+      Get.snackbar(
+        "success".tr,
+        response['message'],
+        snackPosition:
+        SnackPosition.BOTTOM,
+      );
+
+      fetchingState =
+          AddressFetchingState
+              .loading
+              .obs;
+
+      fetchAddress();
+
+    } catch (e) {
+
+      print("ADD ADDRESS ERROR $e");
+
+      Get.snackbar(
+        "error".tr,
+        "something_went_wrong".tr,
+        snackPosition:
+        SnackPosition.BOTTOM,
+      );
     }
   }
 
-  void deleteAddress(String id) {
-    addressList.removeWhere((e) => e.id == id);
+   updateAddress(AddressModel model)async {
+
+    Map<String, dynamic> dataBody = {
+
+      "addressId":model.id,
+      "userId":
+      Get.put(HomeController())
+          .userModel
+          .data
+          ?.userId,
+
+      "holderName":
+      model.holderName,
+
+      "building":
+      model.building,
+
+      "landmark":
+      model.landmark,
+
+
+      "setAsDefault":
+      model.setAsDefault,
+
+      "latitude":
+      model.latitude,
+
+      "longitude":
+      model.longitude,
+
+      "houseImage":
+      mediaId,
+
+      "addressType":
+      model.addressType,
+
+      "pinCode":
+      selectedPinCode,
+
+      "status":
+      "active"
+    };
+    try {
+      print("Data Body ${jsonEncode(dataBody)}");
+      var response=await AddressService().updateAddress(dataBody);
+      Get.snackbar(
+        "success".tr,
+        "address_updated_successfully".tr,
+        snackPosition:
+        SnackPosition.TOP,
+      );
+
+      fetchingState =
+          AddressFetchingState
+              .loading
+              .obs;
+
+      fetchAddress();
+return response;
+
+    } catch (e) {
+
+      print("UPDATE ADDRESS ERROR $e");
+
+      Get.snackbar(
+        "error".tr,
+        "something_went_wrong".tr,
+        snackPosition:
+        SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  void deleteAddress(String id) async{
+   addressHistoryModel.data?.removeWhere((e) => e.addressId ==id);
+    update();
+    await AddressService().deleteAddress(id);
   }
 
 

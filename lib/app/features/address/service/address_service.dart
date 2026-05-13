@@ -21,4 +21,16 @@ class AddressService{
     return AddressHistoryModel.fromJson(response.data);
   }
 
+
+  Future<dynamic>updateAddress(dataBody)async{
+    var response=await DioService().putService(endPoint: EndPoints.updateAddress, dataBody: dataBody);
+    return response.data;
+  }
+
+
+  Future<dynamic>deleteAddress(String id)async{
+    var response=await DioService().deleteService(EndPoints.deleteAddress(id));
+    return response.data;
+
+}
 }

@@ -14,6 +14,8 @@ class EndPoints{
   static const String updateAddress='/address/update';
   static const String placeOrder="/orders/order-history";
   static const String addWalletAmount="/wallet/addAmount";
+  static const String subscribeSubscription="/subscriptions/add";
+  static const String updateSubscription="/subscriptions/update";
 
   static String getOrderHistory(String userId)=>"/orders/order-history?userId=$userId";
   static String getAddress(String userId)=>"/address/list?userId=$userId";
@@ -27,7 +29,9 @@ class EndPoints{
   static String getUserProfile(String userId)=>'/auth/userProfile?userId=$userId';
   static String getCouponInfo(String couponCode)=>'/coupon/search?couponCode=$couponCode';
   static String updateProfile(String userId)=>'/auth/updateProfile?userId=$userId';
-
+  static String deleteAddress(String addressId)=>"/address/delete?addressId=$addressId";
+  static String getSubscriptionInfo(String subscriptionId)=>"/subscriptions/list?subscriptionId=$subscriptionId";
+  static String getSubscriptionList(String userId)=>"/subscriptions/list?userId=$userId";
 
 
   /// Media Url

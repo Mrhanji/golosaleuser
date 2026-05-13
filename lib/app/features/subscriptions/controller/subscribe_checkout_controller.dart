@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../widget/SubscriptionSuccessSheet.dart';
+import '/app/features/subscriptions/service/subscription_service.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
-
-import 'package:golosaleuser/app/features/auth/model/user_model.dart';
-import 'package:golosaleuser/utils/app_constants.dart';
-
+import '/utils/app_constants.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../../address/model/address_model.dart';
 import '/app/features/address/service/address_service.dart';
@@ -17,7 +18,7 @@ class SubscribeController extends GetxController {
   AddressHistoryModel addressHistoryModel = AddressHistoryModel();
 
   RxBool addressLoading = true.obs;
-
+  RxBool thumbnailLoading = true.obs;
   double walletBalance = 0.0;
   double perDayBill = 0.0;
 
@@ -34,6 +35,7 @@ class SubscribeController extends GetxController {
     super.onInit();
 
     final arguments = Get.arguments;
+    print(arguments);
 
     planDetails = PlanDetails.fromJson(arguments);
 
@@ -52,7 +54,7 @@ class SubscribeController extends GetxController {
     }
 
     getAddress();
-
+    thumbnailLoading.value=false;
     // Razorpay
     razorpay = Razorpay();
 
@@ -132,6 +134,7 @@ class SubscribeController extends GetxController {
         'amount': ((planDetails.total ?? 0) * 100).toInt(),
         'name': AppConstants.appName,
         'description': planDetails.productTitle ?? '',
+        'image': 'https://golosale.com/golo-icon.png',
         'retry': {
           'enabled': true,
           'max_count': 1,
@@ -140,6 +143,8 @@ class SubscribeController extends GetxController {
         'prefill': {
           'contact': homeController.userModel.data?.userMobile ?? '',
           'email': '',
+          'name': homeController.userModel.data?.firstName ?? 'Customer',
+
         },
         'theme': {
           'color': '#4FC83F',
@@ -162,17 +167,33 @@ class SubscribeController extends GetxController {
 
   // ================= SUCCESS =================
 
-  void _handlePaymentSuccess(
-      PaymentSuccessResponse response,
-      ) {
-    showDialogBox(
-      "Payment Success",
-      "Payment completed successfully",
-    );
+  // ─── In your payment screen ───────────────────────────────────────────────────
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    Map<String, dynamic> dataBody = {
+      "userId": homeController.userModel.data!.userId,
+      "productId": planDetails.productId,
+      "productQty": planDetails.productQty,
+      "productPrice": planDetails.productPrice,
+      "startAt": planDetails.startDate.toString(),
+      "endAt": planDetails.endDate.toString(),
+      "planDuration": planDetails.subscriptionDays,
+      "totalBill": planDetails.total,
+      "addressId": addressHistoryModel.data![selectedAddress].addressId,
+      "paymentMode": "online",
+      "status": "scheduled",
+    };
+
+    final apiResponse = await SubscriptionServices().subscribeSubscription(dataBody);
+
+    // Parse the 'data' field from your API response
+    // e.g. apiResponse.data is a Map<String, dynamic>
+    final successData = SubscriptionSuccessData.fromJson(apiResponse['data']);
+
+    // Show the beautiful success sheet 🎉
+    showSubscriptionSuccess(successData);
 
     print(response.paymentId);
-
-    // CALL SUCCESS API HERE
   }
 
   // ================= ERROR =================

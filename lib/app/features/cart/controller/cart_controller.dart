@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../utils/app_constants.dart';
 import '/app/features/cart/model/coupon_model.dart';
 import '/app/routes/app_routes.dart';
 import 'package:lottie/lottie.dart';
@@ -8,6 +9,7 @@ import '/app/features/address/service/address_service.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../../home/service/home_service.dart';
 import '/app/features/cart/model/cart_model.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 enum PaymentType { cod, online }
 enum CartState { loading, noItem, error, itemFound }
@@ -17,10 +19,10 @@ class CartController extends GetxController {
   double subTotal = 0;
   int deliveryCharge = 0;
   double discount = 0;
-
+  late Razorpay razorpay;
   CartModel cartModel = CartModel();
   CartState currentCartState = CartState.loading;
-
+  HomeController home=HomeController();
   bool isCodAvailable = false;
   var userId;
 
@@ -191,7 +193,7 @@ class CartController extends GetxController {
 
   getCart() async {
     cartModel = CartModel();
-    final home = Get.put(HomeController());
+     home = Get.put(HomeController());
 
     userId = home.userModel.data!.userId.toString();
 
@@ -260,7 +262,91 @@ class CartController extends GetxController {
 
   /// ---------------- ORDER ----------------
 
-  placeOrder() async {
+
+  placeOrder()async{
+    if(paymentType==PaymentType.cod){
+      await _orderPlaced();
+    }else{
+      /// 👉 Razorpay integration here
+      openRazorPay();
+    }
+  }
+
+
+ void openRazorPay() {
+
+    try {
+
+      final options = {
+
+        'key': AppConstants.razorpayKey,
+
+        'amount':
+        ((total) * 100).toInt(),
+
+        'name':
+        AppConstants.appName,
+
+        'description':
+        'Product Purchase',
+
+        /// APP LOGO
+        'image':
+        'https://golosale.com/golo-icon.png',
+
+        'retry': {
+          'enabled': true,
+          'max_count': 1,
+        },
+
+        'send_sms_hash': true,
+
+        /// USER DETAILS
+        'prefill': {
+
+          'name':
+          home.userModel.data?.firstName ??
+              'Customer',
+
+          'contact':
+          home.userModel.data?.userMobile ??
+              '',
+
+          'email':
+          home.userModel.data?.userEmail ??
+              '',
+        },
+
+        /// THEME
+        'theme': {
+          'color': '#4FC83F',
+        }
+      };
+
+      Future.delayed(
+        const Duration(
+            milliseconds: 300),
+            () {
+
+          razorpay.open(options);
+        },
+      );
+
+    } catch (e) {
+
+      showDialogBox(
+        "Error",
+        e.toString(),
+      );
+    }
+  }
+
+
+
+
+
+
+  _orderPlaced() async {
     Map<String, dynamic> orderBody = {
       "userId": userId,
       "addressId": selectedAddressId,
@@ -411,5 +497,90 @@ class CartController extends GetxController {
     super.onInit();
     getCart();
     getAddress();
+
+    // Razorpay
+    razorpay = Razorpay();
+
+    razorpay.on(
+      Razorpay.EVENT_PAYMENT_SUCCESS,
+      _handlePaymentSuccess,
+    );
+
+    razorpay.on(
+      Razorpay.EVENT_PAYMENT_ERROR,
+      _handlePaymentError,
+    );
+
+    razorpay.on(
+      Razorpay.EVENT_EXTERNAL_WALLET,
+      _handleExternalWallet,
+    );
+
+  }
+
+  // ================= DISPOSE =================
+
+  @override
+  void onClose() {
+    razorpay.clear();
+    super.onClose();
+  }
+
+
+
+  // ================= SUCCESS =================
+
+  void _handlePaymentSuccess(
+      PaymentSuccessResponse response,
+      )async {
+   await _orderPlaced();
+    print(response.paymentId);
+
+    // CALL SUCCESS API HERE
+  }
+
+  // ================= ERROR =================
+
+  void _handlePaymentError(
+      PaymentFailureResponse response,
+      ) {
+    showDialogBox(
+      "Payment Failed",
+      response.message ?? "Transaction failed",
+    );
+  }
+
+  // ================= EXTERNAL WALLET =================
+
+  void _handleExternalWallet(
+      ExternalWalletResponse response,
+      ) {
+    showDialogBox(
+      "External Wallet",
+      response.walletName ?? '',
+    );
+  }
+
+
+  void showDialogBox(
+      String title,
+      String message,
+      ) {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
   }
 }

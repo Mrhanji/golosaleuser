@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../utils/utils_functions.dart';
 import '/app/features/address/model/address_model.dart';
 import '/utils/end_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -678,13 +679,13 @@ class AddressScreen extends StatelessWidget {
                                   .toString(),
 
                           holderName:
-                          holderName.text,
+                          holderName.text.trim(),
 
                           building:
-                          building.text,
+                          building.text.trim(),
 
                           landmark:
-                          landmark.text,
+                          landmark.text.trim(),
 
                           setAsDefault:
                           setDefault.value
@@ -713,30 +714,81 @@ class AddressScreen extends StatelessWidget {
                                   ?.houseImage,
                         );
 
-                        if (model ==
-                            null) {
+                        /// VALIDATIONS
+                        if ((newModel.holderName ?? "")
+                            .trim()
+                            .isEmpty) {
 
-                          controller
-                              .addAddress(
+                          UtilsFunctions().showSnackBar(
+                            title: "error".tr,
+                            message:
+                            "first_name_required".tr,
+                            isError: true,
+                          );
+
+                          return;
+                        }
+
+                        if ((newModel.building ?? "")
+                            .trim()
+                            .isEmpty) {
+
+                          UtilsFunctions().showSnackBar(
+                            title: "error".tr,
+                            message:
+                            "building_required".tr,
+                            isError: true,
+                          );
+
+                          return;
+                        }
+
+                        if ((newModel.landmark ?? "")
+                            .trim()
+                            .isEmpty) {
+
+                          UtilsFunctions().showSnackBar(
+                            title: "error".tr,
+                            message:
+                            "landmark_required".tr,
+                            isError: true,
+                          );
+
+                          return;
+                        }
+
+                        if (controller.selectedPinCode ==
+                            0) {
+
+                          UtilsFunctions().showSnackBar(
+                            title: "error".tr,
+                            message:
+                            "pincode_required".tr,
+                            isError: true,
+                          );
+
+                          return;
+                        }
+
+                        /// SAVE ADDRESS
+                        if (model == null) {
+
+                          controller.addAddress(
                               newModel);
 
                         } else {
 
-                          controller
-                              .updateAddress(
+                          controller.updateAddress(
                               newModel);
-
-                          controller
-                              .update();
-
-                          Get.snackbar(
-                            "success".tr,
-                            "address_updated_successfully"
-                                .tr,
-                          );
                         }
 
-                        Get.back();
+                        Future.delayed(
+                          const Duration(
+                              milliseconds: 500),
+                              () {
+                            Get.back();
+                          },
+                        );
                       },
 
                       child: Text(
@@ -1276,17 +1328,7 @@ class AddressScreen extends StatelessWidget {
                       onConfirm:
                           () {
 
-                        controller
-                            .addressHistoryModel
-                            .data
-                            ?.removeWhere(
-                                (e) =>
-                            e.addressId ==
-                                model
-                                    .addressId);
-
-                        controller
-                            .update();
+                        controller.deleteAddress(model.addressId!);
 
                         Get.back();
 

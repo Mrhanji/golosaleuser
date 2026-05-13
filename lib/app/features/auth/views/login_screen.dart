@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '/app/features/auth/controller/auth_controller.dart';
 import '../../../routes/app_routes.dart';
@@ -57,7 +58,7 @@ class LoginScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: InkWell(
-              onTap: ()=>authController.sendOtp(),
+              onTap: ()=>authController.otpSending?null:authController.sendOtp(),
               child: Container(
                 height: Get.height*0.07,
                 width: Get.width,
@@ -65,7 +66,8 @@ class LoginScreen extends StatelessWidget {
                   color: HexColor(AppConstants.primaryColor),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Center(child: Text("login".tr,style: GoogleFonts.poppins(fontSize: Get.height*0.02,color: Colors.white),)),
+                child: Center(child:
+                authController.otpSending?CupertinoActivityIndicator(color: Colors.white,):Text("login".tr,style: GoogleFonts.poppins(fontSize: Get.height*0.02,color: Colors.white),)),
               ),
             ),
           ),

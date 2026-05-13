@@ -442,16 +442,17 @@ Widget _cartItems() {
               value: PaymentType.online,
               groupValue: controller.paymentType,
               onChanged: controller.selectPayment,
-              title:  Text("₹${controller.userCurrentBalance} "+ "wallet_balance".tr),
+            title:  Text("online_payment".tr),
+            //  title:  Text("₹${controller.userCurrentBalance} "+ "wallet_balance".tr),
             ),
 
-            Visibility(
-              visible: controller.userCurrentBalance<controller.total,
-              child: TextButton(onPressed: ()=>null, child: Text('low_balance_recharge_now'.tr,style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold,
-                color: Colors.red
-              ),)),
-            )
+            // Visibility(
+            //   visible: controller.userCurrentBalance<controller.total,
+            //   child: TextButton(onPressed: ()=>null, child: Text('low_balance_recharge_now'.tr,style: GoogleFonts.poppins(
+            //     fontWeight: FontWeight.bold,
+            //     color: Colors.red
+            //   ),)),
+            // )
 
           ],
 
