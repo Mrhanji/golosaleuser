@@ -9,166 +9,281 @@ import '/app/features/search/model/products_model.dart';
 /// ================= CONTROLLER =================
 
 class ProductController extends GetxController {
-  ProductsModel productsModel=ProductsModel();
-  RxBool isProductLoading=true.obs;
-  int quantity = 1;
-  bool isSubscription = false,isAddedIntoCart=false;
-  int selectedPlan = 7;
-  DateTime? selectedStartDate=DateTime.now();
-  DateTime? selectedEndDate=DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+7);
-  int subscriptionDays=0;
-  double total=0;
+  ProductsModel productsModel = ProductsModel();
 
+  RxBool isProductLoading = true.obs;
+
+  int quantity = 1;
+
+  bool isSubscription = false, isAddedIntoCart = false;
+
+  int selectedPlan = 7;
+
+  DateTime? selectedStartDate = DateTime.now();
+
+  DateTime? selectedEndDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day + 7,
+  );
+
+  int subscriptionDays = 0;
+
+  double total = 0;
+
+  /// ---- Slot: morning / evening ----
+  String selectedSlot = '';
+
+  /// ================= SLOT =================
+
+  void initializeDefaultSlot() {
+    final product = productsModel.data!.first;
+
+    if (product.availableInMorningSlot == true) {
+      selectedSlot = 'morning';
+    } else if (product.availableInEveningSlot == true) {
+      selectedSlot = 'evening';
+    } else {
+      selectedSlot = '';
+    }
+  }
+
+  void selectSlot(String slot) {
+    final product = productsModel.data!.first;
+
+    /// Prevent invalid selection
+    if (slot == "morning" && product.availableInMorningSlot != true) {
+      return;
+    }
+
+    if (slot == "evening" && product.availableInEveningSlot != true) {
+      return;
+    }
+
+    selectedSlot = slot;
+
+    update();
+  }
+
+  // =========================================
 
   void increment() {
     quantity++;
-    if(isSubscription){
-      double price = double.parse(productsModel.data!.first.productPrice.toString());
+
+    if (isSubscription) {
+      double price = double.parse(
+        productsModel.data!.first.productPrice.toString(),
+      );
+
       total = price * subscriptionDays * quantity;
     }
+
     update();
   }
 
   void decrement() {
-    if (quantity > 1) quantity--;
-    if(isSubscription){
-      double price = double.parse(productsModel.data!.first.productPrice.toString());
+    if (quantity > 1) {
+      quantity--;
+    }
+
+    if (isSubscription) {
+      double price = double.parse(
+        productsModel.data!.first.productPrice.toString(),
+      );
+
       total = price * subscriptionDays * quantity;
     }
+
     update();
   }
+
+  /// ================= SUBSCRIPTION =================
 
   void toggleSubscription(bool value) {
     isSubscription = value;
+
     selectedPlan = 7;
-    if(isSubscription){
-      selectedStartDate=DateTime.now();
-      selectedEndDate=DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day+7);
-      subscriptionDays=7;
-      total=double.parse(productsModel.data!.first.productPrice.toString()) * subscriptionDays;
+
+    initializeDefaultSlot();
+
+    if (isSubscription) {
+      selectedStartDate = DateTime.now();
+
+      selectedEndDate = DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day + 7,
+      );
+
+      subscriptionDays = 7;
+
+      total =
+          double.parse(productsModel.data!.first.productPrice.toString()) *
+          subscriptionDays *
+          quantity;
     }
+
     update();
   }
 
-
-  selectPlan(int plan) {
-
+  void selectPlan(int plan) {
     selectedPlan = plan;
 
     subscriptionDays = plan;
 
-    /// PRODUCT PRICE
-    double price = double.parse(productsModel.data!.first.productPrice.toString(),);
+    double price = double.parse(
+      productsModel.data!.first.productPrice.toString(),
+    );
 
-    /// TOTAL
     total = price * subscriptionDays * quantity;
 
-    /// START DATE
     selectedStartDate = DateTime.now();
 
-    /// END DATE
-    selectedEndDate = selectedStartDate!.add(Duration(days: plan),);
+    selectedEndDate = selectedStartDate!.add(Duration(days: plan));
 
     update();
   }
 
+  /// ================= START DATE =================
 
-  selectStartDate()async{
-    // pick start date with datepicker
-    DateTime? pickedDate=await showDatePicker(
-        context: Get.context!,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2100));
-    if(pickedDate!=null){
-      selectedStartDate=pickedDate;
-      selectedEndDate=pickedDate.add(Duration(days: 7));
-      subscriptionDays=7;
-      // Calculate total price based on subscription days
-      double price = double.parse(productsModel.data!.first.productPrice.toString());
+  selectStartDate() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: Get.context!,
+
+      initialDate: DateTime.now(),
+
+      firstDate: DateTime.now(),
+
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      selectedStartDate = pickedDate;
+
+      selectedEndDate = pickedDate.add(const Duration(days: 7));
+
+      subscriptionDays = 7;
+
+      double price = double.parse(
+        productsModel.data!.first.productPrice.toString(),
+      );
+
       total = price * subscriptionDays * quantity;
+
       update();
     }
   }
 
+  /// ================= END DATE =================
 
-  selectEndDate()async{
-    // pick end date with datepicker
+  selectEndDate() async {
     DateTime now = DateTime.now();
 
     DateTime? pickedDate = await showDatePicker(
       context: Get.context!,
+
       initialDate: now.add(const Duration(days: 1)),
-      firstDate: now.add(const Duration(days: 1)), // tomorrow
+
+      firstDate: now.add(const Duration(days: 1)),
+
       lastDate: DateTime(2100),
     );
-    if(pickedDate!=null){
-      selectedEndDate=pickedDate;
-      subscriptionDays=pickedDate.difference(selectedStartDate!).inDays;
-      // calculate total price based on subscription days wth quantity
-      /// ✅ Get price
+
+    if (pickedDate != null) {
+      selectedEndDate = pickedDate;
+
+      subscriptionDays = pickedDate.difference(selectedStartDate!).inDays;
+
       double price = double.parse(
-          productsModel.data!.first.productPrice.toString());
+        productsModel.data!.first.productPrice.toString(),
+      );
 
-
-      /// ✅ Final total = price × days × quantity
       total = price * subscriptionDays * quantity;
+
       update();
     }
-
   }
 
+  /// ================= NAVIGATE =================
 
-  navigateToSubscribe()async{
-    Map<String,dynamic>body={
-      'productId':productsModel.data!.first.productId,
-      'userId':Get.put(HomeController()).userModel.data?.userId,
-      'productQty':quantity,
-      'startDate':selectedStartDate!.add(Duration(days: 1)),
-      'endDate':selectedEndDate,
-      'subscriptionDays':subscriptionDays,
-      'total':total,
-      'productTitle':productsModel.data!.first.productTitle,
-      'productThumbnail':productsModel.data!.first.productThumbnail,
-      'productUnitTag':productsModel.data!.first.productUnitTag,
-      'productPrice':productsModel.data!.first.productPrice,
+  navigateToSubscribe() async {
+    Map<String, dynamic> body = {
+      'productId': productsModel.data!.first.productId,
+
+      'userId': Get.put(HomeController()).userModel.data?.userId,
+
+      'productQty': quantity,
+
+      'startDate': selectedStartDate!.add(const Duration(days: 1)),
+
+      'endDate': selectedEndDate,
+
+      'subscriptionDays': subscriptionDays,
+
+      'total': total,
+
+      'productTitle': productsModel.data!.first.productTitle,
+
+      'productThumbnail': productsModel.data!.first.productThumbnail,
+
+      'productUnitTag': productsModel.data!.first.productUnitTag,
+
+      'productPrice': productsModel.data!.first.productPrice,
+
+      'selectedSlot': selectedSlot,
     };
 
-    Get.toNamed(AppRoutes.subscribeCartScreen,arguments: body);
+    Get.toNamed(AppRoutes.subscribeCartScreen, arguments: body);
   }
 
+  /// ================= PRODUCT =================
 
-  getProductInfo()async{
-    productsModel=await HomeServices().getSingleProductById(Get.arguments);
+  getProductInfo() async {
+    productsModel = await HomeServices().getSingleProductById(Get.arguments);
+
+    initializeDefaultSlot();
+
     await Get.put(CartController()).getCart();
-    isAddedIntoCart=Get.put(CartController()).cartModel.data!.where((product)=> product.productId==productsModel.data!.first.productId).isNotEmpty;
-    isProductLoading.value=false;
+
+    isAddedIntoCart = Get.put(CartController()).cartModel.data!
+        .where(
+          (product) => product.productId == productsModel.data!.first.productId,
+        )
+        .isNotEmpty;
+
+    isProductLoading.value = false;
+
     update();
   }
 
+  /// ================= CART =================
 
-  addToCart()async{
-    Map<String,dynamic>body={
-      'productId':productsModel.data!.first.productId,
-      'userId':Get.put(HomeController()).userModel.data?.userId,
-      'productQty':quantity,
+  addToCart() async {
+    Map<String, dynamic> body = {
+      'productId': productsModel.data!.first.productId,
+
+      'userId': Get.put(HomeController()).userModel.data?.userId,
+
+      'productQty': quantity,
     };
-    isAddedIntoCart=true;
-    update();
-    print(body);
-    var response=await HomeServices().addToCart(body);
-    Get.put(CartController()).getCart();
-    print(response);
-    Get.snackbar("cart_added".tr, '${response['message']}');
 
+    isAddedIntoCart = true;
+
+    update();
+
+    var response = await HomeServices().addToCart(body);
+
+    Get.put(CartController()).getCart();
+
+    Get.snackbar("cart_added".tr, '${response['message']}');
   }
 
-  /// init
+  /// ================= INIT =================
 
   @override
   void onInit() {
     super.onInit();
+
     getProductInfo();
   }
-
 }

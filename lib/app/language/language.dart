@@ -293,7 +293,9 @@ class AppTranslations extends Translations {
       'cancel_order_confirmation':'Are you sure you want to cancel this order?',
       'order_cancelled_successfully':'Order Cancelled Successfully',
       "address_not_available_for_this_order":"Address details are not available for this order",
-      "this_order_has_been_cancelled_by_the_store_or_user":"This order has been cancelled by the store or user."
+      "this_order_has_been_cancelled_by_the_store_or_user":"This order has been cancelled by the store or user.",
+      "choose_slot":"Choose Slot",
+      "slot_not_available":"Slot Not Available",
 
 
 

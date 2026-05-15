@@ -14,16 +14,7 @@ class ProductsModel {
     data = json["data"] == null ? null : (json["data"] as List).map((e) => ProductData.fromJson(e)).toList();
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["status"] = status;
-    _data["statusCode"] = statusCode;
-    _data["message"] = message;
-    if(data != null) {
-      _data["data"] = data?.map((e) => e.toJson()).toList();
-    }
-    return _data;
-  }
+
 }
 
 class ProductData {
@@ -36,12 +27,14 @@ class ProductData {
   String? productThumbnail;
   String? productCategoryId;
   int? hasSubscriptionModel;
+  bool? availableInEveningSlot;
+  bool? availableInMorningSlot;
   String? productUnitTag;
   String? status;
   String? createdOn;
   String? updatedOn;
 
-  ProductData({this.productId, this.productTitle, this.productInfo, this.productPrice, this.productMrp, this.productStock, this.productThumbnail, this.productCategoryId, this.hasSubscriptionModel,this.productUnitTag, this.status, this.createdOn, this.updatedOn});
+  ProductData({this.productId, this.productTitle, this.productInfo, this.productPrice, this.productMrp, this.productStock, this.productThumbnail, this.productCategoryId, this.hasSubscriptionModel,this.productUnitTag, this.status, this.createdOn, this.updatedOn,this.availableInEveningSlot,this.availableInMorningSlot});
 
   ProductData.fromJson(Map<String, dynamic> json) {
     productId = json["productId"];
@@ -57,22 +50,9 @@ class ProductData {
     status = json["status"];
     createdOn = json["createdOn"];
     updatedOn = json["updatedOn"];
+    availableInEveningSlot=json["availableInEveningSlot"]==1;
+    availableInMorningSlot=json["availableInMorningSlot"]==1;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["productId"] = productId;
-    _data["productTitle"] = productTitle;
-    _data["productInfo"] = productInfo;
-    _data["productPrice"] = productPrice;
-    _data["productMrp"] = productMrp;
-    _data["productStock"] = productStock;
-    _data["productThumbnail"] = productThumbnail;
-    _data["productCategoryId"] = productCategoryId;
-    _data["hasSubscriptionModel"] = hasSubscriptionModel;
-    _data["status"] = status;
-    _data["createdOn"] = createdOn;
-    _data["updatedOn"] = updatedOn;
-    return _data;
-  }
+
 }
