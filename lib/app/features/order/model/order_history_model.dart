@@ -14,16 +14,7 @@ class OrderHistoryModel {
     data = json["data"] == null ? null : Data.fromJson(json["data"]);
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["status"] = status;
-    _data["statusCode"] = statusCode;
-    _data["message"] = message;
-    if(data != null) {
-      _data["data"] = data?.toJson();
-    }
-    return _data;
-  }
+
 }
 
 class Data {
@@ -43,17 +34,7 @@ class Data {
     orders = json["orders"] == null ? null : (json["orders"] as List).map((e) => Orders.fromJson(e)).toList();
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["totalOrders"] = totalOrders;
-    _data["totalPages"] = totalPages;
-    _data["currentPage"] = currentPage;
-    _data["pageSize"] = pageSize;
-    if(orders != null) {
-      _data["orders"] = orders?.map((e) => e.toJson()).toList();
-    }
-    return _data;
-  }
+
 }
 
 class Orders {
@@ -74,8 +55,9 @@ class Orders {
   List<OrderItems>? orderItems;
   int? totalQty;
   int? totalItems;
+  bool? isSubscriptionOrder;
 
-  Orders({this.orderId,this.orderNumber, this.userId, this.orderStatus, this.subTotal, this.grandTotal, this.createdOn, this.addressId, this.assignedDeliveryAgentId, this.couponId, this.couponPercent, this.deliveryFee, this.paymentMode, this.paymentRefDetails, this.orderItems, this.totalQty, this.totalItems});
+  Orders({this.orderId,this.orderNumber, this.userId, this.orderStatus, this.subTotal, this.grandTotal, this.createdOn, this.addressId, this.assignedDeliveryAgentId, this.couponId, this.couponPercent, this.deliveryFee, this.paymentMode, this.paymentRefDetails, this.orderItems, this.totalQty, this.totalItems,this.isSubscriptionOrder});
 
   Orders.fromJson(Map<String, dynamic> json) {
     orderId = json["orderId"];
@@ -95,30 +77,10 @@ class Orders {
     orderItems = json["orderItems"] == null ? null : (json["orderItems"] as List).map((e) => OrderItems.fromJson(e)).toList();
     totalQty = json["totalQty"];
     totalItems = json["totalItems"];
+    isSubscriptionOrder = json["isSubscriptionOrder"].toString()=='yes'?true:false;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["orderId"] = orderId;
-    _data["userId"] = userId;
-    _data["orderStatus"] = orderStatus;
-    _data["subTotal"] = subTotal;
-    _data["grandTotal"] = grandTotal;
-    _data["createdOn"] = createdOn;
-    _data["addressId"] = addressId;
-    _data["assignedDeliveryAgentId"] = assignedDeliveryAgentId;
-    _data["couponId"] = couponId;
-    _data["couponPercent"] = couponPercent;
-    _data["deliveryFee"] = deliveryFee;
-    _data["paymentMode"] = paymentMode;
-    _data["paymentRefDetails"] = paymentRefDetails;
-    if(orderItems != null) {
-      _data["orderItems"] = orderItems?.map((e) => e.toJson()).toList();
-    }
-    _data["totalQty"] = totalQty;
-    _data["totalItems"] = totalItems;
-    return _data;
-  }
+
 }
 
 class OrderItems {
@@ -134,15 +96,7 @@ class OrderItems {
     product = json["product"] == null ? null : Product.fromJson(json["product"]);
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["recordId"] = recordId;
-    _data["qty"] = qty;
-    if(product != null) {
-      _data["product"] = product?.toJson();
-    }
-    return _data;
-  }
+
 }
 
 class Product {
@@ -164,13 +118,5 @@ class Product {
     productUnitTag = json["productUnitTag"];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> _data = <String, dynamic>{};
-    _data["productId"] = productId;
-    _data["productTitle"] = productTitle;
-    _data["productPrice"] = productPrice;
-    _data["productMrp"] = productMrp;
-    _data["productThumbnail"] = productThumbnail;
-    return _data;
-  }
+
 }

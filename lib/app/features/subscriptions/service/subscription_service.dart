@@ -15,8 +15,13 @@ class SubscriptionServices{
     return SubscriptionModel.fromJson(response.data);
   }
 
-  Future<dynamic>updateSubscription(dataBody)async{
-    var response=await DioService().postService(endPoint: EndPoints.updateSubscription, dataBody: dataBody);
+  Future<dynamic>updateSubscriptionStatus(dataBody)async{
+    var response=await DioService().putService(endPoint: EndPoints.updateSubscriptionStatus, dataBody: dataBody);
+    return response.data;
+  }
+
+  Future<dynamic>removeSubscriptionsStatus(dataBody)async{
+    var response=await DioService().deleteService( EndPoints.removeSubscriptionStatus, dataBody: dataBody);
     return response.data;
   }
 

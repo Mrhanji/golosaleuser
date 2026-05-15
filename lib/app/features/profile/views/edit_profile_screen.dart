@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:golosaleuser/app/features/home/controller/home_controller.dart';
+import 'package:golosaleuser/app/features/profile/widgets/name_avatar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -107,63 +108,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           bottom: Radius.circular(28),
         ),
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 10),
-          Stack(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: CircleAvatar(
-                  radius: 58,
-                  backgroundColor: Colors.grey.shade200,
-                  backgroundImage: CachedNetworkImageProvider(
-                    homeController.userModel.data?.profilePicture != null &&
-                        homeController.userModel.data!.profilePicture!
-                            .isNotEmpty
-                        ? homeController.userModel.data!.profilePicture!
-                        : "https://www.golosale.com/assets/image-B0sHWpoa.png",
-                  ),
-                  onBackgroundImageError: (_, __) {
-                    // image error handled internally by fallback URL
-                  },
-                  child: homeController.userModel.data?.profilePicture == null
-                      ? const Center(child: Icon(CupertinoIcons.person_alt))
-                      : null,
-                ),
-              ),
-              // Positioned(
-              //   bottom: 0,
-              //   right: 0,
-              //   child: InkWell(
-              //     onTap: () {},
-              //     child: Container(
-              //       padding: const EdgeInsets.all(6),
-              //       decoration: const BoxDecoration(
-              //         color: Colors.black,
-              //         shape: BoxShape.circle,
-              //       ),
-              //       child: const Icon(
-              //         Icons.camera_alt,
-              //         size: 18,
-              //         color: Colors.white,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          // Text(
-          //   "change_photo".tr,
-          //   style: GoogleFonts.poppins(color: Colors.white70),
-          // )
-        ],
-      ),
+      // child: Column(
+      //   children: [
+      //     const SizedBox(height: 10),
+      //     Stack(
+      //       children: [
+      //         Container(
+      //           padding: const EdgeInsets.all(4),
+      //           decoration: const BoxDecoration(
+      //             color: Colors.white,
+      //             shape: BoxShape.circle,
+      //           ),
+      //           child: CircleAvatar(
+      //             radius: 58,
+      //             backgroundColor: Colors.grey.shade200,
+      //             backgroundImage: CachedNetworkImageProvider(
+      //               homeController.userModel.data?.profilePicture != null &&
+      //                   homeController.userModel.data!.profilePicture!
+      //                       .isNotEmpty
+      //                   ? homeController.userModel.data!.profilePicture!
+      //                   : "https://www.golosale.com/assets/image-B0sHWpoa.png",
+      //             ),
+      //             onBackgroundImageError: (_, __) {
+      //               // image error handled internally by fallback URL
+      //             },
+      //             child: homeController.userModel.data?.profilePicture == null
+      //                 ? const Center(child: Icon(CupertinoIcons.person_alt))
+      //                 : null,
+      //           ),
+      //         ),
+      //         // Positioned(
+      //         //   bottom: 0,
+      //         //   right: 0,
+      //         //   child: InkWell(
+      //         //     onTap: () {},
+      //         //     child: Container(
+      //         //       padding: const EdgeInsets.all(6),
+      //         //       decoration: const BoxDecoration(
+      //         //         color: Colors.black,
+      //         //         shape: BoxShape.circle,
+      //         //       ),
+      //         //       child: const Icon(
+      //         //         Icons.camera_alt,
+      //         //         size: 18,
+      //         //         color: Colors.white,
+      //         //       ),
+      //         //     ),
+      //         //   ),
+      //         // ),
+      //       ],
+      //     ),
+      //     const SizedBox(height: 12),
+      //     // Text(
+      //     //   "change_photo".tr,
+      //     //   style: GoogleFonts.poppins(color: Colors.white70),
+      //     // )
+      //   ],
+      // ),
+
+      child: NameAvatar(firstName: nameController.text, lastName: lastNameController.text),
     );
   }
 

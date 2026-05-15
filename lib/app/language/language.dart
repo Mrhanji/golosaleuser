@@ -172,7 +172,7 @@ class AppTranslations extends Translations {
       "my_addresses": "My Addresses",
       "add_address": "Add Address",
       "update_address": "Update Address",
-      "holder_name": "Holder Name",
+      "holder_name": "Receiver Name",
       "building_flat": "Building / Flat",
       "landmark": "Landmark",
       "upload_house_image": "Upload Gate / House Image",
@@ -197,6 +197,7 @@ class AppTranslations extends Translations {
       "landmark_required": "Please enter landmark",
       "pincode_required": "Please select pincode",
       "location_required": "Please select location",
+      "pin_code":'Pin Code',
 
 
         "my_subscriptions": "My Subscriptions",
@@ -260,6 +261,41 @@ class AppTranslations extends Translations {
       "pause_cutoff_note":
       "Same-day pause requests are only accepted before 11:00 PM. Requests submitted after the cutoff time may still be delivered because order processing could already be completed.",
       "last_day":"Last Day",
+      "address_deleted_message": "The delivery address linked to this subscription is no longer available. It may have been removed or updated. Please contact support or update your address to continue smooth deliveries.",
+      "resume_subscription": "Resume Subscription",
+      'paused':'Paused',
+      'start':'Start',
+      'end':'End',
+      'today':'Today',
+      'invalid_selection':'Invalid Selection',
+      'past_dates_not_allowed':'Past Dates Not Allowed',
+      'address_required':'Address Required',
+      'please_select_address':'Please select an address',
+      "resume_subscription_desc": "Your subscription has been resumed successfully. Deliveries will continue from the selected restart date.",
+      'subscription_resumed_successfully':'Subscription Resumed Successfully',
+      'subscription_order':'Subscription Order',
+      'ordered_on':'Ordered On',
+      'more_items':'More Items',
+      'order_no':'Order No',
+      'pending':'Pending',
+      'confirmed':'Confirmed',
+      'processing':'Processing',
+      'delivered':'Delivered',
+      'no_orders_found':'No Orders Found',
+      'your_orders_will_appear_here':'Your orders will appear here',
+      'order_tracking':'Order Tracking',
+      'ordered_items':'Ordered Items',
+      'delivery_fee':'Delivery Fee',
+      'order_cancelled':'Order Cancelled',
+      'this_order_has_been_cancelled':'This order has been cancelled.',
+      'subscription_orders_cannot_be_cancelled':'Subscription orders cannot be cancelled.',
+      'cancel_order':'Cancel Order',
+      'cancel_order_confirmation':'Are you sure you want to cancel this order?',
+      'order_cancelled_successfully':'Order Cancelled Successfully',
+      "address_not_available_for_this_order":"Address details are not available for this order",
+      "this_order_has_been_cancelled_by_the_store_or_user":"This order has been cancelled by the store or user."
+
+
 
 
 

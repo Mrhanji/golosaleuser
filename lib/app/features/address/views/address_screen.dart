@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -239,107 +241,80 @@ class AddressScreen extends StatelessWidget {
                         height: 14),
 
                     /// PINCODE
-                    GetBuilder<
-                        AddressController>(
-                      builder:
-                          (controller) {
 
-                        return Container(
-                          padding:
-                          const EdgeInsets
-                              .symmetric(
-                              horizontal:
-                              16),
+                    Row(
+                      children: [
+                        Text("pin_code".tr),
+                      ],
+                    ),
+                    SizedBox(height: 10,),
+                    GetBuilder<AddressController>(
+                      builder: (controller) {
 
-                          decoration:
-                          BoxDecoration(
-                            color: Colors
-                                .grey
-                                .shade100,
+                        return DropdownButtonFormField<int>(
 
-                            borderRadius:
-                            BorderRadius
-                                .circular(
-                                16),
-                          ),
+                          value: controller.pinCode.contains(
+                            controller.selectedPinCode,
+                          )
+                              ? controller.selectedPinCode
+                              : null,
 
-                          child:
-                          DropdownButtonHideUnderline(
+                          isExpanded: true,
 
-                            child:
-                            DropdownButton<
-                                int>(
 
-                              value: controller
-                                  .pinCode
-                                  .contains(
-                                  controller
-                                      .selectedPinCode)
-                                  ? controller
-                                  .selectedPinCode
-                                  : null,
+                          dropdownColor: Colors.white,
 
-                              isExpanded:
-                              true,
+                          borderRadius: BorderRadius.circular(18),
 
-                              icon:
-                              const Icon(
-                                Icons
-                                    .keyboard_arrow_down_rounded,
-                              ),
+                          icon: Container(
 
-                              hint: Text(
-                                "select_pincode"
-                                    .tr,
+                            padding: const EdgeInsets.all(4),
 
-                                style:
-                                GoogleFonts
-                                    .poppins(
-                                  fontSize:
-                                  13,
-                                  fontWeight:
-                                  FontWeight
-                                      .w500,
-                                ),
-                              ),
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(.08),
+                              shape: BoxShape.circle,
+                            ),
 
-                              items: controller
-                                  .pinCode
-                                  .map((e) {
-
-                                return DropdownMenuItem<
-                                    int>(
-                                  value: e,
-
-                                  child: Text(
-                                    e.toString(),
-
-                                    style:
-                                    GoogleFonts
-                                        .poppins(
-                                      fontSize:
-                                      13,
-                                      fontWeight:
-                                      FontWeight
-                                          .w500,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-
-                              onChanged:
-                                  (value) {
-
-                                if (value !=
-                                    null) {
-
-                                  controller
-                                      .selectPinCode(
-                                      value);
-                                }
-                              },
+                            child: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: primaryColor,
+                              size: 18,
                             ),
                           ),
+
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: secondaryColor,
+                          ),
+
+
+
+                          items: controller.pinCode.map((e) {
+
+                            return DropdownMenuItem<int>(
+
+                              value: e,
+
+                              child: Text(
+                                e.toString(),
+
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: secondaryColor,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+
+                          onChanged: (value) {
+
+                            if (value != null) {
+
+                              controller.selectPinCode(value);
+                            }
+                          },
                         );
                       },
                     ),
@@ -1224,27 +1199,61 @@ class AddressScreen extends StatelessWidget {
               model.houseImage != '')
 
             Padding(
-              padding:
-              const EdgeInsets.only(
-                  top: 14),
+              padding: const EdgeInsets.only(top: 14),
 
               child: ClipRRect(
 
                 borderRadius:
-                BorderRadius.circular(
-                    18),
+                BorderRadius.circular(18),
 
-                child: Image.network(
+                child: CachedNetworkImage(
 
-                  EndPoints.mediaUrl(
-                      model.houseImage
-                          .toString()),
+                  imageUrl: EndPoints.mediaUrl(
+                    model.houseImage.toString(),
+                  ),
 
                   height: 145,
-                  width:
-                  double.infinity,
+                  width: double.infinity,
 
                   fit: BoxFit.cover,
+
+                  placeholder: (context, url) {
+
+                    return Container(
+
+                      height: 145,
+                      width: double.infinity,
+
+                      color: Colors.grey.shade100,
+
+                      child: const Center(
+                        child:
+                        CupertinoActivityIndicator(),
+                      ),
+                    );
+                  },
+
+                  errorWidget:
+                      (context, url, error) {
+
+                    return Container(
+
+                      height: 145,
+                      width: double.infinity,
+
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius:
+                        BorderRadius.circular(18),
+                      ),
+
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: Colors.grey.shade500,
+                        size: 34,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

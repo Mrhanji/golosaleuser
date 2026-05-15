@@ -237,10 +237,7 @@ class CartController extends GetxController {
     addressLoading = false;
 
     if (addressHistoryModel.data!.isNotEmpty) {
-      selectedAddressId = addressHistoryModel.data!
-          .firstWhere((e) => e.setAsDefault == 1)
-          .addressId
-          .toString();
+      selectedAddressId = addressHistoryModel.data!.firstWhere((e) => e.setAsDefault == 1).addressId.toString();
     }
 
     update();
@@ -264,12 +261,19 @@ class CartController extends GetxController {
 
 
   placeOrder()async{
+    if(selectedAddressId==''){
+      showDialogBox(
+        "address_required".tr,
+        "please_select_address".tr,
+      );
+    }else{
     if(paymentType==PaymentType.cod){
       await _orderPlaced();
     }else{
       /// 👉 Razorpay integration here
       openRazorPay();
     }
+  }
   }
 
 

@@ -19,6 +19,7 @@ class ProductController extends GetxController {
   int subscriptionDays=0;
   double total=0;
 
+
   void increment() {
     quantity++;
     if(isSubscription){
@@ -63,8 +64,7 @@ class ProductController extends GetxController {
     total = price * subscriptionDays * quantity;
 
     /// START DATE
-    selectedStartDate =
-        DateTime.now();
+    selectedStartDate = DateTime.now();
 
     /// END DATE
     selectedEndDate = selectedStartDate!.add(Duration(days: plan),);
@@ -124,7 +124,7 @@ class ProductController extends GetxController {
       'productId':productsModel.data!.first.productId,
       'userId':Get.put(HomeController()).userModel.data?.userId,
       'productQty':quantity,
-      'startDate':selectedStartDate,
+      'startDate':selectedStartDate!.add(Duration(days: 1)),
       'endDate':selectedEndDate,
       'subscriptionDays':subscriptionDays,
       'total':total,

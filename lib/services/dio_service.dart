@@ -57,10 +57,10 @@ class DioService {
 
   /// Delete Service
 
-  Future<dynamic>deleteService(endPoint)async{
+  Future<dynamic>deleteService(endPoint,{dataBody})async{
     try{
       print("FullUrl:- ${AppConstants.apiUrl}$endPoint");
-      return await dio.delete(endPoint);
+      return await dio.delete(endPoint,data: dataBody);
     }catch(e){
       throw Exception(e);
     }

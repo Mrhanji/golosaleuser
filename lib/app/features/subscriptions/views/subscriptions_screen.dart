@@ -70,6 +70,10 @@ class SubscriptionsScreen extends StatelessWidget {
 
         final item = controller.subscription!;
 
+        // Parse plan start and end dates once
+        final planStartDay = DateTime.parse(item.startAt.toString());
+        final planEndDay   = DateTime.parse(item.endAt.toString());
+
         return Scaffold(
 
           backgroundColor:
@@ -94,7 +98,7 @@ class SubscriptionsScreen extends StatelessWidget {
             ),
           ),
 
-          // BOTTOM BUTTON
+          // BUTTON
 
           bottomNavigationBar: Container(
             padding: const EdgeInsets.all(16),
@@ -104,252 +108,404 @@ class SubscriptionsScreen extends StatelessWidget {
                 height: 56,
 
                 child: ElevatedButton(
+
+                  // ENABLE ONLY WHEN DATE SELECTED
+
                   onPressed:
                   controller.rangeStart != null &&
                       controller.rangeEnd != null
                       ? () {
 
-                    Get.dialog(
+                    // RESUME FLOW
 
-                      Dialog(
+                    if (controller.isSelectedPausedDate()) {
 
-                        backgroundColor:
-                        Colors.white,
+                      Get.dialog(
 
-                        shape:
-                        RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(28),
-                        ),
+                        Dialog(
 
-                        child: Padding(
-                          padding:
-                          const EdgeInsets.all(22),
+                          backgroundColor:
+                          Colors.white,
 
-                          child: Column(
-                            mainAxisSize:
-                            MainAxisSize.min,
+                          shape:
+                          RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(
+                                28),
+                          ),
 
-                            children: [
+                          child: Padding(
+                            padding:
+                            const EdgeInsets.all(
+                                22),
 
-                              Container(
-                                height: 72,
-                                width: 72,
+                            child: Column(
+                              mainAxisSize:
+                              MainAxisSize.min,
 
-                                decoration:
-                                BoxDecoration(
-                                  color: const Color(
-                                      0xFFF59E0B)
-                                      .withOpacity(.12),
+                              children: [
 
-                                  shape:
-                                  BoxShape.circle,
+                                Container(
+                                  height: 72,
+                                  width: 72,
+
+                                  decoration:
+                                  BoxDecoration(
+                                    color: const Color(
+                                        0xFF4FC83F)
+                                        .withOpacity(
+                                        .12),
+
+                                    shape:
+                                    BoxShape.circle,
+                                  ),
+
+                                  child: const Icon(
+                                    Icons.play_arrow_rounded,
+
+                                    size: 38,
+
+                                    color: Color(
+                                        0xFF4FC83F),
+                                  ),
                                 ),
 
-                                child: const Icon(
-                                  Icons.pause_circle_rounded,
+                                const SizedBox(
+                                    height: 18),
 
-                                  size: 38,
+                                Text(
+                                  "resume_subscription"
+                                      .tr,
 
-                                  color:
-                                  Color(0xFFF59E0B),
-                                ),
-                              ),
+                                  style:
+                                  GoogleFonts
+                                      .poppins(
+                                    fontSize: 22,
 
-                              const SizedBox(height: 18),
-
-                              Text(
-                                "pause_subscription".tr,
-
-                                style:
-                                GoogleFonts.poppins(
-                                  fontSize: 22,
-
-                                  fontWeight:
-                                  FontWeight.w700,
-                                ),
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              Text(
-                                "pause_subscription_confirmation_desc"
-                                    .tr,
-
-                                textAlign:
-                                TextAlign.center,
-
-                                style:
-                                GoogleFonts.poppins(
-                                  color: Colors
-                                      .grey.shade700,
-
-                                  height: 1.6,
-                                ),
-                              ),
-
-                              const SizedBox(height: 22),
-
-                              Container(
-                                padding:
-                                const EdgeInsets.all(
-                                    16),
-
-                                decoration:
-                                BoxDecoration(
-                                  color: const Color(
-                                      0xFFF8FFF6),
-
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(18),
+                                    fontWeight:
+                                    FontWeight
+                                        .w700,
+                                  ),
                                 ),
 
-                                child: Column(
+                                const SizedBox(
+                                    height: 10),
+
+                                Text(
+                                  "resume_subscription_desc"
+                                      .tr,
+
+                                  textAlign:
+                                  TextAlign.center,
+
+                                  style:
+                                  GoogleFonts
+                                      .poppins(
+                                    color: Colors
+                                        .grey
+                                        .shade700,
+
+                                    height: 1.6,
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                    height: 24),
+
+                                Row(
                                   children: [
 
-                                    _billRow(
-                                      "pause_start_date"
-                                          .tr,
+                                    Expanded(
+                                      child:
+                                      SizedBox(
+                                        height:
+                                        52,
 
-                                      controller
-                                          .formatDate(
-                                        controller
-                                            .rangeStart!,
+                                        child:
+                                        OutlinedButton(
+                                          onPressed:
+                                              () {
+                                            Get.back();
+                                          },
+
+                                          child:
+                                          Text(
+                                            "cancel"
+                                                .tr,
+                                          ),
+                                        ),
                                       ),
                                     ),
 
                                     const SizedBox(
-                                        height: 12),
+                                        width:
+                                        12),
 
-                                    _billRow(
-                                      "pause_end_date"
-                                          .tr,
+                                    Expanded(
+                                      child:
+                                      SizedBox(
+                                        height:
+                                        52,
 
-                                      controller
-                                          .formatDate(
-                                        controller
-                                            .rangeEnd!,
+                                        child:
+                                        ElevatedButton(
+                                          onPressed:
+                                              () {
+
+                                            Get.back();
+
+                                            controller.resumePausedPlan(controller.rangeStart!,
+                                              controller
+                                                  .rangeEnd!,
+                                            );
+                                          },
+
+                                          style:
+                                          ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                            const Color(
+                                                0xFF4FC83F),
+                                          ),
+
+                                          child:
+                                          Text(
+                                            "resume"
+                                                .tr,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-
-                              const SizedBox(height: 24),
-
-                              Row(
-                                children: [
-
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 52,
-
-                                      child:
-                                      OutlinedButton(
-                                        onPressed: () {
-                                          Get.back();
-                                        },
-
-                                        style:
-                                        OutlinedButton
-                                            .styleFrom(
-                                          side:
-                                          const BorderSide(
-                                            color: Color(
-                                                0xFFE5E7EB),
-                                          ),
-
-                                          shape:
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius
-                                                .circular(
-                                                16),
-                                          ),
-                                        ),
-
-                                        child: Text(
-                                          "cancel".tr,
-
-                                          style:
-                                          GoogleFonts
-                                              .poppins(
-                                            color: const Color(
-                                                0xFF111827),
-
-                                            fontWeight:
-                                            FontWeight
-                                                .w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 12),
-
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 52,
-
-                                      child:
-                                      ElevatedButton(
-                                        onPressed: () {
-
-                                          Get.back();
-
-                                          controller
-                                              .pausedPlan(
-                                            controller
-                                                .rangeStart!,
-                                            controller
-                                                .rangeEnd!,
-                                          );
-                                        },
-
-                                        style:
-                                        ElevatedButton
-                                            .styleFrom(
-                                          elevation: 0,
-
-                                          backgroundColor:
-                                          const Color(
-                                              0xFF4FC83F),
-
-                                          shape:
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius
-                                                .circular(
-                                                16),
-                                          ),
-                                        ),
-
-                                        child: Text(
-                                          "submit".tr,
-
-                                          style:
-                                          GoogleFonts
-                                              .poppins(
-                                            color:
-                                            Colors.white,
-
-                                            fontWeight:
-                                            FontWeight
-                                                .w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
+                      );
+
+                    } else {
+
+                      // PAUSE FLOW
+
+                      Get.dialog(
+
+                        Dialog(
+
+                          backgroundColor:
+                          Colors.white,
+
+                          shape:
+                          RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(
+                                28),
+                          ),
+
+                          child: Padding(
+                            padding:
+                            const EdgeInsets.all(
+                                22),
+
+                            child: Column(
+                              mainAxisSize:
+                              MainAxisSize.min,
+
+                              children: [
+
+                                Container(
+                                  height: 72,
+                                  width: 72,
+
+                                  decoration:
+                                  BoxDecoration(
+                                    color: const Color(
+                                        0xFFF59E0B)
+                                        .withOpacity(
+                                        .12),
+
+                                    shape:
+                                    BoxShape.circle,
+                                  ),
+
+                                  child: const Icon(
+                                    Icons
+                                        .pause_circle_rounded,
+
+                                    size: 38,
+
+                                    color: Color(
+                                        0xFFF59E0B),
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                    height: 18),
+
+                                Text(
+                                  "pause_subscription"
+                                      .tr,
+
+                                  style:
+                                  GoogleFonts
+                                      .poppins(
+                                    fontSize: 22,
+
+                                    fontWeight:
+                                    FontWeight
+                                        .w700,
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                    height: 10),
+
+                                Text(
+                                  "pause_subscription_confirmation_desc"
+                                      .tr,
+
+                                  textAlign:
+                                  TextAlign.center,
+
+                                  style:
+                                  GoogleFonts
+                                      .poppins(
+                                    color: Colors
+                                        .grey
+                                        .shade700,
+
+                                    height: 1.6,
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                    height: 22),
+
+                                Container(
+                                  padding:
+                                  const EdgeInsets
+                                      .all(16),
+
+                                  decoration:
+                                  BoxDecoration(
+                                    color: const Color(
+                                        0xFFF8FFF6),
+
+                                    borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                        18),
+                                  ),
+
+                                  child: Column(
+                                    children: [
+
+                                      _billRow(
+                                        "pause_start_date"
+                                            .tr,
+
+                                        controller
+                                            .formatDate(
+                                          controller
+                                              .rangeStart!,
+                                        ),
+                                      ),
+
+                                      const SizedBox(
+                                          height:
+                                          12),
+
+                                      _billRow(
+                                        "pause_end_date"
+                                            .tr,
+
+                                        controller
+                                            .formatDate(
+                                          controller
+                                              .rangeEnd!,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                    height: 24),
+
+                                Row(
+                                  children: [
+
+                                    Expanded(
+                                      child:
+                                      SizedBox(
+                                        height:
+                                        52,
+
+                                        child:
+                                        OutlinedButton(
+                                          onPressed:
+                                              () {
+                                            Get.back();
+                                          },
+
+                                          child:
+                                          Text(
+                                            "cancel"
+                                                .tr,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(
+                                        width:
+                                        12),
+
+                                    Expanded(
+                                      child:
+                                      SizedBox(
+                                        height:
+                                        52,
+
+                                        child:
+                                        ElevatedButton(
+                                          onPressed:
+                                              () {
+
+                                            Get.back();
+
+                                            controller
+                                                .pausedPlan(
+                                              controller
+                                                  .rangeStart!,
+                                              controller
+                                                  .rangeEnd!,
+                                            );
+                                          },
+
+                                          style:
+                                          ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                            const Color(
+                                                0xFF4FC83F),
+                                          ),
+
+                                          child:
+                                          Text(
+                                            "submit"
+                                                .tr,
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                   }
                       : null,
 
@@ -362,7 +518,12 @@ class SubscriptionsScreen extends StatelessWidget {
                         .withOpacity(.35),
 
                     backgroundColor:
-                    const Color(0xFF4FC83F),
+                    controller
+                        .isSelectedPausedDate()
+                        ? const Color(
+                        0xFF2563EB)
+                        : const Color(
+                        0xFF4FC83F),
 
                     shape:
                     RoundedRectangleBorder(
@@ -378,20 +539,32 @@ class SubscriptionsScreen extends StatelessWidget {
 
                     children: [
 
-                      const Icon(
-                        Icons.pause_circle_outline,
+                      Icon(
+                        controller
+                            .isSelectedPausedDate()
+                            ? Icons.play_arrow_rounded
+                            : Icons
+                            .pause_circle_outline,
+
                         color: Colors.white,
                       ),
 
                       const SizedBox(width: 10),
 
                       Text(
-                        controller.rangeStart !=
+
+                        controller
+                            .isSelectedPausedDate()
+
+                            ? "resume_subscription".tr
+
+                            : controller.rangeStart !=
                             null &&
                             controller.rangeEnd !=
                                 null
-                            ? "pause_selected_days"
-                            .tr
+
+                            ? "pause_selected_days".tr
+
                             : "select_pause_dates"
                             .tr,
 
@@ -411,6 +584,9 @@ class SubscriptionsScreen extends StatelessWidget {
           ),
 
           body: SingleChildScrollView(
+
+            physics:
+            const BouncingScrollPhysics(),
 
             padding: const EdgeInsets.all(16),
 
@@ -432,7 +608,8 @@ class SubscriptionsScreen extends StatelessWidget {
                     boxShadow: [
                       BoxShadow(
                         color:
-                        Colors.black.withOpacity(.04),
+                        Colors.black.withOpacity(
+                            .04),
 
                         blurRadius: 18,
 
@@ -444,8 +621,6 @@ class SubscriptionsScreen extends StatelessWidget {
 
                   child: Row(
                     children: [
-
-                      // PRODUCT IMAGE
 
                       ClipRRect(
                         borderRadius:
@@ -568,13 +743,13 @@ class SubscriptionsScreen extends StatelessWidget {
                     color: Colors.white,
 
                     borderRadius:
-                    BorderRadius.circular(
-                        28),
+                    BorderRadius.circular(28),
 
                     boxShadow: [
                       BoxShadow(
                         color:
-                        Colors.black.withOpacity(.04),
+                        Colors.black.withOpacity(
+                            .04),
 
                         blurRadius: 18,
 
@@ -604,686 +779,582 @@ class SubscriptionsScreen extends StatelessWidget {
 
                       const SizedBox(height: 14),
 
-                      // CALENDAR
+                      NotificationListener<
+                          OverscrollIndicatorNotification>(
+                        onNotification:
+                            (overscroll) {
 
-                      TableCalendar(
+                          overscroll
+                              .disallowIndicator();
 
-                        focusedDay:
-                        controller.focusedDay,
-
-                        firstDay: DateTime.parse(
-                          item.startAt.toString(),
-                        ),
-
-                        // REMOVED +1
-
-                        lastDay: DateTime.parse(
-                          item.endAt.toString(),
-                        ),
-
-                        rangeStartDay:
-                        controller.rangeStart,
-
-                        rangeEndDay:
-                        controller.rangeEnd,
-
-                        rangeSelectionMode:
-                        RangeSelectionMode
-                            .toggledOn,
-
-                        onRangeSelected:
-                            (
-                            start,
-                            end,
-                            focusedDay,
-                            ) {
-
-                          controller
-                              .onRangeSelected(
-                            start,
-                            end,
-                            focusedDay,
-                          );
+                          return true;
                         },
 
-                        headerStyle:
-                        HeaderStyle(
+                        child: TableCalendar(
 
-                          formatButtonVisible:
-                          false,
+                          availableGestures:
+                          AvailableGestures
+                              .horizontalSwipe,
 
-                          titleCentered:
-                          true,
+                          focusedDay:
+                          controller.focusedDay,
 
-                          titleTextStyle:
-                          GoogleFonts
-                              .poppins(
-                            fontWeight:
-                            FontWeight
-                                .w700,
-                          ),
-                        ),
+                          firstDay: planStartDay,
 
-                        calendarStyle:
-                        CalendarStyle(
+                          lastDay: planEndDay,
 
-                          outsideDaysVisible:
-                          false,
+                          rangeStartDay:
+                          controller.rangeStart,
 
-                          rangeHighlightColor:
-                          const Color(
-                              0xFFF59E0B)
-                              .withOpacity(.20),
+                          rangeEndDay:
+                          controller.rangeEnd,
 
-                          rangeStartDecoration:
-                          const BoxDecoration(
-                            color:
-                            Color(
-                                0xFFF59E0B),
+                          rangeSelectionMode:
+                          RangeSelectionMode
+                              .toggledOn,
 
-                            shape:
-                            BoxShape.circle,
-                          ),
-
-                          rangeEndDecoration:
-                          const BoxDecoration(
-                            color:
-                            Color(
-                                0xFFEF4444),
-
-                            shape:
-                            BoxShape.circle,
-                          ),
-
-                          todayDecoration:
-                          const BoxDecoration(
-                            color:
-                            Color(
-                                0xFF111827),
-
-                            shape:
-                            BoxShape.circle,
-                          ),
-                        ),
-
-                        calendarBuilders:
-                        CalendarBuilders(
-
-                          // DEFAULT
-
-                          defaultBuilder:
+                          onRangeSelected:
                               (
-                              context,
-                              day,
-                              _,
+                              start,
+                              end,
+                              focusedDay,
                               ) {
 
-                            final isPaused =
                             controller
-                                .isPausedDay(
-                              day,
+                                .onRangeSelected(
+                              start,
+                              end,
+                              focusedDay,
+                            );
+                          },
+
+                          onDaySelected:
+                              (
+                              selectedDay,
+                              focusedDay,
+                              ) {
+
+                            // PAST DATE BLOCK
+
+                            final today =
+                            DateTime.now();
+
+                            final cleanToday =
+                            DateTime(
+                              today.year,
+                              today.month,
+                              today.day,
                             );
 
-                            final isDelivery =
+                            final cleanDay =
+                            DateTime(
+                              selectedDay.year,
+                              selectedDay.month,
+                              selectedDay.day,
+                            );
+
+                            if (cleanDay
+                                .isBefore(
+                                cleanToday)) {
+                              return;
+                            }
+
+                            // SELECT SINGLE DAY
+
                             controller
-                                .isDeliveryDay(
-                              day,
+                                .onRangeSelected(
+                              selectedDay,
+                              selectedDay,
+                              focusedDay,
                             );
+                          },
 
-                            final lastPlanDay =
-                            DateTime.parse(
-                              item.endAt
-                                  .toString(),
-                            );
+                          headerStyle:
+                          HeaderStyle(
 
-                            final isLastDay =
-                            controller
-                                .isSameDate(
-                              day,
-                              lastPlanDay,
-                            );
+                            formatButtonVisible:
+                            false,
 
-                            // LAST DAY + PAUSED
+                            titleCentered:
+                            true,
 
-                            if (isPaused &&
-                                isLastDay) {
+                            titleTextStyle:
+                            GoogleFonts
+                                .poppins(
+                              fontWeight:
+                              FontWeight
+                                  .w700,
+                            ),
+                          ),
 
-                              return Container(
-                                margin:
-                                const EdgeInsets
-                                    .all(6),
+                          calendarStyle:
+                          CalendarStyle(
 
-                                decoration:
-                                BoxDecoration(
+                            outsideDaysVisible:
+                            false,
 
-                                  gradient:
-                                  const LinearGradient(
-                                    colors: [
-                                      Color(
-                                          0xFFF59E0B),
-                                      Color(
-                                          0xFFEF4444),
+                            rangeHighlightColor:
+                            const Color(
+                                0xFFF59E0B)
+                                .withOpacity(
+                                .20),
+
+                            rangeStartDecoration:
+                            const BoxDecoration(
+                              color: Color(
+                                  0xFFF59E0B),
+
+                              shape:
+                              BoxShape.circle,
+                            ),
+
+                            rangeEndDecoration:
+                            const BoxDecoration(
+                              color: Color(
+                                  0xFFEF4444),
+
+                              shape:
+                              BoxShape.circle,
+                            ),
+
+                            todayDecoration:
+                            const BoxDecoration(
+                              color: Color(
+                                  0xFF111827),
+
+                              shape:
+                              BoxShape.circle,
+                            ),
+                          ),
+
+                          calendarBuilders:
+                          CalendarBuilders(
+
+                            defaultBuilder:
+                                (
+                                context,
+                                day,
+                                _,
+                                ) {
+
+                              final isPaused =
+                              controller
+                                  .isPausedDay(
+                                day,
+                              );
+
+                              final isDelivery =
+                              controller
+                                  .isDeliveryDay(
+                                day,
+                              );
+
+                              final isLastDay =
+                              controller
+                                  .isSameDate(
+                                day,
+                                planEndDay,
+                              );
+
+                              // ── NEW: plan start date check ──
+                              final isStartDay =
+                              controller.isSameDate(
+                                day,
+                                planStartDay,
+                              );
+
+                              final today =
+                              DateTime.now();
+
+                              final cleanToday =
+                              DateTime(
+                                today.year,
+                                today.month,
+                                today.day,
+                              );
+
+                              final cleanDay =
+                              DateTime(
+                                day.year,
+                                day.month,
+                                day.day,
+                              );
+
+                              final isPast =
+                              cleanDay
+                                  .isBefore(
+                                  cleanToday);
+
+                              // ── Helper: day cell with label ──
+                              Widget _dayCell({
+                                required String dayNum,
+                                required Color bgColor,
+                                required Color textColor,
+                                required String label,
+                                required Color labelColor,
+                                Border? border,
+                                Gradient? gradient,
+                                double borderRadius = 12,
+                              }) {
+                                return Container(
+                                  padding: EdgeInsets.all(5),
+                                  margin: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    color: gradient == null ? bgColor : null,
+                                    gradient: gradient,
+                                    border: border,
+                                    borderRadius: BorderRadius.circular(borderRadius),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        dayNum,
+                                        style: GoogleFonts.poppins(
+                                          color: textColor,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 13,
+                                          height: 1.1,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 1),
+                                      Text(
+                                        label,
+                                        style: GoogleFonts.poppins(
+                                          color: labelColor,
+                                          fontSize: 7,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.1,
+                                        ),
+                                      ),
                                     ],
                                   ),
+                                );
+                              }
 
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                      12),
-                                ),
+                              // ── PAST + PAUSED (show paused even in past) ──
+                              if (isPast && isPaused) {
+                                return _dayCell(
+                                  dayNum: "${day.day}",
+                                  bgColor: const Color(0xFFF59E0B),
+                                  textColor: Colors.white,
+                                  label: "paused".tr,
+                                  labelColor: Colors.white.withOpacity(0.85),
+                                );
+                              }
 
-                                child: Center(
-                                  child: Text(
-                                    "${day.day}",
+                              // ── PAST DAY (not paused) ──
+                              if (isPast) {
+                                // Show start label on past start date if it falls in past
+                                if (isStartDay) {
+                                  return _dayCell(
+                                    dayNum: "${day.day}",
+                                    bgColor: Colors.blueGrey,
+                                    textColor: Colors.white,
+                                    label: "start".tr,
+                                    labelColor: Colors.white,
+                                  );
+                                }
 
-                                    style:
-                                    GoogleFonts
-                                        .poppins(
-                                      color: Colors
-                                          .white,
+                                return Container(
+                                  margin: const EdgeInsets
+                                      .all(
+                                      6),
 
-                                      fontWeight:
-                                      FontWeight
-                                          .w700,
+                                  decoration:
+                                  BoxDecoration(
+                                    color: Colors
+                                        .grey
+                                        .shade100,
+
+                                    borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                        12),
+                                  ),
+
+                                  child: Center(
+                                    child: Text(
+                                      "${day.day}",
+
+                                      style:
+                                      GoogleFonts.poppins(
+                                        color: Colors
+                                            .grey
+                                            .shade400,
+
+                                        fontWeight:
+                                        FontWeight
+                                            .w600,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }
+                                );
+                              }
 
-                            // LAST DAY
+                              // ── LAST DAY + PAUSED ──
 
-                            if (isLastDay) {
+                              if (isPaused &&
+                                  isLastDay) {
 
-                              return Container(
-                                margin:
-                                const EdgeInsets
-                                    .all(6),
-
-                                decoration:
-                                BoxDecoration(
-                                  color:
-                                  const Color(
-                                      0xFFEF4444)
-                                      .withOpacity(
-                                      .14),
-
-                                  border:
-                                  Border.all(
-                                    color:
-                                    const Color(
-                                        0xFFEF4444),
-
-                                    width:
-                                    1.5,
+                                return _dayCell(
+                                  dayNum: "${day.day}",
+                                  bgColor: Colors.transparent,
+                                  textColor: Colors.white,
+                                  label: "paused".tr,
+                                  labelColor: Colors.white.withOpacity(0.85),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFF59E0B),
+                                      Color(0xFFEF4444),
+                                    ],
                                   ),
+                                );
+                              }
 
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                      12),
-                                ),
-
-                                child: Center(
-                                  child: Text(
-                                    "${day.day}",
-
-                                    style:
-                                    GoogleFonts
-                                        .poppins(
-                                      color:
-                                      const Color(
-                                          0xFFEF4444),
-
-                                      fontWeight:
-                                      FontWeight
-                                          .w700,
-                                    ),
+                              // ── START DAY + PAUSED ──
+                              if (isPaused && isStartDay) {
+                                return _dayCell(
+                                  dayNum: "${day.day}",
+                                  bgColor: Colors.transparent,
+                                  textColor: Colors.white,
+                                  label: "paused".tr,
+                                  labelColor: Colors.white.withOpacity(0.85),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF4FC83F),
+                                      Color(0xFFF59E0B),
+                                    ],
                                   ),
-                                ),
-                              );
-                            }
+                                );
+                              }
 
-                            // PAUSED
+                              // ── LAST DAY ──
 
-                            if (isPaused) {
-
-                              return Container(
-                                margin:
-                                const EdgeInsets
-                                    .all(6),
-
-                                decoration:
-                                BoxDecoration(
-                                  color:
-                                  const Color(
-                                      0xFFF59E0B),
-
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                      12),
-                                ),
-
-                                child: Center(
-                                  child: Text(
-                                    "${day.day}",
-
-                                    style:
-                                    GoogleFonts
-                                        .poppins(
-                                      color:
-                                      Colors
-                                          .white,
-
-                                      fontWeight:
-                                      FontWeight
-                                          .w700,
-                                    ),
+                              if (isLastDay) {
+                                return _dayCell(
+                                  dayNum: "${day.day}",
+                                  bgColor: const Color(0xFFEF4444).withOpacity(.14),
+                                  textColor: const Color(0xFFEF4444),
+                                  label: "end".tr,
+                                  labelColor: const Color(0xFFEF4444),
+                                  border: Border.all(
+                                    color: const Color(0xFFEF4444),
+                                    width: 1.5,
                                   ),
-                                ),
-                              );
-                            }
+                                );
+                              }
 
-                            // DELIVERY
-
-                            if (isDelivery) {
-
-                              return Container(
-                                margin:
-                                const EdgeInsets
-                                    .all(6),
-
-                                decoration:
-                                BoxDecoration(
-                                  color:
-                                  const Color(
-                                      0xFF4FC83F)
-                                      .withOpacity(
-                                      .15),
-
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                      12),
-                                ),
-
-                                child: Center(
-                                  child: Text(
-                                    "${day.day}",
-
-                                    style:
-                                    GoogleFonts
-                                        .poppins(
-                                      color:
-                                      const Color(
-                                          0xFF4FC83F),
-
-                                      fontWeight:
-                                      FontWeight
-                                          .w700,
-                                    ),
+                              // ── START DAY (new highlight) ──
+                              if (isStartDay) {
+                                return _dayCell(
+                                  dayNum: "${day.day}",
+                                  bgColor: const Color(0xFF4FC83F).withOpacity(.15),
+                                  textColor: const Color(0xFF4FC83F),
+                                  label: "start".tr,
+                                  labelColor: const Color(0xFF4FC83F),
+                                  border: Border.all(
+                                    color: const Color(0xFF4FC83F),
+                                    width: 1.5,
                                   ),
-                                ),
-                              );
-                            }
+                                );
+                              }
 
-                            return null;
-                          },
+                              // ── PAUSED ──
 
-                          // RANGE START
+                              if (isPaused) {
+                                return _dayCell(
+                                  dayNum: "${day.day}",
+                                  bgColor: const Color(0xFFF59E0B),
+                                  textColor: Colors.white,
+                                  label: "paused".tr,
+                                  labelColor: Colors.white.withOpacity(0.85),
+                                );
+                              }
 
-                          rangeStartBuilder:
-                              (
-                              context,
-                              day,
-                              focusedDay,
-                              ) {
+                              // ── DELIVERY ──
 
-                            return Container(
-                              margin:
-                              const EdgeInsets
-                                  .all(6),
+                              if (isDelivery) {
+                                return _dayCell(
+                                  dayNum: "${day.day}",
+                                  bgColor: const Color(0xFF4FC83F).withOpacity(.15),
+                                  textColor: const Color(0xFF4FC83F),
+                                  label: "delivery".tr,
+                                  labelColor: const Color(0xFF4FC83F),
+                                );
+                              }
 
-                              decoration:
-                              BoxDecoration(
-                                color:
-                                const Color(
-                                    0xFFF59E0B),
-
-                                borderRadius:
-                                BorderRadius
-                                    .circular(
-                                    12),
-                              ),
-
-                              child: Center(
-                                child: Text(
-                                  "${day.day}",
-
-                                  style:
-                                  GoogleFonts
-                                      .poppins(
-                                    color:
-                                    Colors.white,
-
-                                    fontWeight:
-                                    FontWeight
-                                        .w700,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-
-                          // RANGE END
-
-                          rangeEndBuilder:
-                              (
-                              context,
-                              day,
-                              focusedDay,
-                              ) {
-
-                            return Container(
-                              margin:
-                              const EdgeInsets
-                                  .all(6),
-
-                              decoration:
-                              BoxDecoration(
-                                color:
-                                const Color(
-                                    0xFFEF4444),
-
-                                borderRadius:
-                                BorderRadius
-                                    .circular(
-                                    12),
-                              ),
-
-                              child: Center(
-                                child: Text(
-                                  "${day.day}",
-
-                                  style:
-                                  GoogleFonts
-                                      .poppins(
-                                    color:
-                                    Colors.white,
-
-                                    fontWeight:
-                                    FontWeight
-                                        .w700,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-
-                          // SINGLE DAY
-
-                          selectedBuilder:
-                              (
-                              context,
-                              day,
-                              focusedDay,
-                              ) {
-
-                            return Container(
-                              margin:
-                              const EdgeInsets
-                                  .all(6),
-
-                              decoration:
-                              BoxDecoration(
-                                color:
-                                const Color(
-                                    0xFFF59E0B),
-
-                                borderRadius:
-                                BorderRadius
-                                    .circular(
-                                    12),
-                              ),
-
-                              child: Center(
-                                child: Text(
-                                  "${day.day}",
-
-                                  style:
-                                  GoogleFonts
-                                      .poppins(
-                                    color:
-                                    Colors.white,
-
-                                    fontWeight:
-                                    FontWeight
-                                        .w700,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                              return null;
+                            },
+                          ),
                         ),
                       ),
 
                       const SizedBox(height: 14),
 
-                      // INFO BOXES
+                      // LEGEND ROW
 
-                      Column(
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 8,
                         children: [
-
-                          // SELECTED DATES
-
-                          if (controller.rangeStart !=
-                              null &&
-                              controller.rangeEnd !=
-                                  null)
-
-                            Container(
-                              width: double.infinity,
-
-                              padding:
-                              const EdgeInsets
-                                  .all(16),
-
-                              decoration:
-                              BoxDecoration(
-                                color:
-                                const Color(
-                                    0xFFF59E0B)
-                                    .withOpacity(
-                                    .08),
-
-                                borderRadius:
-                                BorderRadius
-                                    .circular(
-                                    18),
-
-                                border:
-                                Border.all(
-                                  color:
-                                  const Color(
-                                      0xFFF59E0B)
-                                      .withOpacity(
-                                      .25),
-                                ),
-                              ),
-
-                              child: Row(
-                                crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
-
-                                children: [
-
-                                  const Icon(
-                                    Icons
-                                        .pause_circle_outline,
-
-                                    color:
-                                    Color(
-                                        0xFFF59E0B),
-                                  ),
-
-                                  const SizedBox(
-                                      width: 12),
-
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
-
-                                      children: [
-
-                                        Text(
-                                          "selected_pause_dates"
-                                              .tr,
-
-                                          style:
-                                          GoogleFonts
-                                              .poppins(
-                                            fontWeight:
-                                            FontWeight
-                                                .w700,
-
-                                            color:
-                                            const Color(
-                                                0xFF92400E),
-                                          ),
-                                        ),
-
-                                        const SizedBox(
-                                            height:
-                                            6),
-
-                                        Text(
-                                          "${controller.formatDate(controller.rangeStart!)} - ${controller.formatDate(controller.rangeEnd!)}",
-
-                                          style:
-                                          GoogleFonts
-                                              .poppins(
-                                            color:
-                                            const Color(
-                                                0xFF92400E),
-
-                                            height:
-                                            1.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                          const SizedBox(height: 14),
-
-                          // CUTOFF NOTE
-
-                          Container(
-                            width: double.infinity,
-
-                            padding:
-                            const EdgeInsets.all(
-                                14),
-
-                            decoration:
-                            BoxDecoration(
-                              color:
-                              const Color(
-                                  0xFF111827)
-                                  .withOpacity(
-                                  .04),
-
-                              borderRadius:
-                              BorderRadius
-                                  .circular(
-                                  16),
-                            ),
-
-                            child: Row(
-                              crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .start,
-
-                              children: [
-
-                                const Icon(
-                                  Icons
-                                      .info_outline_rounded,
-
-                                  size: 18,
-
-                                  color:
-                                  Color(
-                                      0xFF111827),
-                                ),
-
-                                const SizedBox(
-                                    width: 10),
-
-                                Expanded(
-                                  child: Text(
-                                    "pause_cutoff_note"
-                                        .tr,
-
-                                    style:
-                                    GoogleFonts
-                                        .poppins(
-                                      fontSize: 12,
-
-                                      height:
-                                      1.6,
-
-                                      color: Colors
-                                          .grey
-                                          .shade700,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          _legendDot(
+                            color: const Color(0xFF4FC83F),
+                            label: "start".tr+' / ' +"scheduled".tr,
+                          ),
+                          _legendDot(
+                            color: const Color(0xFFEF4444),
+                            label: "end".tr,
+                          ),
+                          _legendDot(
+                            color: const Color(0xFFF59E0B),
+                            label: "paused".tr,
+                          ),
+                          _legendDot(
+                            color: const Color(0xFF111827),
+                            label: "today".tr,
                           ),
                         ],
                       ),
 
                       const SizedBox(height: 14),
 
-                      // LEGENDS
+                      // ADDRESS ISSUE MESSAGE
 
-                      Row(
-                        children: [
+                      if (item.address == null)
 
-                          _legend(
+                        Container(
+                          width: double.infinity,
+
+                          padding:
+                          const EdgeInsets.all(
+                              16),
+
+                          decoration:
+                          BoxDecoration(
+                            color:
                             const Color(
-                                0xFF4FC83F),
+                                0xFFEF4444)
+                                .withOpacity(
+                                .08),
 
-                            "delivery_day".tr,
+                            borderRadius:
+                            BorderRadius
+                                .circular(
+                                18),
+
+                            border: Border.all(
+                              color:
+                              const Color(
+                                  0xFFEF4444)
+                                  .withOpacity(
+                                  .20),
+                            ),
                           ),
 
-                          const SizedBox(width: 18),
+                          child: Row(
+                            crossAxisAlignment:
+                            CrossAxisAlignment
+                                .start,
 
-                          _legend(
-                            const Color(
-                                0xFFF59E0B),
+                            children: [
 
-                            "paused_day".tr,
+                              const Icon(
+                                Icons.warning_amber_rounded,
+
+                                color: Color(
+                                    0xFFEF4444),
+                              ),
+
+                              const SizedBox(
+                                  width: 12),
+
+                              Expanded(
+                                child: Text(
+                                  "address_deleted_message"
+                                      .tr,
+
+                                  style:
+                                  GoogleFonts
+                                      .poppins(
+                                    color:
+                                    const Color(
+                                        0xFF991B1B),
+
+                                    height:
+                                    1.6,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
 
-                          const SizedBox(width: 18),
+                      const SizedBox(height: 14),
 
-                          _legend(
-                            const Color(
-                                0xFFEF4444),
+                      // NOTE
 
-                            "last_day".tr,
-                          ),
-                        ],
+                      Container(
+                        width: double.infinity,
+
+                        padding:
+                        const EdgeInsets.all(
+                            14),
+
+                        decoration:
+                        BoxDecoration(
+                          color:
+                          const Color(
+                              0xFF111827)
+                              .withOpacity(
+                              .04),
+
+                          borderRadius:
+                          BorderRadius.circular(
+                              16),
+                        ),
+
+                        child: Row(
+                          crossAxisAlignment:
+                          CrossAxisAlignment
+                              .start,
+
+                          children: [
+
+                            const Icon(
+                              Icons
+                                  .info_outline_rounded,
+
+                              size: 18,
+
+                              color:
+                              Color(
+                                  0xFF111827),
+                            ),
+
+                            const SizedBox(
+                                width: 10),
+
+                            Expanded(
+                              child: Text(
+                                "pause_cutoff_note"
+                                    .tr,
+
+                                style:
+                                GoogleFonts
+                                    .poppins(
+                                  fontSize: 12,
+
+                                  height: 1.6,
+
+                                  color: Colors
+                                      .grey
+                                      .shade700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -1293,92 +1364,103 @@ class SubscriptionsScreen extends StatelessWidget {
 
                 // ADDRESS CARD
 
-                Container(
-                  padding:
-                  const EdgeInsets.all(18),
+                if (item.address != null)
 
-                  decoration: BoxDecoration(
-                    color: Colors.white,
+                  Container(
+                    padding:
+                    const EdgeInsets.all(18),
 
-                    borderRadius:
-                    BorderRadius.circular(
-                        28),
-                  ),
+                    decoration:
+                    BoxDecoration(
+                      color: Colors.white,
 
-                  child: Row(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                      borderRadius:
+                      BorderRadius.circular(
+                          28),
+                    ),
 
-                    children: [
+                    child: Row(
+                      crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
 
-                      Container(
-                        height: 48,
-                        width: 48,
+                      children: [
 
-                        decoration: BoxDecoration(
-                          color:
-                          const Color(
-                              0xFF4FC83F)
-                              .withOpacity(.12),
+                        Container(
+                          height: 48,
+                          width: 48,
 
-                          borderRadius:
-                          BorderRadius.circular(
-                              14),
+                          decoration:
+                          BoxDecoration(
+                            color:
+                            const Color(
+                                0xFF4FC83F)
+                                .withOpacity(
+                                .12),
+
+                            borderRadius:
+                            BorderRadius
+                                .circular(
+                                14),
+                          ),
+
+                          child: const Icon(
+                            Icons
+                                .location_on_rounded,
+
+                            color:
+                            Color(
+                                0xFF4FC83F),
+                          ),
                         ),
 
-                        child: const Icon(
-                          Icons.location_on_rounded,
+                        const SizedBox(
+                            width: 14),
 
-                          color:
-                          Color(0xFF4FC83F),
-                        ),
-                      ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment
+                                .start,
 
-                      const SizedBox(width: 14),
+                            children: [
 
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment
-                              .start,
+                              Text(
+                                item.address
+                                    ?.holderName ??
+                                    '',
 
-                          children: [
-
-                            Text(
-                              item.address
-                                  ?.holderName ??
-                                  '',
-
-                              style:
-                              GoogleFonts
-                                  .poppins(
-                                fontWeight:
-                                FontWeight
-                                    .w700,
+                                style:
+                                GoogleFonts
+                                    .poppins(
+                                  fontWeight:
+                                  FontWeight
+                                      .w700,
+                                ),
                               ),
-                            ),
 
-                            const SizedBox(height: 5),
+                              const SizedBox(
+                                  height: 5),
 
-                            Text(
-                              "${item.address?.building ?? ''}, ${item.address?.landmark ?? ''}",
+                              Text(
+                                "${item.address?.building ?? ''}, ${item.address?.landmark ?? ''}",
 
-                              style:
-                              GoogleFonts
-                                  .poppins(
-                                color:
-                                Colors.grey
-                                    .shade700,
+                                style:
+                                GoogleFonts
+                                    .poppins(
+                                  color: Colors
+                                      .grey
+                                      .shade700,
 
-                                height: 1.5,
+                                  height: 1.5,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
 
                 const SizedBox(height: 18),
 
@@ -1434,33 +1516,29 @@ class SubscriptionsScreen extends StatelessWidget {
     );
   }
 
-  Widget _legend(
-      Color color,
-      String text,
-      ) {
-
+  /// Small colored dot + label for the legend row
+  Widget _legendDot({
+    required Color color,
+    required String label,
+  }) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-
         Container(
-          height: 14,
-          width: 14,
-
+          width: 10,
+          height: 10,
           decoration: BoxDecoration(
             color: color,
-
-            borderRadius:
-            BorderRadius.circular(4),
+            shape: BoxShape.circle,
           ),
         ),
-
-        const SizedBox(width: 6),
-
+        const SizedBox(width: 5),
         Text(
-          text,
-
+          label,
           style: GoogleFonts.poppins(
-            fontSize: 12,
+            fontSize: 11,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

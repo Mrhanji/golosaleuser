@@ -15,9 +15,11 @@ class EndPoints{
   static const String placeOrder="/orders/order-history";
   static const String addWalletAmount="/wallet/addAmount";
   static const String subscribeSubscription="/subscriptions/add";
-  static const String updateSubscription="/subscriptions/update";
+  static const String updateSubscriptionStatus="/subscriptions/addStatus";
+  static const String removeSubscriptionStatus="/subscriptions/removeStatus";
 
-  static String getOrderHistory(String userId)=>"/orders/order-history?userId=$userId";
+  static String getOrderHistory(String userId,int page,limit)=>"/orders/order-history?userId=$userId&page=$page&limit=$limit";
+  static String getOrderDetails(String orderId)=>'/orders/order-details?orderId=$orderId';
   static String getAddress(String userId)=>"/address/list?userId=$userId";
   static String getCartItems(String userId)=>"/cart/getCart?userId=$userId";
   static String removeCartItem(String cartId)=>"/cart/remove?cartId=$cartId";

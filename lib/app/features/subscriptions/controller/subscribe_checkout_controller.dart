@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../widget/SubscriptionSuccessSheet.dart';
@@ -13,16 +11,14 @@ import '/app/features/address/service/address_service.dart';
 class SubscribeController extends GetxController {
   int selectedAddress = 0;
   int selectedPayment = 0;
-
   PlanDetails planDetails = PlanDetails();
   AddressHistoryModel addressHistoryModel = AddressHistoryModel();
-
   RxBool addressLoading = true.obs;
   RxBool thumbnailLoading = true.obs;
   double walletBalance = 0.0;
   double perDayBill = 0.0;
-
   bool isWalletEnabled = false;
+
 
   late Razorpay razorpay;
 
@@ -104,6 +100,7 @@ class SubscribeController extends GetxController {
   // ================= SUBSCRIBE =================
 
   Future<void> subScribe() async {
+    if(addressHistoryModel.data!.isNotEmpty){
     if (selectedPayment == 0) {
       // Wallet Payment
 
@@ -122,6 +119,12 @@ class SubscribeController extends GetxController {
       }
     } else {
       openRazorPay();
+    }
+    }else{
+      showDialogBox(
+      "address_required".tr,
+        "please_select_address".tr
+      );
     }
   }
 

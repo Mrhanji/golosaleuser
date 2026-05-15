@@ -1,5 +1,6 @@
 import 'package:golosaleuser/app/features/cart/model/coupon_model.dart';
 
+import '../../order/model/order_details_model.dart';
 import '/app/features/order/model/order_history_model.dart';
 import '/app/features/home/model/settings_model.dart';
 import '/app/features/cart/model/cart_model.dart';
@@ -105,9 +106,14 @@ Future<SettingsModel>getAppSettings()async{
   }
 
 
-  Future<OrderHistoryModel>getOrderHistory(userId)async{
-    var response=await DioService().getService(endPoint: EndPoints.getOrderHistory(userId));
+  Future<OrderHistoryModel>getOrderHistory(userId,page,limit)async{
+    var response=await DioService().getService(endPoint: EndPoints.getOrderHistory(userId,page,limit));
     return OrderHistoryModel.fromJson(response.data);
+  }
+
+  Future<OrderDetailsModel>getOrderDetails(orderId)async{
+    var response=await DioService().getService(endPoint: EndPoints.getOrderDetails(orderId));
+    return OrderDetailsModel.fromJson(response.data);
   }
 
 

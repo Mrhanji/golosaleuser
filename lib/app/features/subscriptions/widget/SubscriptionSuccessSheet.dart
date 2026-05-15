@@ -892,7 +892,7 @@ class _ActionButton extends StatelessWidget {
             ),
             child: ElevatedButton(
               onPressed: () {
-                
+
                 Get.offAllNamed(AppRoutes.home);
               },
               style: ElevatedButton.styleFrom(
@@ -925,8 +925,7 @@ class _ActionButton extends StatelessWidget {
         TextButton(
           onPressed: () {
             Get.back();
-            // Navigate to subscriptions
-            // Get.toNamed('/subscriptions');
+            Get.offAllNamed(AppRoutes.subscriptionListScreen);
           },
           child: Text(
             'View My Subscriptions',

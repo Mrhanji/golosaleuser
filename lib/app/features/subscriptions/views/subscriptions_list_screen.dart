@@ -258,7 +258,7 @@ class SubscriptionsListScreen extends StatelessWidget {
 
                                 style:
                                 GoogleFonts.poppins(
-                                  fontSize: 22,
+                                  fontSize: Get.height*0.02,
 
                                   fontWeight:
                                   FontWeight.w700,
@@ -274,7 +274,7 @@ class SubscriptionsListScreen extends StatelessWidget {
 
                                 style:
                                 GoogleFonts.poppins(
-                                  fontSize: 12,
+                                  fontSize: Get.height*0.017,
 
                                   color: Colors
                                       .grey.shade600,

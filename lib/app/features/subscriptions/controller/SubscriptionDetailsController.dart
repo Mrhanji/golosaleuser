@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '/app/features/home/controller/home_controller.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 import '../model/subscription_details_model.dart';
 import '../service/subscription_service.dart';
 
@@ -9,7 +11,7 @@ class SubscriptionDetailsController extends GetxController {
 
   bool isLoading = false;
 
-  // SUBSCRIPTION DETAILS
+  // DETAILS MODEL
 
   SubscriptionDetailsModel subscriptionDetails =
   SubscriptionDetailsModel();
@@ -39,10 +41,10 @@ class SubscriptionDetailsController extends GetxController {
 
   int pauseCutoffHour = 23;
 
-  // INFO MESSAGE
+  // MESSAGE
 
   String pauseInfoMessage =
-      "Orders can only be paused before 11:00 PM for same day delivery. Requests after cutoff time may still be delivered as processing could already be completed.";
+      "Orders can only be paused before 11:00 PM for same day delivery. Requests after cutoff time may still be delivered because order processing may already be completed.";
 
   @override
   void onInit() {
@@ -94,18 +96,23 @@ class SubscriptionDetailsController extends GetxController {
     }
   }
 
-  // PAUSE PLAN
+  // FORMAT DATE
 
-  pausedPlan(
-      DateTime start,
-      DateTime end,
-      ) async {
+  String formatDate(DateTime date) {
 
-    debugPrint(
-      "Pause Plan => $start - $end",
-    );
+    return "${date.day}/${date.month}/${date.year}";
+  }
 
-    // CALL YOUR API HERE
+  // SAME DATE
+
+  bool isSameDate(
+      DateTime a,
+      DateTime b,
+      ) {
+
+    return a.year == b.year &&
+        a.month == b.month &&
+        a.day == b.day;
   }
 
   // TODAY CHECK
@@ -119,6 +126,52 @@ class SubscriptionDetailsController extends GetxController {
         now.day == date.day;
   }
 
+  // FUTURE DATE CHECK
+
+  bool isFutureOrToday(
+      DateTime date,
+      ) {
+
+    final now = DateTime.now();
+
+    final today = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+
+    final selected = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+
+    return !selected.isBefore(today);
+  }
+
+  // PAST DATE CHECK
+
+  bool isPastDate(
+      DateTime date,
+      ) {
+
+    final now = DateTime.now();
+
+    final today = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+
+    final selected = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+
+    return selected.isBefore(today);
+  }
+
   // CUTOFF CHECK
 
   bool isPauseAllowedForToday() {
@@ -128,14 +181,40 @@ class SubscriptionDetailsController extends GetxController {
     return now.hour < pauseCutoffHour;
   }
 
-  // VALIDATE RANGE
+  // VALIDATE PAUSE
 
   bool validatePauseSelection(
       DateTime start,
       DateTime end,
       ) {
 
-    // TODAY CHECK
+    // PAST DATE BLOCK
+
+    if (isPastDate(start) ||
+        isPastDate(end)) {
+
+      Get.snackbar(
+
+        "invalid_selection".tr,
+
+        "past_dates_not_allowed".tr,
+
+        snackPosition:
+        SnackPosition.BOTTOM,
+
+        backgroundColor:
+        const Color(0xFFEF4444),
+
+        colorText: Colors.white,
+
+        margin:
+        const EdgeInsets.all(16),
+      );
+
+      return false;
+    }
+
+    // TODAY CUT OFF CHECK
 
     if (isToday(start)) {
 
@@ -167,23 +246,53 @@ class SubscriptionDetailsController extends GetxController {
     return true;
   }
 
-  // FORMAT DATE
+  // RANGE SELECT
 
-  String formatDate(DateTime date) {
-
-    return "${date.day}/${date.month}/${date.year}";
-  }
-
-  // SAME DATE CHECK
-
-  bool isSameDate(
-      DateTime a,
-      DateTime b,
+  void onRangeSelected(
+      DateTime? start,
+      DateTime? end,
+      DateTime focused,
       ) {
 
-    return a.year == b.year &&
-        a.month == b.month &&
-        a.day == b.day;
+    if (start == null) return;
+
+    // SINGLE DAY SUPPORT
+
+    end ??= start;
+
+    // VALIDATE
+
+    final valid =
+    validatePauseSelection(
+      start,
+      end,
+    );
+
+    if (!valid) {
+      return;
+    }
+
+    focusedDay = focused;
+
+    rangeStart = start;
+
+    rangeEnd = end;
+
+    rangeSelectionMode =
+        RangeSelectionMode.toggledOn;
+
+    update();
+  }
+
+  // CLEAR SELECTION
+
+  void clearSelection() {
+
+    rangeStart = null;
+
+    rangeEnd = null;
+
+    update();
   }
 
   // ACTIVE DELIVERY DAYS
@@ -272,9 +381,11 @@ class SubscriptionDetailsController extends GetxController {
     return pausedDays;
   }
 
-  // IS DELIVERY DAY
+  // DELIVERY DAY
 
-  bool isDeliveryDay(DateTime day) {
+  bool isDeliveryDay(
+      DateTime day,
+      ) {
 
     final activeDays =
     getActiveDays();
@@ -295,9 +406,11 @@ class SubscriptionDetailsController extends GetxController {
     return isActive && !isPaused;
   }
 
-  // IS PAUSED DAY
+  // PAUSED DAY
 
-  bool isPausedDay(DateTime day) {
+  bool isPausedDay(
+      DateTime day,
+      ) {
 
     final pausedDays =
     getPausedDays();
@@ -307,53 +420,211 @@ class SubscriptionDetailsController extends GetxController {
     );
   }
 
-  // RANGE SELECT
+  // SELECTED DATE IS PAUSED
 
-  void onRangeSelected(
-      DateTime? start,
-      DateTime? end,
-      DateTime focused,
-      ) {
+  bool isSelectedPausedDate() {
 
-    if (start == null) return;
-
-    // SINGLE DAY SUPPORT
-
-    end ??= start;
-
-    // VALIDATE
-
-    final valid =
-    validatePauseSelection(
-      start,
-      end,
-    );
-
-    if (!valid) {
-      return;
+    if (rangeStart == null ||
+        rangeEnd == null) {
+      return false;
     }
 
-    focusedDay = focused;
+    // PAST DATE BLOCK
 
-    rangeStart = start;
+    if (isPastDate(rangeStart!) ||
+        isPastDate(rangeEnd!)) {
+      return false;
+    }
 
-    rangeEnd = end;
+    final pausedDays =
+    getPausedDays();
 
-    rangeSelectionMode =
-        RangeSelectionMode.toggledOn;
-
-    update();
+    return pausedDays.any(
+          (e) =>
+          isSameDate(
+            e,
+            rangeStart!,
+          ),
+    );
   }
 
-  // CLEAR RANGE
+  // PAUSE PLAN
 
-  void clearSelection() {
+  Future<void> pausedPlan(
+      DateTime start,
+      DateTime end,
+      ) async {
 
-    rangeStart = null;
+    try {
+      Map<String,dynamic>dataBody={
+        "subscriptionId": subscriptionId,
+        "userId": Get.put(HomeController()).userModel.data!.userId.toString(),
+        "pauseAt": start.toString(),
+        "reStartAt": end.toString()
+      };
 
-    rangeEnd = null;
+      var response=await SubscriptionServices().updateSubscriptionStatus(dataBody);
+      print("Response $response");
+      debugPrint(
+        "Pause Plan => $start - $end",
+      );
 
-    update();
+      // CALL API HERE
+
+      Get.snackbar(
+
+        "success".tr,
+
+        "subscription_paused_successfully"
+            .tr,
+
+        snackPosition:
+        SnackPosition.BOTTOM,
+
+        backgroundColor:
+        const Color(0xFF4FC83F),
+
+        colorText: Colors.white,
+
+        margin:
+        const EdgeInsets.all(16),
+      );
+
+      clearSelection();
+
+      loadSubscriptionDetails();
+
+    } catch (e) {
+
+      debugPrint(
+        "Pause Plan Error => $e",
+      );
+    }
+  }
+
+  // RESUME PLAN
+
+  Future<void> resumePausedPlan(DateTime start, DateTime end,) async {
+
+    try {
+
+      List<int> dateIds = [];
+
+      final cleanStart = DateTime(
+        start.year,
+        start.month,
+        start.day,
+      );
+
+      final cleanEnd = DateTime(
+        end.year,
+        end.month,
+        end.day,
+      );
+
+      for (int i = 0; i < subscription!.days!.length; i++) {
+
+        final pauseDate =
+        DateTime.parse(
+          subscription!.days![i]
+              .pauseAt
+              .toString(),
+        );
+
+        final restartDate =
+        DateTime.parse(
+          subscription!.days![i]
+              .reStartAt
+              .toString(),
+        );
+
+        final cleanPauseDate =
+        DateTime(
+          pauseDate.year,
+          pauseDate.month,
+          pauseDate.day,
+        );
+
+        final cleanRestartDate =
+        DateTime(
+          restartDate.year,
+          restartDate.month,
+          restartDate.day,
+        );
+
+        print(
+            "Days id-> ${subscription!.days![i].id}"
+                " - pause:$cleanPauseDate"
+                " - restart:$cleanRestartDate"
+        );
+
+        // NORMAL RANGE
+
+        final isPauseInRange =
+            !cleanPauseDate.isBefore(cleanStart) &&
+                !cleanPauseDate.isAfter(cleanEnd);
+
+        // IMPORTANT
+        // INCLUDE LAST DAY USING restartAt
+
+        final isLastDay =
+            cleanRestartDate == cleanEnd;
+
+        if (isPauseInRange || isLastDay) {
+
+          dateIds.add(
+            subscription!.days![i].id!,
+          );
+        }
+      }
+
+      print("dateIds => $dateIds");
+
+      debugPrint(
+        "Resume Plan => $start - $end",
+      );
+
+
+
+      Map<String, dynamic> dataBody = {
+        "subscriptionId": subscriptionId,
+        "statusIds": dateIds,
+      };
+
+      print("dataBody => ${jsonEncode(dataBody)}");
+      var response=await SubscriptionServices().removeSubscriptionsStatus(dataBody);
+      print("Response ${response}");
+      // CALL API HERE
+
+      Get.snackbar(
+
+        "success".tr,
+
+        "subscription_resumed_successfully"
+            .tr,
+
+        snackPosition:
+        SnackPosition.BOTTOM,
+
+        backgroundColor:
+        const Color(0xFF2563EB),
+
+        colorText: Colors.white,
+
+        margin:
+        const EdgeInsets.all(16),
+      );
+
+      clearSelection();
+
+      loadSubscriptionDetails();
+
+    } catch (e) {
+
+      debugPrint(
+        "Resume Plan Error => $e",
+      );
+    }
   }
 
   // TOTAL PAUSED DAYS
@@ -399,7 +670,9 @@ class SubscriptionDetailsController extends GetxController {
 
   // STATUS TEXT
 
-  String getStatusText(String status) {
+  String getStatusText(
+      String status,
+      ) {
 
     switch (status.toLowerCase()) {
 
@@ -422,7 +695,9 @@ class SubscriptionDetailsController extends GetxController {
 
   // STATUS COLOR
 
-  int getStatusColor(String status) {
+  int getStatusColor(
+      String status,
+      ) {
 
     switch (status.toLowerCase()) {
 

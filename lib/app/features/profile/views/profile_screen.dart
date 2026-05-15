@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:golosaleuser/app/features/profile/widgets/name_avatar.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../../../../utils/app_constants.dart';
 import '../../../../utils/utils_functions.dart';
@@ -144,40 +145,9 @@ class ProfileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Avatar
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 20,
-                      ),
-                    ],
-                  ),
-                  child:  CircleAvatar(
-                    radius: 58,
-                    backgroundColor: Colors.grey.shade200,
-                    backgroundImage: CachedNetworkImageProvider(
-                      controller.userModel.data?.profilePicture != null &&
-                          controller.userModel.data!.profilePicture!.isNotEmpty
-                          ? controller.userModel.data!.profilePicture!
-                          : "https://www.golosale.com/assets/image-B0sHWpoa.png",
-                    ),
-                    onBackgroundImageError: (_, __) {
-                      // image error handled internally by fallback URL
-
-                    },
-
-                    child: controller.userModel.data?.profilePicture == null
-                        ? const Center(
-                      child: Icon(CupertinoIcons.person_alt)
-                    )
-                        : null,
-                  )
-                  ,
-                ),
+               NameAvatar(
+                   firstName: controller.userModel.data!.firstName.toString(),
+                   lastName:  controller.userModel.data!.lastName.toString()),
 
                 const SizedBox(height: 16),
 
@@ -280,16 +250,16 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              ElevatedButton.icon(
-                onPressed: () =>Get.toNamed(AppRoutes.rechargeScreen),
-                icon: const Icon(Icons.add),
-                label:  Text("add_money".tr),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              )
+              // ElevatedButton.icon(
+              //   onPressed: () =>Get.toNamed(AppRoutes.rechargeScreen),
+              //   icon: const Icon(Icons.add),
+              //   label:  Text("add_money".tr),
+              //   style: ElevatedButton.styleFrom(
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(14),
+              //     ),
+              //   ),
+              // )
             ],
           ),
 
