@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/notification_service.dart';
 import '/app/features/auth/model/user_model.dart';
 import '/app/features/auth/service/auth_service.dart';
 import '../../../../database/local_db.dart';
@@ -68,7 +69,8 @@ class AuthController extends GetxController{
    /// verify otp and login user.
     print("Otp is:- ${otpController.text}");
     if(otpController.text.length==4){
-      var response=await authService.verifyOtp(mobile: mobileController.text,otp: otpController.text);
+      var deviceId=await  NotificationService.instance.getDeviceToken();
+      var response=await authService.verifyOtp(mobile: mobileController.text,otp: otpController.text,deviceId: deviceId);
       if(response.data!=null){
         Get.snackbar("Success", "Login successfully",snackPosition: SnackPosition.BOTTOM);
         await SecurePreferenceStorage().setLoginStatus(true);

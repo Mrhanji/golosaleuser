@@ -11,8 +11,8 @@ class AuthService{
   }
 
 
-  Future<UserModel>verifyOtp({mobile,otp})async{
-    var response=await dioService.postService(endPoint: EndPoints.verifyOtp,dataBody: {"mobile":mobile,"otpCode":otp});
+  Future<UserModel>verifyOtp({mobile,otp,deviceId})async{
+    var response=await dioService.postService(endPoint: EndPoints.verifyOtp,dataBody: {"mobile":mobile,"otpCode":otp,'deviceId':deviceId});
     print("Response:- ${response.data}");
     return UserModel.fromJson(response.data);
 

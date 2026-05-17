@@ -17,6 +17,7 @@ class EndPoints{
   static const String subscribeSubscription="/subscriptions/add";
   static const String updateSubscriptionStatus="/subscriptions/addStatus";
   static const String removeSubscriptionStatus="/subscriptions/removeStatus";
+  static const String setDeviceToken="/auth/setDeviceToken";
 
   static String getOrderHistory(String userId,int page,limit)=>"/orders/order-history?userId=$userId&page=$page&limit=$limit";
   static String getOrderDetails(String orderId)=>'/orders/order-details?orderId=$orderId';
