@@ -227,11 +227,11 @@ class ProductScreen extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: subscriptionPlans.map((plan) {
+                children: controller.productsModel.data!.first.slotPlans!.where((d)=>d.slotType.toString()==controller.selectedSlot.toString()).map((plan) {
                   return ChoiceChip(
-                    label: Text("$plan ${"days".tr}"),
-                    selected: controller.selectedPlan == plan,
-                    onSelected: (_) => controller.selectPlan(plan),
+                    label: Text("${plan.durationDays} ${"days".tr}"),
+                    selected: controller.selectedPlan == plan.durationDays,
+                    onSelected: (_) => controller.selectPlan(plan.durationDays!),
                   );
                 }).toList(),
               ),
@@ -398,8 +398,7 @@ class ProductScreen extends StatelessWidget {
     required bool isAvailable,
   }) {
 
-    final bool selected =
-        controller.selectedSlot == slotKey;
+    final bool selected = controller.selectedSlot == slotKey;
 
     return AnimatedOpacity(
 

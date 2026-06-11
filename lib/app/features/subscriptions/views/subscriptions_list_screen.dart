@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/routes/app_routes.dart';
+import '/app/routes/app_routes.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../controller/subscriptions_controller.dart';
 
 class SubscriptionsListScreen extends StatelessWidget {
@@ -53,9 +52,15 @@ class SubscriptionsListScreen extends StatelessWidget {
             controller.subscriptions.data!.length,
 
             itemBuilder: (context, index) {
+              final item = controller.subscriptions.data![index];
+              print("DELIVERY SLOT => ${item.deliverySlot}");
 
-              final item =
-              controller.subscriptions.data![index];
+              final isMorning =
+              item.deliverySlot
+                  .toString()
+                  .trim()
+                  .toLowerCase()
+                  .contains('morning');
 
               return Container(
                 margin:
@@ -353,6 +358,103 @@ class SubscriptionsListScreen extends StatelessWidget {
 
                           // INFO CARD
 
+
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18),
+                              color: isMorning
+                                  ? const Color(0xFFFFFAEE)
+                                  : const Color(0xFFF8F5FF),
+                              border: Border.all(
+                                color: isMorning
+                                    ? const Color(0xFFFFC107).withOpacity(.25)
+                                    : const Color(0xFF7C4DFF).withOpacity(.20),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 46,
+                                  width: 46,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isMorning
+                                        ? const Color(0xFFFFC107).withOpacity(.15)
+                                        : const Color(0xFF7C4DFF).withOpacity(.12),
+                                  ),
+                                  child: Icon(
+                                    isMorning
+                                        ? Icons.wb_sunny_rounded
+                                        : Icons.nightlight_round,
+                                    size: 24,
+                                    color: isMorning
+                                        ? const Color(0xFFFF9800)
+                                        : const Color(0xFF7C4DFF),
+                                  ),
+                                ),
+
+                                const SizedBox(width: 12),
+
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Delivery Slot',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 3),
+
+                                      Text(
+                                        isMorning
+                                            ? 'Morning Delivery'
+                                            : 'Evening Delivery',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFF111827),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 7,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: isMorning
+                                        ? const Color(0xFFFFC107).withOpacity(.12)
+                                        : const Color(0xFF7C4DFF).withOpacity(.12),
+                                  ),
+                                  child: Text(
+                                    isMorning
+                                        ? "🌅 Morning"
+                                        : "🌙 Evening",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isMorning
+                                          ? const Color(0xFFFF9800)
+                                          : const Color(0xFF7C4DFF),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           Container(
                             padding:
                             const EdgeInsets.all(14),

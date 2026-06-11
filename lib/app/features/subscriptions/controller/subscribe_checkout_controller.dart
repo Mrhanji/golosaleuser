@@ -185,6 +185,7 @@ class SubscribeController extends GetxController {
       "addressId": addressHistoryModel.data![selectedAddress].addressId,
       "paymentMode": "online",
       "status": "scheduled",
+      "deliverySlot":planDetails.slotType
     };
 
     final apiResponse = await SubscriptionServices().subscribeSubscription(dataBody);
@@ -266,6 +267,7 @@ class PlanDetails {
   String? productThumbnail;
   String? productUnitTag;
   String? productPrice;
+  String? slotType;
 
   PlanDetails({
     this.productId,
@@ -279,6 +281,7 @@ class PlanDetails {
     this.productThumbnail,
     this.productUnitTag,
     this.productPrice,
+    this.slotType
   });
 
   factory PlanDetails.fromJson(
@@ -298,6 +301,7 @@ class PlanDetails {
       productThumbnail: json['productThumbnail'] ?? '',
       productUnitTag: json['productUnitTag'] ?? '',
       productPrice: json['productPrice'] ?? '',
+      slotType: json['selectedSlot'] ?? '',
     );
   }
 

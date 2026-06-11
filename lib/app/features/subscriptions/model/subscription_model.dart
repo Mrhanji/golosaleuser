@@ -31,8 +31,14 @@ class Data {
   String? status;
   String? createdAt;
   String? updatedAt;
+  String? deliverySlot;
 
-  Data({this.subscriptionId, this.userId, this.productId, this.productQty, this.productPrice, this.startAt, this.endAt, this.planDuration, this.totalBill, this.addressId, this.paymentMode, this.status, this.createdAt, this.updatedAt});
+  Data({this.subscriptionId, this.userId, this.productId,
+    this.productQty, this.productPrice, this.startAt, this.endAt,
+    this.planDuration, this.totalBill, this.addressId, this.paymentMode,
+    this.status, this.createdAt, this.updatedAt,
+    this.deliverySlot
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     subscriptionId = json["subscriptionId"];
@@ -49,6 +55,8 @@ class Data {
     status = json["status"];
     createdAt = json["createdAt"];
     updatedAt = json["updatedAt"];
+    deliverySlot = json["deliverySlot"];
+
   }
 
 

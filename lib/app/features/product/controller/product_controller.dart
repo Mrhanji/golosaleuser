@@ -60,6 +60,14 @@ class ProductController extends GetxController {
       return;
     }
 
+    if(slot=='morning'){
+      selectedPlan=productsModel.data!.first.slotPlans!.where((p)=>p.slotType=='morning').first.durationDays!;
+      subscriptionDays=selectedPlan;
+    }else{
+      selectedPlan=productsModel.data!.first.slotPlans!.where((p)=>p.slotType=='evening').first.durationDays!;
+      subscriptionDays=selectedPlan;
+    }
+
     selectedSlot = slot;
 
     update();
@@ -102,7 +110,7 @@ class ProductController extends GetxController {
   void toggleSubscription(bool value) {
     isSubscription = value;
 
-    selectedPlan = 7;
+    selectedPlan = productsModel.data!.first.slotPlans!.first.durationDays!;
 
     initializeDefaultSlot();
 
@@ -112,10 +120,10 @@ class ProductController extends GetxController {
       selectedEndDate = DateTime(
         DateTime.now().year,
         DateTime.now().month,
-        DateTime.now().day + 7,
+        DateTime.now().day + selectedPlan,
       );
 
-      subscriptionDays = 7;
+      subscriptionDays = selectedPlan;
 
       total =
           double.parse(productsModel.data!.first.productPrice.toString()) *

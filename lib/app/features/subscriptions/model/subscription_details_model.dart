@@ -35,8 +35,13 @@ class Data {
   ProductInfo? productInfo;
   Address? address;
   List<Days>? days;
+  String? deliverySlot;
 
-  Data({this.subscriptionId, this.userId, this.productId, this.productQty, this.productPrice, this.startAt, this.endAt, this.planDuration, this.totalBill, this.addressId, this.paymentMode, this.status, this.createdAt, this.updatedAt, this.productInfo, this.address, this.days});
+
+  Data({this.subscriptionId, this.userId, this.productId,
+    this.productQty, this.productPrice, this.startAt, this.endAt,
+    this.planDuration, this.totalBill, this.addressId, this.paymentMode,
+    this.status, this.createdAt, this.updatedAt, this.productInfo, this.address, this.days,this.deliverySlot});
 
   Data.fromJson(Map<String, dynamic> json) {
     subscriptionId = json["subscriptionId"];
@@ -56,6 +61,7 @@ class Data {
     productInfo = json["productInfo"] == null ? null : ProductInfo.fromJson(json["productInfo"]);
     address = json["address"] == null ? null : Address.fromJson(json["address"]);
     days = json["days"] == null ? null : (json["days"] as List).map((e) => Days.fromJson(e)).toList();
+    deliverySlot=json["deliverySlot"];
   }
 
 

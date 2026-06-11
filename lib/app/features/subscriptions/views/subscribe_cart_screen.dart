@@ -234,32 +234,147 @@ class SubscribeCartScreen extends StatelessWidget {
 
   /// ================= DATE =================
   Widget _dateSection() {
+    final slotType =
+        controller.planDetails.slotType ?? "morning";
+
+    final isMorning =
+        slotType.toLowerCase() == "morning";
+
+    final deliveryTime = isMorning
+        ? "06:00 AM - 09:00 AM"
+        : "06:00 PM - 08:00 PM";
+
+    final slotName =
+        "${slotType[0].toUpperCase()}${slotType.substring(1).toLowerCase()}";
+
     return Container(
       margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("subscription_duration".tr,
-              style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600)),
-          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Icon(
+                Icons.calendar_month_rounded,
+                color: Color(0xff4F46E5),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "subscription_duration".tr,
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isMorning
+                    ? [
+                  const Color(0xffFFF7ED),
+                  const Color(0xffFFEDD5),
+                ]
+                    : [
+                  const Color(0xffEEF2FF),
+                  const Color(0xffE0E7FF),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: 52,
+                  width: 52,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                    BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    isMorning
+                        ? Icons.wb_sunny_rounded
+                        : Icons.nightlight_round,
+                    color: isMorning
+                        ? Colors.orange
+                        : Colors.indigo,
+                    size: 28,
+                  ),
+                ),
+
+                const SizedBox(width: 14),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "$slotName Delivery",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      Text(
+                        deliveryTime,
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey.shade700,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
 
           Row(
             children: [
               Expanded(
-                  child: _dateBox(
-                      "start_date".tr, UtilsFunctions().formatDate(controller.planDetails.startDate!))),
+                child: _dateBox(
+                  "start_date".tr,
+                  UtilsFunctions().formatDate(
+                    controller.planDetails.startDate!,
+                  ),
+                ),
+              ),
               const SizedBox(width: 10),
               Expanded(
-                  child: _dateBox(
-                      "end_date".tr, UtilsFunctions().formatDate(controller.planDetails.endDate!))),
+                child: _dateBox(
+                  "end_date".tr,
+                  UtilsFunctions().formatDate(
+                    controller.planDetails.endDate!,
+                  ),
+                ),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

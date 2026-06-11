@@ -27,14 +27,16 @@ class ProductData {
   String? productThumbnail;
   String? productCategoryId;
   int? hasSubscriptionModel;
-  bool? availableInEveningSlot;
   bool? availableInMorningSlot;
+  bool? availableInEveningSlot;
   String? productUnitTag;
   String? status;
   String? createdOn;
   String? updatedOn;
+  dynamic categoryTitle;
+  List<SlotPlans>? slotPlans;
 
-  ProductData({this.productId, this.productTitle, this.productInfo, this.productPrice, this.productMrp, this.productStock, this.productThumbnail, this.productCategoryId, this.hasSubscriptionModel,this.productUnitTag, this.status, this.createdOn, this.updatedOn,this.availableInEveningSlot,this.availableInMorningSlot});
+  ProductData({this.productId, this.productTitle, this.productInfo, this.productPrice, this.productMrp, this.productStock, this.productThumbnail, this.productCategoryId, this.hasSubscriptionModel, this.availableInMorningSlot, this.availableInEveningSlot, this.productUnitTag, this.status, this.createdOn, this.updatedOn, this.categoryTitle, this.slotPlans});
 
   ProductData.fromJson(Map<String, dynamic> json) {
     productId = json["productId"];
@@ -46,12 +48,38 @@ class ProductData {
     productThumbnail = json["productThumbnail"];
     productCategoryId = json["productCategoryId"];
     hasSubscriptionModel = json["hasSubscriptionModel"];
+    availableInMorningSlot = json["availableInMorningSlot"];
+    availableInEveningSlot = json["availableInEveningSlot"];
     productUnitTag = json["productUnitTag"];
     status = json["status"];
     createdOn = json["createdOn"];
     updatedOn = json["updatedOn"];
-    availableInEveningSlot=json["availableInEveningSlot"]==1;
-    availableInMorningSlot=json["availableInMorningSlot"]==1;
+    categoryTitle = json["categoryTitle"];
+    slotPlans = json["slotPlans"] == null ? null : (json["slotPlans"] as List).map((e) => SlotPlans.fromJson(e)).toList();
+  }
+
+
+}
+
+class SlotPlans {
+  int? id;
+  String? productId;
+  String? slotType;
+  int? durationDays;
+  String? status;
+  String? createdAt;
+  String? updatedAt;
+
+  SlotPlans({this.id, this.productId, this.slotType, this.durationDays, this.status, this.createdAt, this.updatedAt});
+
+  SlotPlans.fromJson(Map<String, dynamic> json) {
+    id = json["id"];
+    productId = json["productId"];
+    slotType = json["slotType"];
+    durationDays = json["durationDays"];
+    status = json["status"];
+    createdAt = json["createdAt"];
+    updatedAt = json["updatedAt"];
   }
 
 
