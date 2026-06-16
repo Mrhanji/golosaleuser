@@ -47,7 +47,7 @@ class ProductData {
     productStock = json["productStock"];
     productThumbnail = json["productThumbnail"];
     productCategoryId = json["productCategoryId"];
-    hasSubscriptionModel = json["hasSubscriptionModel"];
+    hasSubscriptionModel = json["hasSubscriptionModel"]==true?1:0;
     availableInMorningSlot = json["availableInMorningSlot"];
     availableInEveningSlot = json["availableInEveningSlot"];
     productUnitTag = json["productUnitTag"];

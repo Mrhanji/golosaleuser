@@ -227,13 +227,16 @@ class ProductScreen extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: controller.productsModel.data!.first.slotPlans!.where((d)=>d.slotType.toString()==controller.selectedSlot.toString()).map((plan) {
-                  return ChoiceChip(
-                    label: Text("${plan.durationDays} ${"days".tr}"),
-                    selected: controller.selectedPlan == plan.durationDays,
-                    onSelected: (_) => controller.selectPlan(plan.durationDays!),
-                  );
-                }).toList(),
+                children: (controller.productsModel.data!.first.slotPlans!
+                    .where((d) => d.slotType.toString() == controller.selectedSlot.toString())
+                    .toList()
+                  ..sort((a, b) => (a.durationDays ?? 0).compareTo(b.durationDays ?? 0)))
+                    .map((plan) => ChoiceChip(
+                  label: Text("${plan.durationDays} ${"days".tr}"),
+                  selected: controller.selectedPlan == plan.durationDays,
+                  onSelected: (_) => controller.selectPlan(plan.durationDays!),
+                ))
+                    .toList(),
               ),
 
               const SizedBox(height: 10),
