@@ -3,8 +3,7 @@ import '/utils/app_constants.dart';
 class EndPoints{
   static const String sendOtp="/auth/sendOtp";
   static const String verifyOtp="/auth/verifyOtp";
-  static const String getCities="/cities/getAllCities";
-  static const String getCategory="/category/getCategories";
+  static const String getCities="/cities/getAllCities"; 
   static const String popularProduct="/product/popular";
 
   static const String updateCart="/cart/update";
@@ -19,6 +18,7 @@ class EndPoints{
   static const String removeSubscriptionStatus="/subscriptions/removeStatus";
   static const String setDeviceToken="/auth/setDeviceToken";
 
+  static String getCategory(String cityId)=>"/category/getCategories?cityId=$cityId&status=active";
   static String getOrderHistory(String userId,int page,limit)=>"/orders/order-history?userId=$userId&page=$page&limit=$limit";
   static String getOrderDetails(String orderId)=>'/orders/order-details?orderId=$orderId';
   static String getAddress(String userId)=>"/address/list?userId=$userId";

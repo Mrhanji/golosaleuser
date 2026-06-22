@@ -300,6 +300,11 @@ class AppTranslations extends Translations {
           "This order has been cancelled by the store or user.",
       "choose_slot": "Choose Slot",
       "slot_not_available": "Slot Not Available",
+      "deliver_to":"Deliver To",
+      'logout_msg':"Logout now and come back anytime for fresh milk, fruits, vegetables, and daily essentials delivered to your doorstep.",
+      'yes':"Yes",
+      "no":"No"
+  
     },
     'hi_IN': {
       'hello': 'नमस्ते',

@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/search/model/products_model.dart';
 import '/utils/end_points.dart';
 import '/app/routes/app_routes.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '/app/features/home/widgets/category_card.dart';
 import '/app/features/home/widgets/product_card.dart';
+import '/app/features/home/widgets/shimmer_skeleton.dart';
 import '/utils/app_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
+import 'package:hexcolor/hexcolor.dart';
 
 class homeView extends StatelessWidget {
   final HomeController controller;
@@ -19,120 +19,200 @@ class homeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = HexColor(AppConstants.primaryColor);
+
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header area - tappable to open address bottom sheet
-          InkWell(
-            onTap: ()=>controller.restCity(),
-            child: Container(
-              height: Get.height * 0.1,
-              width: Get.width,
-              padding: const EdgeInsets.only(left: 10, right: 10, top: 15),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: Get.height * 0.04,
-                    width: Get.height * 0.04,
-                    decoration: const BoxDecoration(
-                      color: Colors.deepOrange,
-                      shape: BoxShape.circle,
+          // Elegant Header Area
+          Container(
+            width: Get.width,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Location Selection Trigger
+                Expanded(
+                  child: InkWell(
+                    onTap: () => controller.restCity(),
+                    borderRadius: BorderRadius.circular(10),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 38,
+                            width: 38,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.grey.shade200),
+                            ),
+                            padding: const EdgeInsets.all(4),
+                            child: Image.asset('assets/images/golo-icon.png'),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "deliver_to".tr.isEmpty
+                                      ? "Deliver to"
+                                      : "deliver_to".tr,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    color: Colors.grey.shade500,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        "${controller.defaultCity.cityName}",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: Colors.grey,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Image.asset('assets/images/golo-icon.png'),
                   ),
-                  SizedBox(width: Get.width * 0.02),
-                  Text("${controller.defaultCity.cityName}",style: GoogleFonts.poppins(fontSize: Get.height*0.02)),
-                  const Spacer(),
-                  const Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: Colors.grey,
-                  ),
-                  IconButton(onPressed: ()=>Get.toNamed(AppRoutes.searchScreen), icon: Icon(CupertinoIcons.search))
-                ],
+                ),
+
+                // Search Trigger Icon (Alternate entry point)
+                IconButton(
+                  onPressed: () => Get.toNamed(AppRoutes.notificationScreen),
+                  icon: const Icon(CupertinoIcons.bell, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+
+          // Premium Integrated Search Bar
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: InkWell(
+              onTap: () => Get.toNamed(AppRoutes.searchScreen),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(CupertinoIcons.search, color: primaryColor, size: 20),
+                    const SizedBox(width: 10),
+                    Text(
+                      "Search fresh organic produce...",
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey.shade500,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
 
-          // Carousel (unchanged)
+          // Carousel Section
           Obx(() {
-
             if (controller.isBannerLoading.value) {
-              return SizedBox(
-                height: Get.height * 0.3,
-                child: const Center(child: CircularProgressIndicator()),
-              );
+              return const BannerShimmerLoading();
             }
-            if(controller.bannerModel.data!.isEmpty){
+            if (controller.bannerModel.data == null ||
+                controller.bannerModel.data!.isEmpty) {
               return SizedBox(
-                height: Get.height * 0.3,
-                child: const Center(child: Text("No banner found")),
+                height: Get.height * 0.18,
+                child: const Center(child: Text("No banners found")),
               );
             }
 
             final items = List.generate(
               controller.bannerModel.data!.length,
-                  (i) => CachedNetworkImage(
-                imageUrl: EndPoints.mediaUrl(controller.bannerModel.data![i].bannerImageId.toString()),
+              (i) => CachedNetworkImage(
+                imageUrl: EndPoints.mediaUrl(
+                  controller.bannerModel.data![i].bannerImageId.toString(),
+                ),
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(18),
                     image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.fill,
-                      //  colorFilter:
-                      //  ColorFilter.mode(Colors.red, BlendMode.colorBurn)
+                      image: imageProvider,
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
-                placeholder: (context, url) => Center(child: CupertinoActivityIndicator()),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+                placeholder: (context, url) => const ShimmerSkeleton(
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey.shade100,
+                  child: const Icon(Icons.error_outline),
+                ),
               ),
             );
 
-            return
-            SizedBox(
+            return SizedBox(
               width: Get.width,
               child: Column(
                 children: [
-
-                  /// ===== CAROUSEL =====
                   CarouselSlider(
-                    items: items.map((item) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
-                        child: item,
-                      );
-                    }).toList(),
+                    items: items,
                     options: CarouselOptions(
                       height: Get.height * 0.22,
-                      viewportFraction: 0.89,
+                      viewportFraction: 0.9,
                       enlargeCenterPage: true,
                       autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 3),
-                      autoPlayAnimationDuration: const Duration(milliseconds: 600),
+                      autoPlayInterval: const Duration(seconds: 4),
+                      autoPlayAnimationDuration: const Duration(
+                        milliseconds: 800,
+                      ),
                       onPageChanged: (index, reason) {
                         controller.currentIndex.value = index;
                       },
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
-                  /// ===== DOT INDICATOR =====
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       items.length,
-                          (index) => AnimatedContainer(
+                      (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: controller.currentIndex.value == index ? 18 : 6,
+                        width: controller.currentIndex.value == index ? 20 : 6,
                         height: 6,
                         decoration: BoxDecoration(
                           color: controller.currentIndex.value == index
-                              ? Colors.green
-                              : Colors.grey.shade400,
+                              ? primaryColor
+                              : Colors.grey.shade300,
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -142,105 +222,310 @@ class homeView extends StatelessWidget {
               ),
             );
           }),
-          const SizedBox(height: 8),
-          // Category View
+
+          const SizedBox(height: 12),
+
+          // Categories Header
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("shop_by_category".tr +"🔥",
-                  textAlign: TextAlign.start,
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
-                      fontSize: Get.height*0.02),),
-                Text('- - - - - - - - - - - - - ',style: GoogleFonts.aBeeZee(color: Colors.grey.shade300),),
+                Container(
+                  width: 4,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "shop_by_category".tr,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.grey.shade800,
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "Explore fresh organic essentials",
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey.shade400,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
 
-       Obx((){
-         if(controller.isCategoryLoading.value){
-           return CircularProgressIndicator();
-         }
-         if(controller.categoryModel.data!.isEmpty){
-           return Text("No category found");
-         }
-         return    Container(
-             height: Get.height*0.23,
-             width: Get.width,
-             padding: EdgeInsets.only(left: 5, right: 5),
-             child:ListView.builder(
-                 scrollDirection: Axis.horizontal,
-                 shrinkWrap: true,
-                 itemCount: controller.categoryModel.data?.length,
-                 itemBuilder: (i,data)=> Padding(
-                   padding: const EdgeInsets.only(right: 4.0,left: 4),
-                   child: categoryCard(controller.categoryModel.data![data]),
-                 )
-             ));
-       }),
+          // Categories List
+          Obx(() {
+            if (controller.isCategoryLoading.value) {
+              return const CategoryShimmerLoading();
+            }
+            if (controller.categoryModel.data == null ||
+                controller.categoryModel.data!.isEmpty) {
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade100),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        CupertinoIcons.grid,
+                        color: primaryColor,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "No Categories Available",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.grey.shade800,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            "We're updating our seasonal catalog. Please reload.",
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.refresh_rounded, color: primaryColor),
+                      onPressed: () => controller.getCategory(),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return SizedBox(
+              height: 155,
+              width: Get.width,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: controller.categoryModel.data?.length,
+                itemBuilder: (context, index) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: categoryCard(controller.categoryModel.data![index]),
+                ),
+              ),
+            );
+          }),
 
+          const SizedBox(height: 12),
 
-          /// Popular items
+          // Popular Items Header
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("popular_items".tr +"👏",
-                  textAlign: TextAlign.start,
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold,
-                      fontSize: Get.height*0.02),),
-                Text('- - - - - - - - - - - - - - - -',style: GoogleFonts.aBeeZee(color: Colors.grey.shade300),),
+                Container(
+                  width: 4,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "popular_items".tr,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.grey.shade800,
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "Customer favorites of the week",
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.grey.shade400,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
 
-         Obx((){
-           if(controller.isPopularProductLoading.value){
-             return Center(child: CupertinoActivityIndicator());
-           }
-           if(controller.popularProductsModel.data!.isEmpty){
-             return Text("No popular product found");
-           }
-           return  Container(
-               height: Get.height*0.26,
-               width: Get.width,
-               padding: EdgeInsets.only(left: 5, right: 5),
-               child:ListView.builder(
-                   scrollDirection: Axis.horizontal,
-                   shrinkWrap: true,
-                   itemCount: controller.popularProductsModel.data!.length,
-                   itemBuilder: (i,data)=> Padding(
-                     padding: const EdgeInsets.only(right: 4.0,left: 4),
-                     child: productCard(controller.popularProductsModel.data![data]),
-                   )
-               ));
-         }),
+          // Popular Items List
+          Obx(() {
+            if (controller.isPopularProductLoading.value) {
+              return const ProductShimmerLoading();
+            }
+            if (controller.popularProductsModel.data == null ||
+                controller.popularProductsModel.data!.isEmpty) {
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade100),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        CupertinoIcons.star_fill,
+                        color: primaryColor,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "No Popular Products Yet",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.grey.shade800,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            "Check back later for seasonal popular items.",
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.refresh_rounded, color: primaryColor),
+                      onPressed: () => controller.getPopularProducts(),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return SizedBox(
+              height: Get.height * 0.25,
+              width: Get.width,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: controller.popularProductsModel.data!.length,
+                itemBuilder: (context, index) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: productCard(
+                    controller.popularProductsModel.data![index],
+                  ),
+                ),
+              ),
+            );
+          }),
 
+          const SizedBox(height: 16),
 
-          Divider(),
-          Text("Organic products, \ndelivered fresh...",
-              textAlign: TextAlign.start,
-              softWrap: true,
-              style: GoogleFonts.aBeeZee(fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey.shade200,
-                  fontSize: Get.height*0.05)),
-
+          // Clean Divider
           Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Image.asset(AppConstants.appLogoOrganic),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Divider(color: Colors.grey.shade200, height: 1),
           ),
 
-          Text("Made with ❤️ by Golosale",
-            textAlign: TextAlign.start,
-            softWrap: true,
-            style: GoogleFonts.b612(
-                color: Colors.black38,
-                fontSize: Get.height*0.015),
-          )
+          const SizedBox(height: 16),
+
+          Container(child: Image.asset("assets/images/bottom_banner.png")),
+          // Premium Footer Brand Section
+          Container(
+            width: Get.width,
+            padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Organic products,\ndelivered fresh...",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.blueGrey.shade700,
+                    fontSize: Get.height * 0.03,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    AppConstants.appLogoOrganic,
+                    height: Get.height * 0.07,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Made with ❤️ by Golosale",
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey.shade400,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
-
-
 }

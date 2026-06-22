@@ -48,6 +48,7 @@ dependencies:
   firebase_core: ^4.9.0
   firebase_messaging: ^16.2.2
   flutter_local_notifications: ^20.1.0
+  permission_handler: ^12.0.3
 
 dev_dependencies:
   flutter_test:
@@ -76,20 +77,3 @@ flutter:
     - assets/images/
     - assets/animations/
 
-
-
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package

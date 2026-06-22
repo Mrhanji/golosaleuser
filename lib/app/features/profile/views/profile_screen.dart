@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:golosaleuser/app/features/profile/widgets/name_avatar.dart';
+import 'package:hexcolor/hexcolor.dart';
+import '/app/features/profile/widgets/name_avatar.dart';
 import '/app/features/home/controller/home_controller.dart';
 import '../../../../utils/app_constants.dart';
 import '../../../../utils/utils_functions.dart';
@@ -12,42 +12,34 @@ import '../../../language/language.dart';
 
 class ProfileScreen extends StatelessWidget {
   final HomeController homeController;
-    ProfileScreen({super.key, required  this.homeController});
-
-
-
-
+  ProfileScreen({super.key, required this.homeController});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
             GetBuilder(
               init: homeController,
               builder: (context) {
-
-                return _profileHeader( homeController);
-              }
+                return _profileHeader(homeController);
+              },
             ),
-            //const SizedBox(height: 20),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  SizedBox(height: 10,),
-                  _walletCard(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 12),
 
+                  // _walletCard(),
+                  // const SizedBox(height: 24),
                   _sectionTitle("account".tr),
                   _menuTile(
                     icon: CupertinoIcons.bag,
                     title: "order_history".tr,
-                    onTap: ()=>Get.toNamed(AppRoutes.orderHistoryScreen)
+                    onTap: () => Get.toNamed(AppRoutes.orderHistoryScreen),
                   ),
                   _menuTile(
                     icon: CupertinoIcons.person,
@@ -62,48 +54,155 @@ class ProfileScreen extends StatelessWidget {
                       arguments: [],
                     ),
                   ),
-
-                  _menuTile(icon: CupertinoIcons.location_solid,
-                      title: 'address'.tr,
-                  onTap:()=>Get.toNamed(AppRoutes.addressScreen)
+                  _menuTile(
+                    icon: CupertinoIcons.location_solid,
+                    title: 'address'.tr,
+                    onTap: () => Get.toNamed(AppRoutes.addressScreen),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   _sectionTitle("settings".tr),
                   _menuTile(
                     icon: CupertinoIcons.bell,
                     title: "notifications".tr,
-                    onTap: ()=>Get.toNamed(AppRoutes.notificationScreen)
+                    onTap: () => Get.toNamed(AppRoutes.notificationScreen),
                   ),
                   _menuTile(
                     icon: CupertinoIcons.globe,
                     title: "language".tr,
-                    trailing: Text("english".tr),
+                    trailing: Text(
+                      "english".tr,
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey.shade500,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     onTap: () => _changeLanguage(),
                   ),
                   _menuTile(
                     icon: CupertinoIcons.question_circle,
                     title: "help_center".tr,
-                    onTap: () => UtilsFunctions().launchUrls(AppConstants.helpCenterUrl),
+                    onTap: () =>
+                        UtilsFunctions().launchUrls(AppConstants.helpCenterUrl),
                   ),
                   _menuTile(
                     icon: CupertinoIcons.info,
                     title: "about_us".tr,
-                    onTap: () => UtilsFunctions().launchUrls(AppConstants.aboutUsUrl),
+                    onTap: () =>
+                        UtilsFunctions().launchUrls(AppConstants.aboutUsUrl),
                   ),
                   _menuTile(
                     icon: Icons.logout_rounded,
                     title: "logout".tr,
                     color: Colors.red,
-                    onTap: ()=>Get.dialog(AlertDialog(
-                      title: Text("logout_msg".tr),
-                      actions: [
-                        TextButton(onPressed: ()=>Get.back(), child: Text("no".tr)),
-                        TextButton(onPressed: ()=>homeController.logout(), child: Text("yes".tr)),
-                      ],
-                    )),
+                    onTap: () => Get.dialog(
+                      Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        backgroundColor: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 64,
+                                height: 64,
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.logout_rounded,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                "logout".tr,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                "logout_msg".tr,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  height: 1.5,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () => Get.back(),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        side: BorderSide(
+                                          color: Colors.grey.shade200,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "no".tr,
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey.shade700,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () => homeController.logout(),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        elevation: 0,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "yes".tr,
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-
                   const SizedBox(height: 30),
                 ],
               ),
@@ -117,39 +216,78 @@ class ProfileScreen extends StatelessWidget {
   // ================= PROFILE HEADER =================
 
   Widget _profileHeader(HomeController controller) {
-    print("Build called");
+    final primaryColor = HexColor(AppConstants.primaryColor);
+
     return Container(
-      height: Get.height * 0.3,
+      height: Get.height * 0.32,
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           colors: [
-            Color(0xff667EEA),
-            Color(0xff764BA2),
+            primaryColor.withValues(alpha: 0.14),
+            primaryColor.withValues(alpha: 0.01),
           ],
         ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(36),
+          bottomRight: Radius.circular(36),
         ),
       ),
       child: Stack(
         children: [
-          Positioned(top: -40, right: -40, child: _blurCircle(150)),
-          Positioned(bottom: -30, left: -30, child: _blurCircle(120)),
+          // Decorative Offset Circles for layered shape enhancement
+          Positioned(
+            top: -30,
+            right: -20,
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: primaryColor.withValues(alpha: 0.05),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 20,
+            left: -40,
+            child: Container(
+              width: 110,
+              height: 110,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: primaryColor.withValues(alpha: 0.04),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -20,
+            right: 40,
+            child: Container(
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: primaryColor.withValues(alpha: 0.03),
+              ),
+            ),
+          ),
 
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 24),
                 // Avatar
-               NameAvatar(
-                   firstName: controller.userModel.data!.firstName.toString(),
-                   lastName:  controller.userModel.data!.lastName.toString()),
+                NameAvatar(
+                  firstName: controller.userModel.data!.firstName.toString(),
+                  lastName: controller.userModel.data!.lastName.toString(),
+                  radius: 50,
+                ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -157,47 +295,26 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       "${controller.userModel.data!.firstName} ${controller.userModel.data!.lastName}",
                       style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Icon(
-                      Icons.verified,
-                      color: Colors.lightBlueAccent,
-                      size: 20,
-                    ),
+                    Icon(Icons.verified_rounded, color: primaryColor, size: 20),
                   ],
                 ),
 
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
 
                 Text(
                   "📞 ${controller.userModel.data?.userMobile}",
                   style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.white70,
+                    fontSize: 13,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-
-                //const SizedBox(height: 16),
-
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     _headerAction(
-                //       icon: Icons.edit,
-                //       label: "Edit",
-                //       onTap: () => Get.toNamed(AppRoutes.editProfile),
-                //     ),
-                //     const SizedBox(width: 16),
-                //     _headerAction(
-                //       icon: Icons.account_balance_wallet,
-                //       label: "Wallet",
-                //     ),
-                //   ],
-                // ),
               ],
             ),
           ),
@@ -209,29 +326,43 @@ class ProfileScreen extends StatelessWidget {
   // ================= WALLET CARD =================
 
   Widget _walletCard() {
+    final primaryColor = HexColor(AppConstants.primaryColor);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "wallet".tr,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "wallet".tr,
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              Icon(
+                Icons.account_balance_wallet_rounded,
+                color: primaryColor,
+                size: 20,
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -239,89 +370,109 @@ class ProfileScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("balance".tr,
-                      style: GoogleFonts.poppins(color: Colors.grey)),
+                  Text(
+                    "balance".tr,
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey.shade500,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Text(
                     "₹ ${homeController.userModel.data!.walletAmount}",
                     style: GoogleFonts.poppins(
-                      fontSize: 24,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
                 ],
               ),
-              // ElevatedButton.icon(
-              //   onPressed: () =>Get.toNamed(AppRoutes.rechargeScreen),
-              //   icon: const Icon(Icons.add),
-              //   label:  Text("add_money".tr),
-              //   style: ElevatedButton.styleFrom(
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(14),
-              //     ),
-              //   ),
-              // )
+              InkWell(
+                onTap: () => Get.toNamed(AppRoutes.rechargeScreen),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      colors: [
+                        primaryColor,
+                        Color.lerp(primaryColor, Colors.black, 0.12)!,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primaryColor.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.add_circle_outline_rounded,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        "add_money".tr,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
 
-          const Divider(height: 10),
+          const SizedBox(height: 12),
+          Divider(height: 1, color: Colors.grey.shade100),
+          const SizedBox(height: 8),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "recent_transactions".tr,
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Colors.black87,
+                ),
               ),
-
-              TextButton(onPressed: ()=>Get.toNamed(AppRoutes.walletTransactionScreen),
-                  child: Text('see_all'.tr))
+              TextButton(
+                onPressed: () => Get.toNamed(AppRoutes.walletTransactionScreen),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'see_all'.tr,
+                  style: GoogleFonts.poppins(
+                    color: primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
             ],
           ),
-          //const SizedBox(height: 10),
-
-          // _walletTransaction(
-          //   title: "Order Payment",
-          //   date: "Today",
-          //   amount: "- ₹120",
-          //   isDebit: true,
-          // ),
-          // _walletTransaction(
-          //   title: "Wallet Topup",
-          //   date: "Yesterday",
-          //   amount: "+ ₹500",
-          //   isDebit: false,
-          // ),
         ],
-      ),
-    );
-  }
-
-  Widget _walletTransaction({
-    required String title,
-    required String date,
-    required String amount,
-    required bool isDebit,
-  }) {
-
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        backgroundColor:
-        isDebit ? Colors.red.withOpacity(0.1) : Colors.green.withOpacity(0.1),
-        child: Icon(
-          isDebit ? Icons.call_made : Icons.call_received,
-          color: isDebit ? Colors.red : Colors.green,
-        ),
-      ),
-      title: Text(title, style: GoogleFonts.poppins()),
-      subtitle: Text(date),
-
-      trailing: Text(
-        amount,
-        style: GoogleFonts.poppins(
-          fontWeight: FontWeight.w600,
-          color: isDebit ? Colors.red : Colors.green,
-        ),
       ),
     );
   }
@@ -335,80 +486,79 @@ class ProfileScreen extends StatelessWidget {
     Widget? trailing,
     Color? color,
   }) {
+    final primaryColor = HexColor(AppConstants.primaryColor);
+    final isDestructive = color != null && color == Colors.red;
+    final tileColor = isDestructive ? Colors.red : primaryColor;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: ListTile(
         onTap: onTap,
-        leading: Icon(icon, color: color ?? Colors.indigo),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: tileColor.withValues(alpha: 0.08),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: tileColor, size: 20),
+        ),
         title: Text(
           title,
-          style: GoogleFonts.poppins(color: color),
+          style: GoogleFonts.poppins(
+            color: color ?? Colors.black87,
+            fontWeight: FontWeight.w600,
+            fontSize: 14.5,
+          ),
         ),
         trailing:
-        trailing ?? const Icon(CupertinoIcons.chevron_forward, size: 18),
+            trailing ??
+            Icon(
+              CupertinoIcons.chevron_forward,
+              size: 16,
+              color: Colors.grey.shade400,
+            ),
       ),
     );
   }
 
   Widget _sectionTitle(String title) {
+    final primaryColor = HexColor(AppConstants.primaryColor);
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _blurCircle(double size) {
-    return Container(
-      height: size,
-      width: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.08),
-      ),
-    );
-  }
-
-  Widget _headerAction({
-    required IconData icon,
-    required String label,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(30),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
+      padding: const EdgeInsets.only(bottom: 12, top: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 16,
+            decoration: BoxDecoration(
+              color: primaryColor,
+              borderRadius: BorderRadius.circular(2),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 15.5,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -419,21 +569,59 @@ class ProfileScreen extends StatelessWidget {
 _changeLanguage() {
   return Get.dialog(
     AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text("change_language".tr),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: Colors.white,
+      title: Text(
+        "change_language".tr,
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          color: Colors.black87,
+        ),
+      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 8),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: Text('🇺🇸 ${"english".tr}'),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 4,
+            ),
+            leading: const Text("🇺🇸", style: TextStyle(fontSize: 20)),
+            title: Text(
+              "english".tr,
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: Colors.black87,
+              ),
+            ),
             onTap: () {
               Get.updateLocale(Locales.en);
               Get.back();
             },
           ),
-          const Divider(),
+          const Divider(
+            height: 1,
+            indent: 24,
+            endIndent: 24,
+            color: Color(0xfff0f0f0),
+          ),
           ListTile(
-            title: Text('🇮🇳 ${"hindi".tr}'),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 4,
+            ),
+            leading: const Text("🇮🇳", style: TextStyle(fontSize: 20)),
+            title: Text(
+              "hindi".tr,
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: Colors.black87,
+              ),
+            ),
             onTap: () {
               Get.updateLocale(Locales.hi);
               Get.back();

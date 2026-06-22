@@ -1,4 +1,3 @@
-
 class CartModel {
   String? status;
   int? statusCode;
@@ -11,7 +10,9 @@ class CartModel {
     status = json["status"];
     statusCode = json["statusCode"];
     message = json["message"];
-    data = json["data"] == null ? null : (json["data"] as List).map((e) => CartData.fromJson(e)).toList();
+    data = json["data"] == null
+        ? null
+        : (json["data"] as List).map((e) => CartData.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -19,7 +20,7 @@ class CartModel {
     _data["status"] = status;
     _data["statusCode"] = statusCode;
     _data["message"] = message;
-    if(data != null) {
+    if (data != null) {
       _data["data"] = data?.map((e) => e.toJson()).toList();
     }
     return _data;
@@ -35,7 +36,15 @@ class CartData {
   String? updatedOn;
   ProductDetails? productDetails;
 
-  CartData({this.cartId, this.userId, this.productId, this.productQty, this.createdOn, this.updatedOn, this.productDetails});
+  CartData({
+    this.cartId,
+    this.userId,
+    this.productId,
+    this.productQty,
+    this.createdOn,
+    this.updatedOn,
+    this.productDetails,
+  });
 
   CartData.fromJson(Map<String, dynamic> json) {
     cartId = json["cartId"];
@@ -44,7 +53,9 @@ class CartData {
     productQty = json["productQty"];
     createdOn = json["createdOn"];
     updatedOn = json["updatedOn"];
-    productDetails = json["productDetails"] == null ? null : ProductDetails.fromJson(json["productDetails"]);
+    productDetails = json["productDetails"] == null
+        ? null
+        : ProductDetails.fromJson(json["productDetails"]);
   }
 
   Map<String, dynamic> toJson() {
@@ -55,7 +66,7 @@ class CartData {
     _data["productQty"] = productQty;
     _data["createdOn"] = createdOn;
     _data["updatedOn"] = updatedOn;
-    if(productDetails != null) {
+    if (productDetails != null) {
       _data["productDetails"] = productDetails?.toJson();
     }
     return _data;
@@ -77,7 +88,21 @@ class ProductDetails {
   String? createdOn;
   String? updatedOn;
 
-  ProductDetails({this.productId, this.productTitle, this.productInfo, this.productPrice, this.productMrp, this.productStock, this.productThumbnail, this.productCategoryId, this.hasSubscriptionModel, this.productUnitTag, this.status, this.createdOn, this.updatedOn});
+  ProductDetails({
+    this.productId,
+    this.productTitle,
+    this.productInfo,
+    this.productPrice,
+    this.productMrp,
+    this.productStock,
+    this.productThumbnail,
+    this.productCategoryId,
+    this.hasSubscriptionModel,
+    this.productUnitTag,
+    this.status,
+    this.createdOn,
+    this.updatedOn,
+  });
 
   ProductDetails.fromJson(Map<String, dynamic> json) {
     productId = json["productId"];
@@ -88,7 +113,7 @@ class ProductDetails {
     productStock = json["productStock"];
     productThumbnail = json["productThumbnail"];
     productCategoryId = json["productCategoryId"];
-    hasSubscriptionModel = json["hasSubscriptionModel"];
+    hasSubscriptionModel = json["hasSubscriptionModel"] == true ? 1 : 0;
     productUnitTag = json["productUnitTag"];
     status = json["status"];
     createdOn = json["createdOn"];

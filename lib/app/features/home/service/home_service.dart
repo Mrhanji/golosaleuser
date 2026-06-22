@@ -1,4 +1,4 @@
-import 'package:golosaleuser/app/features/cart/model/coupon_model.dart';
+import '/app/features/cart/model/coupon_model.dart';
 
 import '../../order/model/order_details_model.dart';
 import '/app/features/order/model/order_history_model.dart';
@@ -33,9 +33,9 @@ class HomeServices{
   }
 
 
-  Future<CategoryModel>getCategory()async {
+  Future<CategoryModel>getCategory(String cityId)async {
 
-    var response=await DioService().getService(endPoint: EndPoints.getCategory);
+    var response=await DioService().getService(endPoint: EndPoints.getCategory(cityId));
     return CategoryModel.fromJson(response.data);
 
   }
