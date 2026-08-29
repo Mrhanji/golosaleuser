@@ -10,26 +10,19 @@ import '../model/order_details_model.dart';
 class OrderDetailsScreen extends StatelessWidget {
   OrderDetailsScreen({super.key});
 
-  final OrderDetailsController controller =
-  Get.put(OrderDetailsController());
+  final OrderDetailsController controller = Get.put(OrderDetailsController());
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor:
-      const Color(0xFFF7FBF6),
+      backgroundColor: const Color(0xFFF7FBF6),
 
       appBar: AppBar(
-
         elevation: 0,
 
-        backgroundColor:
-        const Color(0xFFF7FBF6),
+        backgroundColor: const Color(0xFFF7FBF6),
 
-        surfaceTintColor:
-        Colors.transparent,
+        surfaceTintColor: Colors.transparent,
 
         centerTitle: true,
 
@@ -44,87 +37,58 @@ class OrderDetailsScreen extends StatelessWidget {
       ),
 
       body: GetBuilder<OrderDetailsController>(
-
         init: controller,
 
         builder: (_) {
-
           if (controller.isLoading) {
-
             return const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF4FC83F),
-              ),
+              child: CircularProgressIndicator(color: Color(0xFF4FC83F)),
             );
           }
 
-          final Data? order =
-              controller.orderDetailsModel.data;
+          final Data? order = controller.orderDetailsModel.data;
 
           if (order == null) {
-
-            return Center(
-              child: Text(
-                "no_order_found".tr,
-              ),
-            );
+            return Center(child: Text("no_order_found".tr));
           }
 
           return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
 
-            padding:
-            const EdgeInsets.all(16),
-
-            physics:
-            const BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
 
             child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 // HEADER
-
                 _headerCard(order),
 
                 const SizedBox(height: 18),
 
                 // TRACKING
-
                 _trackingCard(order),
 
                 const SizedBox(height: 18),
 
                 // DELIVERY AGENT
+                if (order.assignedDeliveryAgent != null)
+                  _deliveryAgentCard(order),
 
-                if (order.assignedDeliveryAgent !=
-                    null)
-
-                  _deliveryAgentCard(
-                    order,
-                  ),
-
-                if (order.assignedDeliveryAgent !=
-                    null)
-
+                if (order.assignedDeliveryAgent != null)
                   const SizedBox(height: 18),
 
                 // ADDRESS
-
                 _addressCard(order),
 
                 const SizedBox(height: 18),
 
                 // ITEMS
-
                 Text(
                   "ordered_items".tr,
 
-                  style:
-                  GoogleFonts.poppins(
-                    fontWeight:
-                    FontWeight.w700,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
 
                     fontSize: 18,
                   ),
@@ -132,282 +96,251 @@ class OrderDetailsScreen extends StatelessWidget {
 
                 const SizedBox(height: 14),
 
-                ...order.orderItems!
-                    .map(
-                      (e) =>
-                      _itemTile(e),
-                )
-                    .toList(),
+                ...order.orderItems!.map((e) => _itemTile(e)).toList(),
 
                 const SizedBox(height: 18),
 
                 // BILL SUMMARY
-
                 _billSection(order),
 
                 const SizedBox(height: 18),
 
                 /// CANCEL BUTTON
-
-                if (order.orderStatus
-                    .toString()
-                    .toLowerCase() !=
-                    "scheduled" &&
+                if (order.orderStatus.toString().toLowerCase() != "scheduled" &&
                     order.isSubscriptionOrder != true)
-
                   SizedBox(
-
                     width: double.infinity,
                     height: 56,
 
-                    child: order.orderStatus
-                        .toString()
-                        .toLowerCase() ==
-                        "cancelled"
-
-                    /// CANCELLED UI
+                    child:
+                        order.orderStatus.toString().toLowerCase() ==
+                            "cancelled"
+                        /// CANCELLED UI
                         ? Container(
-
-                      decoration: BoxDecoration(
-
-                        color: Colors.red.withOpacity(.08),
-
-                        borderRadius:
-                        BorderRadius.circular(18),
-
-                        border: Border.all(
-                          color: Colors.red.withOpacity(.18),
-                        ),
-                      ),
-
-                      padding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-
-                      child: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.center,
-
-                        children: [
-
-                          Container(
-
-                            padding:
-                            const EdgeInsets.all(7),
-
                             decoration: BoxDecoration(
-                              color: Colors.red
-                                  .withOpacity(.10),
+                              color: Colors.red.withOpacity(.08),
 
-                              shape: BoxShape.circle,
-                            ),
+                              borderRadius: BorderRadius.circular(18),
 
-                            child: const Icon(
-                              Icons.cancel_rounded,
-                              color: Colors.red,
-                              size: 18,
-                            ),
-                          ),
-
-                          const SizedBox(width: 12),
-
-                          Text(
-                            "order_cancelled".tr,
-
-                            style:
-                            GoogleFonts.poppins(
-                              color: Colors.red,
-                              fontWeight:
-                              FontWeight.w700,
-
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-
-                    /// NORMAL CANCEL BUTTON
-                        : ElevatedButton.icon(
-
-                      onPressed: () {
-
-                        Get.dialog(
-
-                          AlertDialog(
-
-                            shape:
-                            RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(
-                                  24),
-                            ),
-
-                            title: Text(
-                              "cancel_order".tr,
-
-                              style:
-                              GoogleFonts.poppins(
-                                fontWeight:
-                                FontWeight.w700,
+                              border: Border.all(
+                                color: Colors.red.withOpacity(.18),
                               ),
                             ),
 
-                            content: Text(
-                              "cancel_order_confirmation"
-                                  .tr,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
 
-                              style:
-                              GoogleFonts.poppins(),
-                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
 
-                            actions: [
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(7),
 
-                              TextButton(
-                                onPressed: () {
-                                  Get.back();
-                                },
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(.10),
 
-                                child: Text(
-                                  "close".tr,
-                                ),
-                              ),
+                                    shape: BoxShape.circle,
+                                  ),
 
-                              ElevatedButton(
-
-                                onPressed: () {
-
-                                  Get.back();
-
-                                  controller.cancelOrder(
-                                    order.orderId
-                                        .toString(),
-                                  );
-                                },
-
-                                style:
-                                ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  Colors.red,
-                                ),
-
-                                child: Text(
-                                  "cancel_order".tr,
-
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  child: const Icon(
+                                    Icons.cancel_rounded,
+                                    color: Colors.red,
+                                    size: 18,
                                   ),
                                 ),
+
+                                const SizedBox(width: 12),
+
+                                Text(
+                                  "order_cancelled".tr,
+
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w700,
+
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        /// NORMAL CANCEL BUTTON
+                        : order.orderStatus.toString().toLowerCase() == 'delivered'
+                        ? Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF4FC83F).withOpacity(.08),
+
+                              borderRadius: BorderRadius.circular(18),
+
+                              border: Border.all(
+                                color: const Color(0xFF4FC83F).withOpacity(.18),
                               ),
-                            ],
+                            ),
+
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(7),
+
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF4FC83F).withOpacity(.10),
+
+                                    shape: BoxShape.circle,
+                                  ),
+
+                                  child: const Icon(
+                                    Icons.check_circle_rounded,
+                                    color: Color(0xFF4FC83F),
+                                    size: 18,
+                                  ),
+                                ),
+
+                                const SizedBox(width: 12),
+
+                                Text(
+                                  "delivered".tr,
+
+                                  style: GoogleFonts.poppins(
+                                    color: const Color(0xFF4FC83F),
+                                    fontWeight: FontWeight.w700,
+
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ElevatedButton.icon(
+                            onPressed: () {
+                              Get.dialog(
+                                AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+
+                                  title: Text(
+                                    "cancel_order".tr,
+
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+
+                                  content: Text(
+                                    "cancel_order_confirmation".tr,
+
+                                    style: GoogleFonts.poppins(),
+                                  ),
+
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Get.back();
+                                      },
+
+                                      child: Text("close".tr),
+                                    ),
+
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Get.back();
+
+                                        controller.cancelOrder(
+                                          order.orderId.toString(),
+                                        );
+                                      },
+
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
+
+                                      child: Text(
+                                        "cancel_order".tr,
+
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+
+                            icon: const Icon(
+                              Icons.cancel_outlined,
+                              color: Colors.white,
+                            ),
+
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+
+                              backgroundColor: Colors.red,
+
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+
+                            label: Text(
+                              "cancel_order".tr,
+
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
-                        );
-                      },
-
-                      icon: const Icon(
-                        Icons.cancel_outlined,
-                        color: Colors.white,
-                      ),
-
-                      style: ElevatedButton.styleFrom(
-
-                        elevation: 0,
-
-                        backgroundColor:
-                        Colors.red,
-
-                        shape:
-                        RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(
-                              18),
-                        ),
-                      ),
-
-                      label: Text(
-                        "cancel_order".tr,
-
-                        style:
-                        GoogleFonts.poppins(
-                          color: Colors.white,
-
-                          fontWeight:
-                          FontWeight.w600,
-                        ),
-                      ),
-                    ),
                   ),
 
                 // SUBSCRIPTION ORDER NOTE
-
                 if (order.isSubscriptionOrder == true)
-
                   Container(
-
                     width: double.infinity,
 
-                    margin:
-                    const EdgeInsets.only(
-                        top: 10),
+                    margin: const EdgeInsets.only(top: 10),
 
-                    padding:
-                    const EdgeInsets.all(
-                        16),
+                    padding: const EdgeInsets.all(16),
 
                     decoration: BoxDecoration(
+                      color: const Color(0xFF4FC83F).withOpacity(.08),
 
-                      color:
-                      const Color(0xFF4FC83F)
-                          .withOpacity(.08),
-
-                      borderRadius:
-                      BorderRadius.circular(
-                          18),
+                      borderRadius: BorderRadius.circular(18),
 
                       border: Border.all(
-                        color:
-                        const Color(
-                            0xFF4FC83F)
-                            .withOpacity(.18),
+                        color: const Color(0xFF4FC83F).withOpacity(.18),
                       ),
                     ),
 
                     child: Row(
                       children: [
-
                         const Icon(
                           Icons.autorenew_rounded,
 
-                          color:
-                          Color(0xFF4FC83F),
+                          color: Color(0xFF4FC83F),
                         ),
 
                         const SizedBox(width: 12),
 
                         Expanded(
                           child: Text(
-                            "subscription_orders_cannot_be_cancelled"
-                                .tr,
+                            "subscription_orders_cannot_be_cancelled".tr,
 
-                            style:
-                            GoogleFonts
-                                .poppins(
-                              color:
-                              const Color(
-                                  0xFF4FC83F),
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFF4FC83F),
 
-                              fontWeight:
-                              FontWeight
-                                  .w600,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-
-
 
                 const SizedBox(height: 40),
               ],
@@ -421,83 +354,53 @@ class OrderDetailsScreen extends StatelessWidget {
   // HEADER
 
   Widget _headerCard(Data order) {
-
-    Color statusColor =
-    controller.getStatusColor(
-      order.orderStatus.toString(),
-    );
+    Color statusColor = controller.getStatusColor(order.orderStatus.toString());
 
     return Container(
-
-      padding:
-      const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
 
       decoration: BoxDecoration(
-
         color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(28),
 
         boxShadow: [
-
           BoxShadow(
-            color:
-            Colors.black.withOpacity(.04),
+            color: Colors.black.withOpacity(.04),
 
             blurRadius: 18,
 
-            offset:
-            const Offset(0, 8),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
 
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-
-          if (order.isSubscriptionOrder ==
-              true)
-
+          if (order.isSubscriptionOrder == true)
             Container(
+              margin: const EdgeInsets.only(bottom: 14),
 
-              margin:
-              const EdgeInsets.only(
-                  bottom: 14),
-
-              padding:
-              const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
 
               decoration: BoxDecoration(
+                color: const Color(0xFF4FC83F).withOpacity(.10),
 
-                color:
-                const Color(0xFF4FC83F)
-                    .withOpacity(.10),
-
-                borderRadius:
-                BorderRadius.circular(
-                    50),
+                borderRadius: BorderRadius.circular(50),
               ),
 
               child: Row(
-                mainAxisSize:
-                MainAxisSize.min,
+                mainAxisSize: MainAxisSize.min,
 
                 children: [
-
                   const Icon(
                     Icons.autorenew_rounded,
 
                     size: 18,
 
-                    color:
-                    Color(0xFF4FC83F),
+                    color: Color(0xFF4FC83F),
                   ),
 
                   const SizedBox(width: 8),
@@ -505,14 +408,10 @@ class OrderDetailsScreen extends StatelessWidget {
                   Text(
                     "subscription_order".tr,
 
-                    style:
-                    GoogleFonts.poppins(
-                      color:
-                      const Color(
-                          0xFF4FC83F),
+                    style: GoogleFonts.poppins(
+                      color: const Color(0xFF4FC83F),
 
-                      fontWeight:
-                      FontWeight.w600,
+                      fontWeight: FontWeight.w600,
 
                       fontSize: 12,
                     ),
@@ -522,26 +421,20 @@ class OrderDetailsScreen extends StatelessWidget {
             ),
 
           Row(
-            mainAxisAlignment:
-            MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
             children: [
-
               Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
-
                   Text(
                     "order_no".tr,
 
-                    style:
-                    GoogleFonts.poppins(
+                    style: GoogleFonts.poppins(
                       fontSize: 11,
 
-                      color:
-                      Colors.grey.shade500,
+                      color: Colors.grey.shade500,
                     ),
                   ),
 
@@ -550,49 +443,34 @@ class OrderDetailsScreen extends StatelessWidget {
                   Text(
                     "#ODR-${order.orderNumber}",
 
-                    style:
-                    GoogleFonts.poppins(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
 
-                      fontWeight:
-                      FontWeight.w700,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
               ),
 
               Container(
-
-                padding:
-                const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 8,
                 ),
 
                 decoration: BoxDecoration(
+                  color: statusColor.withOpacity(.10),
 
-                  color:
-                  statusColor.withOpacity(
-                      .10),
-
-                  borderRadius:
-                  BorderRadius.circular(
-                      50),
+                  borderRadius: BorderRadius.circular(50),
                 ),
 
                 child: Text(
+                  controller.getStatusText(order.orderStatus.toString()),
 
-                  controller.getStatusText(
-                    order.orderStatus
-                        .toString(),
-                  ),
-
-                  style:
-                  GoogleFonts.poppins(
+                  style: GoogleFonts.poppins(
                     color: statusColor,
 
-                    fontWeight:
-                    FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -602,75 +480,53 @@ class OrderDetailsScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           Row(
-            mainAxisAlignment:
-            MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
             children: [
-
               Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
-
                   Text(
                     "ordered_on".tr,
 
-                    style:
-                    GoogleFonts.poppins(
+                    style: GoogleFonts.poppins(
                       fontSize: 11,
 
-                      color:
-                      Colors.grey.shade500,
+                      color: Colors.grey.shade500,
                     ),
                   ),
 
                   const SizedBox(height: 4),
 
                   Text(
-                    controller.formatDateTime(
-                      order.createdOn
-                          .toString(),
-                    ),
+                    controller.formatDateTime(order.createdOn.toString()),
 
-                    style:
-                    GoogleFonts.poppins(
-                      fontWeight:
-                      FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
 
               Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
 
                 children: [
-
                   Text(
                     "payment_mode".tr,
 
-                    style:
-                    GoogleFonts.poppins(
+                    style: GoogleFonts.poppins(
                       fontSize: 11,
 
-                      color:
-                      Colors.grey.shade500,
+                      color: Colors.grey.shade500,
                     ),
                   ),
 
                   const SizedBox(height: 4),
 
                   Text(
-                    order.paymentMode
-                        .toString(),
+                    order.paymentMode.toString(),
 
-                    style:
-                    GoogleFonts.poppins(
-                      fontWeight:
-                      FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -684,11 +540,9 @@ class OrderDetailsScreen extends StatelessWidget {
   // TRACKING
 
   Widget _trackingCard(Data order) {
-
     final updates = order.orderUpdates ?? [];
 
     final List<Map<String, dynamic>> trackingSteps = [
-
       {
         "key": "pending",
         "title": "Pending",
@@ -707,30 +561,17 @@ class OrderDetailsScreen extends StatelessWidget {
         "icon": Icons.inventory_2_rounded,
       },
 
-      {
-        "key": "otw",
-        "title": "On Way",
-        "icon": Icons.local_shipping_rounded,
-      },
+      {"key": "otw", "title": "On Way", "icon": Icons.local_shipping_rounded},
 
-      {
-        "key": "delivered",
-        "title": "Delivered",
-        "icon": Icons.home_rounded,
-      },
+      {"key": "delivered", "title": "Delivered", "icon": Icons.home_rounded},
     ];
 
-    final currentStatus =
-    order.orderStatus
-        .toString()
-        .toLowerCase();
+    final currentStatus = order.orderStatus.toString().toLowerCase();
 
     // CANCELLED
 
     if (currentStatus == "cancelled") {
-
       return Container(
-
         width: Get.width,
 
         padding: const EdgeInsets.all(18),
@@ -742,7 +583,6 @@ class OrderDetailsScreen extends StatelessWidget {
 
         child: Column(
           children: [
-
             Container(
               height: 62,
               width: 62,
@@ -791,7 +631,7 @@ class OrderDetailsScreen extends StatelessWidget {
     // CURRENT INDEX
 
     int currentIndex = trackingSteps.indexWhere(
-          (e) => e["key"] == currentStatus,
+      (e) => e["key"] == currentStatus,
     );
 
     if (currentIndex == -1) {
@@ -799,20 +639,16 @@ class OrderDetailsScreen extends StatelessWidget {
     }
 
     return Container(
-
       width: Get.width,
 
       padding: const EdgeInsets.all(16),
 
       decoration: BoxDecoration(
-
         color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24),
 
         boxShadow: [
-
           BoxShadow(
             color: Colors.black.withOpacity(.04),
             blurRadius: 16,
@@ -822,11 +658,9 @@ class OrderDetailsScreen extends StatelessWidget {
       ),
 
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-
           Text(
             "order_tracking".tr,
 
@@ -839,221 +673,144 @@ class OrderDetailsScreen extends StatelessWidget {
           const SizedBox(height: 24),
 
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            children: List.generate(trackingSteps.length, (index) {
+              final step = trackingSteps[index];
 
-            children: List.generate(
-              trackingSteps.length,
+              final bool isCompleted = index < currentIndex;
 
-                  (index) {
+              final bool isCurrent = index == currentIndex;
 
-                final step =
-                trackingSteps[index];
+              final bool isPending = index > currentIndex;
 
-                final bool isCompleted =
-                    index < currentIndex;
+              // FIND UPDATE
 
-                final bool isCurrent =
-                    index == currentIndex;
+              final update = updates.firstWhereOrNull(
+                (e) => e.updateType.toString().toLowerCase() == step["key"],
+              );
 
-                final bool isPending =
-                    index > currentIndex;
+              final time = update != null
+                  ? controller.formatDateTime(update.createdOn.toString())
+                  : "--";
 
-                // FIND UPDATE
+              return Expanded(
+                child: Column(
+                  children: [
+                    // TOP TRACK
+                    Row(
+                      children: [
+                        // LEFT LINE
+                        if (index != 0)
+                          Expanded(
+                            child: Container(
+                              height: 2.5,
 
-                final update =
-                updates.firstWhereOrNull(
-
-                      (e) =>
-                  e.updateType
-                      .toString()
-                      .toLowerCase() ==
-                      step["key"],
-                );
-
-                final time =
-                update != null
-
-                    ? controller
-                    .formatDateTime(
-                  update.createdOn
-                      .toString(),
-                )
-
-                    : "--";
-
-                return Expanded(
-
-                  child: Column(
-                    children: [
-
-                      // TOP TRACK
-
-                      Row(
-                        children: [
-
-                          // LEFT LINE
-
-                          if (index != 0)
-
-                            Expanded(
-                              child: Container(
-                                height: 2.5,
-
-                                color:
-                                isCompleted ||
-                                    isCurrent
-
-                                    ? const Color(
-                                    0xFF4FC83F)
-
-                                    : Colors.grey
-                                    .shade200,
-                              ),
-                            ),
-
-                          // ICON
-
-                          AnimatedContainer(
-
-                            duration:
-                            const Duration(
-                                milliseconds:
-                                250),
-
-                            height: 38,
-                            width: 38,
-
-                            decoration: BoxDecoration(
-
-                              shape: BoxShape.circle,
-
-                              color: isCompleted
-                                  ? const Color(
-                                  0xFF4FC83F)
-
-                                  : isCurrent
-
-                                  ? const Color(
-                                  0xFF4FC83F)
-
-                                  : Colors.grey
-                                  .shade100,
-
-                              boxShadow: isCurrent
-                                  ? [
-                                BoxShadow(
-                                  color: const Color(
-                                      0xFF4FC83F)
-                                      .withOpacity(
-                                      .25),
-
-                                  blurRadius: 12,
-                                ),
-                              ]
-                                  : [],
-                            ),
-
-                            child: Icon(
-
-                              isCompleted
-                                  ? Icons.check_rounded
-                                  : step["icon"],
-
-                              color: isCompleted ||
-                                  isCurrent
-                                  ? Colors.white
-                                  : Colors.grey
-                                  .shade500,
-
-                              size: 17,
+                              color: isCompleted || isCurrent
+                                  ? const Color(0xFF4FC83F)
+                                  : Colors.grey.shade200,
                             ),
                           ),
 
-                          // RIGHT LINE
+                        // ICON
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
 
-                          if (index !=
-                              trackingSteps.length -
-                                  1)
+                          height: 38,
+                          width: 38,
 
-                            Expanded(
-                              child: Container(
-                                height: 2.5,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
 
-                                color: index <
-                                    currentIndex
+                            color: isCompleted
+                                ? const Color(0xFF4FC83F)
+                                : isCurrent
+                                ? const Color(0xFF4FC83F)
+                                : Colors.grey.shade100,
 
-                                    ? const Color(
-                                    0xFF4FC83F)
+                            boxShadow: isCurrent
+                                ? [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFF4FC83F,
+                                      ).withOpacity(.25),
 
-                                    : Colors.grey
-                                    .shade200,
-                              ),
+                                      blurRadius: 12,
+                                    ),
+                                  ]
+                                : [],
+                          ),
+
+                          child: Icon(
+                            isCompleted ? Icons.check_rounded : step["icon"],
+
+                            color: isCompleted || isCurrent
+                                ? Colors.white
+                                : Colors.grey.shade500,
+
+                            size: 17,
+                          ),
+                        ),
+
+                        // RIGHT LINE
+                        if (index != trackingSteps.length - 1)
+                          Expanded(
+                            child: Container(
+                              height: 2.5,
+
+                              color: index < currentIndex
+                                  ? const Color(0xFF4FC83F)
+                                  : Colors.grey.shade200,
                             ),
-                        ],
+                          ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // TITLE
+                    Text(
+                      step["title"],
+
+                      textAlign: TextAlign.center,
+
+                      maxLines: 1,
+
+                      overflow: TextOverflow.ellipsis,
+
+                      style: GoogleFonts.poppins(
+                        fontSize: 9,
+
+                        fontWeight: FontWeight.w700,
+
+                        color: isPending ? Colors.grey.shade500 : Colors.black,
                       ),
+                    ),
 
-                      const SizedBox(height: 10),
+                    const SizedBox(height: 4),
 
-                      // TITLE
+                    // TIME
+                    Text(
+                      time,
 
-                      Text(
-                        step["title"],
+                      textAlign: TextAlign.center,
 
-                        textAlign:
-                        TextAlign.center,
+                      maxLines: 2,
 
-                        maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
 
-                        overflow:
-                        TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 7.5,
 
-                        style:
-                        GoogleFonts.poppins(
-                          fontSize: 9,
+                        height: 1.4,
 
-                          fontWeight:
-                          FontWeight.w700,
-
-                          color: isPending
-                              ? Colors
-                              .grey
-                              .shade500
-                              : Colors.black,
-                        ),
+                        color: Colors.grey.shade600,
                       ),
-
-                      const SizedBox(height: 4),
-
-                      // TIME
-
-                      Text(
-                        time,
-
-                        textAlign:
-                        TextAlign.center,
-
-                        maxLines: 2,
-
-                        overflow:
-                        TextOverflow.ellipsis,
-
-                        style:
-                        GoogleFonts.poppins(
-                          fontSize: 7.5,
-
-                          height: 1.4,
-
-                          color:
-                          Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    ),
+                  ],
+                ),
+              );
+            }),
           ),
         ],
       ),
@@ -1063,36 +820,25 @@ class OrderDetailsScreen extends StatelessWidget {
   // DELIVERY AGENT
 
   Widget _deliveryAgentCard(Data order) {
-
-    final agent =
-    order.assignedDeliveryAgent!;
+    final agent = order.assignedDeliveryAgent!;
 
     return Container(
-
-      padding:
-      const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
 
       decoration: BoxDecoration(
-
         color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(28),
       ),
 
       child: Row(
         children: [
-
           Container(
-
             height: 62,
             width: 62,
 
             decoration: BoxDecoration(
-
-              color:
-              const Color(0xFF4FC83F)
-                  .withOpacity(.12),
+              color: const Color(0xFF4FC83F).withOpacity(.12),
 
               shape: BoxShape.circle,
             ),
@@ -1110,18 +856,14 @@ class OrderDetailsScreen extends StatelessWidget {
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 Text(
                   "${agent.firstName ?? ''} ${agent.lastName ?? ''}",
 
-                  style:
-                  GoogleFonts.poppins(
-                    fontWeight:
-                    FontWeight.w700,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w700,
 
                     fontSize: 16,
                   ),
@@ -1132,53 +874,30 @@ class OrderDetailsScreen extends StatelessWidget {
                 Text(
                   agent.mobile.toString(),
 
-                  style:
-                  GoogleFonts.poppins(
-                    color:
-                    Colors.grey.shade600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey.shade600),
                 ),
               ],
             ),
           ),
 
           Container(
-
-            padding:
-            const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
 
             decoration: BoxDecoration(
+              color: agent.isOnline == 1
+                  ? Colors.green.withOpacity(.10)
+                  : Colors.grey.withOpacity(.10),
 
-              color:
-              agent.isOnline == 1
-                  ? Colors.green
-                  .withOpacity(.10)
-                  : Colors.grey
-                  .withOpacity(.10),
-
-              borderRadius:
-              BorderRadius.circular(
-                  50),
+              borderRadius: BorderRadius.circular(50),
             ),
 
             child: Text(
+              agent.isOnline == 1 ? "online".tr : "offline".tr,
 
-              agent.isOnline == 1
-                  ? "online".tr
-                  : "offline".tr,
+              style: GoogleFonts.poppins(
+                color: agent.isOnline == 1 ? Colors.green : Colors.grey,
 
-              style:
-              GoogleFonts.poppins(
-                color:
-                agent.isOnline == 1
-                    ? Colors.green
-                    : Colors.grey,
-
-                fontWeight:
-                FontWeight.w600,
+                fontWeight: FontWeight.w600,
 
                 fontSize: 12,
               ),
@@ -1192,15 +911,12 @@ class OrderDetailsScreen extends StatelessWidget {
   // ADDRESS
 
   Widget _addressCard(Data order) {
-
     final address = order.address;
 
     return Container(
-
       padding: const EdgeInsets.all(18),
 
       decoration: BoxDecoration(
-
         color: Colors.white,
 
         borderRadius: BorderRadius.circular(28),
@@ -1215,196 +931,169 @@ class OrderDetailsScreen extends StatelessWidget {
       ),
 
       child: address == null
-
           ? Center(
-            child: Column(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
 
-                    mainAxisAlignment:
-                    MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 68,
+                    width: 68,
 
-                    children: [
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4FC83F).withOpacity(.10),
 
-            Container(
+                      shape: BoxShape.circle,
+                    ),
 
-              height: 68,
-              width: 68,
-
-              decoration: BoxDecoration(
-
-                color: const Color(0xFF4FC83F)
-                    .withOpacity(.10),
-
-                shape: BoxShape.circle,
-              ),
-
-              child: const Icon(
-                Icons.location_off_rounded,
-                color: Color(0xFF4FC83F),
-                size: 32,
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
-            Text(
-              "no_address_found".tr,
-
-              textAlign: TextAlign.center,
-
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              "address_not_available_for_this_order".tr,
-
-              textAlign: TextAlign.center,
-
-              style: GoogleFonts.poppins(
-                fontSize: 12.5,
-                height: 1.5,
-                color: Colors.grey.shade600,
-              ),
-            ),
-                    ],
-                  ),
-          )
-
-          : Row(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-
-        children: [
-
-          Container(
-
-            height: 48,
-            width: 48,
-
-            decoration: BoxDecoration(
-
-              color:
-              const Color(0xFF4FC83F)
-                  .withOpacity(.10),
-
-              borderRadius:
-              BorderRadius.circular(16),
-            ),
-
-            child: const Icon(
-              Icons.location_on_rounded,
-              color: Color(0xFF4FC83F),
-            ),
-          ),
-
-          const SizedBox(width: 14),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
-
-              children: [
-
-                Text(
-                  address.holderName ?? '',
-
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                Text(
-                  "${address.building ?? ''}, ${address.landmark ?? ''}",
-
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey.shade700,
-                    height: 1.5,
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                Container(
-
-                  padding:
-                  const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+                    child: const Icon(
+                      Icons.location_off_rounded,
+                      color: Color(0xFF4FC83F),
+                      size: 32,
+                    ),
                   ),
 
-                  decoration: BoxDecoration(
+                  const SizedBox(height: 14),
 
-                    color: Colors.grey.shade100,
+                  Text(
+                    "no_address_found".tr,
 
-                    borderRadius:
-                    BorderRadius.circular(50),
-                  ),
-
-                  child: Text(
-                    address.addressType ?? '',
+                    textAlign: TextAlign.center,
 
                     style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
                     ),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  Text(
+                    "address_not_available_for_this_order".tr,
+
+                    textAlign: TextAlign.center,
+
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.5,
+                      height: 1.5,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+              children: [
+                Container(
+                  height: 48,
+                  width: 48,
+
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4FC83F).withOpacity(.10),
+
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+
+                  child: const Icon(
+                    Icons.location_on_rounded,
+                    color: Color(0xFF4FC83F),
+                  ),
+                ),
+
+                const SizedBox(width: 14),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
+                      Text(
+                        address.holderName ?? '',
+
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+
+                      if (order.user?.userMobile != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          order.user!.userMobile.toString(),
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey.shade600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 6),
+
+                      Text(
+                        "${address.building ?? ''}, ${address.landmark ?? ''}",
+
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey.shade700,
+                          height: 1.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+
+                        child: Text(
+                          address.addressType ?? '',
+
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
   // ITEM
 
   Widget _itemTile(OrderItems item) {
-
     return Container(
+      margin: const EdgeInsets.only(bottom: 14),
 
-      margin:
-      const EdgeInsets.only(
-          bottom: 14),
-
-      padding:
-      const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(14),
 
       decoration: BoxDecoration(
-
         color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24),
       ),
 
       child: Row(
         children: [
-
           ClipRRect(
+            borderRadius: BorderRadius.circular(18),
 
-            borderRadius:
-            BorderRadius.circular(
-                18),
-
-            child:
-            CachedNetworkImage(
-
-              imageUrl:
-              EndPoints.mediaUrl(
-                item.product
-                    ?.productThumbnail
-                    .toString() ??
-                    '',
+            child: CachedNetworkImage(
+              imageUrl: EndPoints.mediaUrl(
+                item.product?.productThumbnail.toString() ?? '',
               ),
 
               height: 78,
@@ -1412,27 +1101,15 @@ class OrderDetailsScreen extends StatelessWidget {
 
               fit: BoxFit.cover,
 
-              placeholder:
-                  (_, __) {
-
-                return Container(
-                  color:
-                  Colors.grey.shade100,
-                );
+              placeholder: (_, __) {
+                return Container(color: Colors.grey.shade100);
               },
 
-              errorWidget:
-                  (_, __, ___) {
-
+              errorWidget: (_, __, ___) {
                 return Container(
+                  color: Colors.grey.shade100,
 
-                  color:
-                  Colors.grey.shade100,
-
-                  child: const Icon(
-                    Icons
-                        .image_not_supported_outlined,
-                  ),
+                  child: const Icon(Icons.image_not_supported_outlined),
                 );
               },
             ),
@@ -1442,25 +1119,18 @@ class OrderDetailsScreen extends StatelessWidget {
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 Text(
-                  item.product
-                      ?.productTitle ??
-                      '',
+                  item.product?.productTitle ?? '',
 
                   maxLines: 2,
 
-                  overflow:
-                  TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
 
-                  style:
-                  GoogleFonts.poppins(
-                    fontWeight:
-                    FontWeight.w600,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
 
                     height: 1.4,
                   ),
@@ -1471,11 +1141,7 @@ class OrderDetailsScreen extends StatelessWidget {
                 Text(
                   "${item.product?.productUnitTag ?? ''} × ${item.qty ?? 0}",
 
-                  style:
-                  GoogleFonts.poppins(
-                    color:
-                    Colors.grey.shade600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey.shade600),
                 ),
               ],
             ),
@@ -1484,10 +1150,8 @@ class OrderDetailsScreen extends StatelessWidget {
           Text(
             "₹${item.product?.productPrice ?? '0'}",
 
-            style:
-            GoogleFonts.poppins(
-              fontWeight:
-              FontWeight.w700,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w700,
 
               fontSize: 16,
             ),
@@ -1500,33 +1164,24 @@ class OrderDetailsScreen extends StatelessWidget {
   // BILL
 
   Widget _billSection(Data order) {
-
     return Container(
-
-      padding:
-      const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
 
       decoration: BoxDecoration(
-
         color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(28),
       ),
 
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-
           Text(
             "bill_summary".tr,
 
-            style:
-            GoogleFonts.poppins(
-              fontWeight:
-              FontWeight.w700,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w700,
 
               fontSize: 18,
             ),
@@ -1534,92 +1189,55 @@ class OrderDetailsScreen extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          _billRow(
-            "item_total".tr,
-
-            "₹${order.subTotal ?? '0'}",
-          ),
+          _billRow("item_total".tr, "₹${order.subTotal ?? '0'}"),
 
           const SizedBox(height: 12),
 
-          _billRow(
-            "delivery_fee".tr,
-
-            "₹${order.deliveryFee ?? 0}",
-          ),
+          _billRow("delivery_fee".tr, "₹${order.deliveryFee ?? 0}"),
 
           const SizedBox(height: 12),
 
-          _billRow(
-            "discount".tr,
-
-            "-${order.couponPercent ?? 0}%",
-
-            green: true,
-          ),
+          _billRow("discount".tr, "-${order.couponPercent ?? 0}%", green: true),
 
           const Padding(
-            padding:
-            EdgeInsets.symmetric(
-                vertical: 16),
+            padding: EdgeInsets.symmetric(vertical: 16),
 
             child: Divider(),
           ),
 
-          _billRow(
-            "total_paid".tr,
-
-            "₹${order.grandTotal ?? '0'}",
-
-            bold: true,
-          ),
+          _billRow("total_paid".tr, "₹${order.grandTotal ?? '0'}", bold: true),
         ],
       ),
     );
   }
 
   Widget _billRow(
-      String title,
-      String value, {
-        bool bold = false,
-        bool green = false,
-      }) {
-
+    String title,
+    String value, {
+    bool bold = false,
+    bool green = false,
+  }) {
     return Row(
-      mainAxisAlignment:
-      MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
       children: [
-
         Text(
           title,
 
-          style:
-          GoogleFonts.poppins(
-            fontWeight:
-            bold
-                ? FontWeight.w700
-                : FontWeight.w500,
+          style: GoogleFonts.poppins(
+            fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
 
-            color:
-            Colors.grey.shade700,
+            color: Colors.grey.shade700,
           ),
         ),
 
         Text(
           value,
 
-          style:
-          GoogleFonts.poppins(
-            fontWeight:
-            bold
-                ? FontWeight.w700
-                : FontWeight.w600,
+          style: GoogleFonts.poppins(
+            fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
 
-            color:
-            green
-                ? Colors.green
-                : Colors.black,
+            color: green ? Colors.green : Colors.black,
           ),
         ),
       ],

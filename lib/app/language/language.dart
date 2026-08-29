@@ -281,6 +281,7 @@ class AppTranslations extends Translations {
       'confirmed': 'Confirmed',
       'processing': 'Processing',
       'delivered': 'Delivered',
+      'otw': 'On the way',
       'no_orders_found': 'No Orders Found',
       'your_orders_will_appear_here': 'Your orders will appear here',
       'order_tracking': 'Order Tracking',
@@ -435,6 +436,7 @@ class AppTranslations extends Translations {
       'no_item': 'कोई आइटम नहीं',
       'view_orders': 'ऑर्डर देखें',
       'order_id': 'ऑर्डर आईडी',
+      'otw': 'रास्ते में',
     },
   };
 }

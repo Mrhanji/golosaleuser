@@ -811,14 +811,30 @@ class SubscriptionsScreen extends StatelessWidget {
 
                           rangeSelectionMode:
                           RangeSelectionMode
-                              .toggledOn,
-
-                          onRangeSelected:
+                              .toggledOn,                          onRangeSelected:
                               (
                               start,
                               end,
                               focusedDay,
                               ) {
+                            final today = DateTime.now();
+                            final cleanToday = DateTime(
+                              today.year,
+                              today.month,
+                              today.day,
+                            );
+
+                            if (start != null) {
+                              final cleanStart = DateTime(
+                                start.year,
+                                start.month,
+                                start.day,
+                              );
+                              if (cleanStart.isBefore(cleanToday) ||
+                                  (cleanStart == cleanToday && today.hour >= 23)) {
+                                return;
+                              }
+                            }
 
                             controller
                                 .onRangeSelected(
@@ -856,6 +872,10 @@ class SubscriptionsScreen extends StatelessWidget {
                             if (cleanDay
                                 .isBefore(
                                 cleanToday)) {
+                              return;
+                            }
+
+                            if (cleanDay == cleanToday && today.hour >= 23) {
                               return;
                             }
 
@@ -929,6 +949,88 @@ class SubscriptionsScreen extends StatelessWidget {
 
                           calendarBuilders:
                           CalendarBuilders(
+
+                            todayBuilder: (context, day, focusedDay) {
+                              final today = DateTime.now();
+                              final isAfterCutoff = today.hour >= 23;
+
+                              if (isAfterCutoff) {
+                                final isPaused = controller.isPausedDay(day);
+                                final isDelivery = controller.isDeliveryDay(day);
+
+                                if (isPaused) {
+                                  return Container(
+                                    padding: const EdgeInsets.all(5),
+                                    margin: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF59E0B),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "${day.day}",
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                            height: 1.1,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 1),
+                                        Text(
+                                          "paused".tr,
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white.withOpacity(0.85),
+                                            fontSize: 7,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+
+                                if (isDelivery) {
+                                  return Container(
+                                    padding: const EdgeInsets.all(5),
+                                    margin: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF4FC83F).withOpacity(.15),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "${day.day}",
+                                          style: GoogleFonts.poppins(
+                                            color: const Color(0xFF4FC83F),
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                            height: 1.1,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 1),
+                                        Text(
+                                          "delivery".tr,
+                                          style: GoogleFonts.poppins(
+                                            color: const Color(0xFF4FC83F),
+                                            fontSize: 7,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
+
+                              return null;
+                            },
 
                             defaultBuilder:
                                 (

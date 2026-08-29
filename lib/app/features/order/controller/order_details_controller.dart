@@ -145,6 +145,9 @@ print("Out put -> ${response}");
       case 'out_for_delivery':
         return 'out_for_delivery'.tr;
 
+      case 'otw':
+        return 'otw'.tr;
+
       case 'delivered':
         return 'delivered'.tr;
 
@@ -182,6 +185,9 @@ print("Out put -> ${response}");
         return const Color(0xFF0EA5E9);
 
       case 'out_for_delivery':
+        return const Color(0xFFEC4899);
+
+      case 'otw':
         return const Color(0xFFEC4899);
 
       case 'delivered':

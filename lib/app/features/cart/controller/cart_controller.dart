@@ -189,6 +189,11 @@ class CartController extends GetxController {
 
   double get total => subTotal + deliveryCharge - discount;
 
+  bool get hasInsufficientBalanceForOnlinePayment =>
+      userCurrentBalance != 0 &&
+      paymentType == PaymentType.online &&
+      userCurrentBalance < total;
+
   /// ---------------- CART ----------------
 
   getCart() async {

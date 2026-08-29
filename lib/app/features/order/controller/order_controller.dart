@@ -173,6 +173,9 @@ class OrderHistoryController
       case 'delivered':
         return 'delivered'.tr;
 
+      case 'otw':
+        return 'otw'.tr;
+
       case 'cancelled':
         return 'cancelled'.tr;
 
@@ -200,6 +203,9 @@ class OrderHistoryController
 
       case 'delivered':
         return const Color(0xFF4FC83F);
+
+      case 'otw':
+        return const Color(0xFFEC4899);
 
       case 'cancelled':
         return const Color(0xFFEF4444);

@@ -1,20 +1,24 @@
-
 class SubscriptionDetailsModel {
   String? status;
   int? statusCode;
   String? message;
   List<Data>? data;
 
-  SubscriptionDetailsModel({this.status, this.statusCode, this.message, this.data});
+  SubscriptionDetailsModel({
+    this.status,
+    this.statusCode,
+    this.message,
+    this.data,
+  });
 
   SubscriptionDetailsModel.fromJson(Map<String, dynamic> json) {
     status = json["status"];
     statusCode = json["statusCode"];
     message = json["message"];
-    data = json["data"] == null ? null : (json["data"] as List).map((e) => Data.fromJson(e)).toList();
+    data = json["data"] == null
+        ? null
+        : (json["data"] as List).map((e) => Data.fromJson(e)).toList();
   }
-
-
 }
 
 class Data {
@@ -37,11 +41,26 @@ class Data {
   List<Days>? days;
   String? deliverySlot;
 
-
-  Data({this.subscriptionId, this.userId, this.productId,
-    this.productQty, this.productPrice, this.startAt, this.endAt,
-    this.planDuration, this.totalBill, this.addressId, this.paymentMode,
-    this.status, this.createdAt, this.updatedAt, this.productInfo, this.address, this.days,this.deliverySlot});
+  Data({
+    this.subscriptionId,
+    this.userId,
+    this.productId,
+    this.productQty,
+    this.productPrice,
+    this.startAt,
+    this.endAt,
+    this.planDuration,
+    this.totalBill,
+    this.addressId,
+    this.paymentMode,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.productInfo,
+    this.address,
+    this.days,
+    this.deliverySlot,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     subscriptionId = json["subscriptionId"];
@@ -58,13 +77,17 @@ class Data {
     status = json["status"];
     createdAt = json["createdAt"];
     updatedAt = json["updatedAt"];
-    productInfo = json["productInfo"] == null ? null : ProductInfo.fromJson(json["productInfo"]);
-    address = json["address"] == null ? null : Address.fromJson(json["address"]);
-    days = json["days"] == null ? null : (json["days"] as List).map((e) => Days.fromJson(e)).toList();
-    deliverySlot=json["deliverySlot"];
+    productInfo = json["productInfo"] == null
+        ? null
+        : ProductInfo.fromJson(json["productInfo"]);
+    address = json["address"] == null
+        ? null
+        : Address.fromJson(json["address"]);
+    days = json["days"] == null
+        ? null
+        : (json["days"] as List).map((e) => Days.fromJson(e)).toList();
+    deliverySlot = json["deliverySlot"];
   }
-
-
 }
 
 class Days {
@@ -76,7 +99,15 @@ class Days {
   String? createdAt;
   String? updatedAt;
 
-  Days({this.id, this.subscriptionId, this.userId, this.pauseAt, this.reStartAt, this.createdAt, this.updatedAt});
+  Days({
+    this.id,
+    this.subscriptionId,
+    this.userId,
+    this.pauseAt,
+    this.reStartAt,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Days.fromJson(Map<String, dynamic> json) {
     id = json["id"];
@@ -118,7 +149,23 @@ class Address {
   String? createdOn;
   String? updatedOn;
 
-  Address({this.addressId, this.userId, this.holderName, this.building, this.landmark, this.cityId, this.setAsDefault, this.latitude, this.longitude, this.houseImage, this.addressType, this.pinCode, this.status, this.createdOn, this.updatedOn});
+  Address({
+    this.addressId,
+    this.userId,
+    this.holderName,
+    this.building,
+    this.landmark,
+    this.cityId,
+    this.setAsDefault,
+    this.latitude,
+    this.longitude,
+    this.houseImage,
+    this.addressType,
+    this.pinCode,
+    this.status,
+    this.createdOn,
+    this.updatedOn,
+  });
 
   Address.fromJson(Map<String, dynamic> json) {
     addressId = json["addressId"];
@@ -137,8 +184,6 @@ class Address {
     createdOn = json["createdOn"];
     updatedOn = json["updatedOn"];
   }
-
-
 }
 
 class ProductInfo {
@@ -150,13 +195,25 @@ class ProductInfo {
   int? productStock;
   String? productThumbnail;
   String? productCategoryId;
-  int? hasSubscriptionModel;
   String? productUnitTag;
   String? status;
   String? createdOn;
   String? updatedOn;
 
-  ProductInfo({this.productId, this.productTitle, this.productInfo, this.productPrice, this.productMrp, this.productStock, this.productThumbnail, this.productCategoryId, this.hasSubscriptionModel, this.productUnitTag, this.status, this.createdOn, this.updatedOn});
+  ProductInfo({
+    this.productId,
+    this.productTitle,
+    this.productInfo,
+    this.productPrice,
+    this.productMrp,
+    this.productStock,
+    this.productThumbnail,
+    this.productCategoryId,
+    this.productUnitTag,
+    this.status,
+    this.createdOn,
+    this.updatedOn,
+  });
 
   ProductInfo.fromJson(Map<String, dynamic> json) {
     productId = json["productId"];
@@ -167,12 +224,9 @@ class ProductInfo {
     productStock = json["productStock"];
     productThumbnail = json["productThumbnail"];
     productCategoryId = json["productCategoryId"];
-    hasSubscriptionModel = json["hasSubscriptionModel"];
     productUnitTag = json["productUnitTag"];
     status = json["status"];
     createdOn = json["createdOn"];
     updatedOn = json["updatedOn"];
   }
-
-
 }

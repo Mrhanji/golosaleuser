@@ -477,7 +477,9 @@ Widget _cartItems() {
           child: ElevatedButton(
 
             style: ElevatedButton.styleFrom(
-              backgroundColor: controller.paymentType==PaymentType.online?controller.userCurrentBalance<controller.total?Colors.grey:HexColor(AppConstants.primaryColor):HexColor(AppConstants.primaryColor),
+              backgroundColor: controller.hasInsufficientBalanceForOnlinePayment
+                  ? Colors.grey
+                  : HexColor(AppConstants.primaryColor),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),

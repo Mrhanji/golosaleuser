@@ -200,7 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: _input(
                   "parent_refer_code".tr,
                   Icons.card_giftcard,
-                  controller: nameController,
+                  controller: referController,
                   hint: "optional".tr,
                 ),
               ),
