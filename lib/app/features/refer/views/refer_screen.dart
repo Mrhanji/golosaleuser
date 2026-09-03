@@ -289,7 +289,7 @@ Widget _buildSummaryCard({
                 _summaryItem(
                   icon: Icons.group_outlined,
                   title: 'refer_count_title'.tr,
-                  value: '0',
+                  value: '${homeController.userModel.data?.totalReferedUser ?? 0}',
                   primaryColor: primaryColor,
                 ),
                 _divider(),

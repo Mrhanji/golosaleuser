@@ -17,6 +17,7 @@ import '/app/features/product/views/product_screen.dart';
 import '/app/onBoarding/views/onboarding_screen.dart';
 import '/app/features/subscriptions/views/subscriptions_screen.dart';
 import '../features/auth/views/login_screen.dart';
+import '../features/auth/views/signup_screen.dart';
 import '../onBoarding/views/splash_screen.dart';
 
 
@@ -25,6 +26,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
+  static const String signup = '/signup';
   static const String otpScreen = "/otpScreen";
   static const String productScreen = "/productScreen";
   static const String subscriptionsScreen = "/subscriptionsScreen";
@@ -51,6 +53,8 @@ class AppPages {
     GetPage(name: AppRoutes.onboarding,page: () => OnBoardingScreen(),),
 
     GetPage(name: AppRoutes.login, page: () => LoginScreen(),),
+
+    GetPage(name: AppRoutes.signup, page: () => SignupScreen(),),
 
     GetPage(name: AppRoutes.otpScreen, page: ()=>OtpScreen()),
 

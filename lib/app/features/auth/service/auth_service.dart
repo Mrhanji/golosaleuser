@@ -30,5 +30,11 @@ class AuthService{
         dataBody: data);
     return response.data;
   }
-  
+
+  Future<dynamic> verifyReferralCode(String referralCode) async {
+    var response = await dioService.getService(
+      endPoint: EndPoints.verifyReferralCode(referralCode),
+    );
+    return response.data;
+  }
 }

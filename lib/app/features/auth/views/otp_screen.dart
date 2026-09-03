@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:hexcolor/hexcolor.dart';
 import '../../../../utils/app_constants.dart';
-import '../../../routes/app_routes.dart';
 import '../controller/auth_controller.dart';
 
 
@@ -202,12 +201,10 @@ class OtpScreen extends StatelessWidget {
                                             width: double.infinity,
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
-                                                colors: [
-                                                  HexColor(AppConstants.primaryColor),
-                                                  HexColor(AppConstants.primaryColor).withRed(
-                                                      (HexColor(AppConstants.primaryColor).red - 20)
-                                                          .clamp(0, 255)),
-                                                ],
+                                                  colors: [
+                                                    HexColor(AppConstants.primaryColor),
+                                                    HexColor(AppConstants.primaryColor).withValues(alpha: 0.85),
+                                                  ],
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                               ),

@@ -202,9 +202,7 @@ class LoginScreen extends StatelessWidget {
                                                         ? [Colors.grey.shade400, Colors.grey.shade400]
                                                         : [
                                                             HexColor(AppConstants.primaryColor),
-                                                            HexColor(AppConstants.primaryColor).withRed(
-                                                                (HexColor(AppConstants.primaryColor).red - 20)
-                                                                    .clamp(0, 255)),
+                                                            HexColor(AppConstants.primaryColor).withValues(alpha: 0.85),
                                                           ],
                                                     begin: Alignment.topLeft,
                                                     end: Alignment.bottomRight,
@@ -239,6 +237,33 @@ class LoginScreen extends StatelessWidget {
                                               ),
                                             );
                                           },
+                                        ),
+                                        const SizedBox(height: 18),
+                                        // Route button to Sign Up screen
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "dont_have_account".tr,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.toNamed(AppRoutes.signup);
+                                              },
+                                              child: Text(
+                                                "signup".tr,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: HexColor(AppConstants.primaryColor),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),

@@ -35,6 +35,7 @@ class EndPoints{
   static String deleteAddress(String addressId)=>"/address/delete?addressId=$addressId";
   static String getSubscriptionInfo(String subscriptionId)=>"/subscriptions/list?subscriptionId=$subscriptionId";
   static String getSubscriptionList(String userId)=>"/subscriptions/list?userId=$userId";
+  static String verifyReferralCode(String referralCode) => "/auth/verifyRefferalCode?referralCode=$referralCode";
 
 
   /// Media Url

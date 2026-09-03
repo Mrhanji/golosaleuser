@@ -58,6 +58,7 @@ class Data {
   String? status;
   String? createdOn;
   String? updatedOn;
+  int? totalReferedUser;
 
   Data({
     this.userId,
@@ -75,6 +76,7 @@ class Data {
     this.status,
     this.createdOn,
     this.updatedOn,
+    this.totalReferedUser
   });
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -93,6 +95,7 @@ class Data {
     status = json["status"];
     createdOn = json["createdOn"];
     updatedOn = json["updatedOn"];
+    totalReferedUser=json["totalReferedUser"];
   }
 
   Map<String, dynamic> toJson() {
