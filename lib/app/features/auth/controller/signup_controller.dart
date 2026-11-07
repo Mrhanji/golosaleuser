@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/notification_service.dart';
 import '../../../../database/local_db.dart';
 import '../../../routes/app_routes.dart';
-import '../model/user_model.dart';
+import '../../../../utils/utils_functions.dart';
 import '../service/auth_service.dart';
 
 class SignupController extends GetxController {
@@ -22,6 +23,7 @@ class SignupController extends GetxController {
   bool isVerifying = false;
   int resendCountdown = 0;
   Timer? _countdownTimer;
+  String? generatedOtp;
 
   // Referral code validation state
   bool isReferralValid = true;
@@ -68,9 +70,9 @@ class SignupController extends GetxController {
   /// Handle referral code text change
   void onReferralCodeChanged(String value) {
     _referralDebounceTimer?.cancel();
-    final code = value.trim();
 
-    if (code.isEmpty) {
+    final cleanCode = value.trim();
+    if (cleanCode.isEmpty) {
       isReferralValid = true;
       isCheckingReferral = false;
       referralErrorMessage = null;
@@ -79,21 +81,17 @@ class SignupController extends GetxController {
       return;
     }
 
-    // Set checking state while user enters referral code
+    isReferralVerified = false;
     isCheckingReferral = true;
     referralErrorMessage = null;
-    isReferralVerified = false;
-    isReferralValid = false;
     update();
 
-    _referralDebounceTimer = Timer(const Duration(milliseconds: 500), () async {
-      await verifyReferralCode(code);
+    _referralDebounceTimer = Timer(const Duration(milliseconds: 600), () {
+      _validateReferralCode(cleanCode);
     });
   }
 
-  /// Verify referral code with the API
-  Future<void> verifyReferralCode(String code) async {
-    final cleanCode = code.trim();
+  Future<void> _validateReferralCode(String cleanCode) async {
     if (cleanCode.isEmpty) {
       isReferralValid = true;
       isCheckingReferral = false;
@@ -150,46 +148,22 @@ class SignupController extends GetxController {
     final referCode = referralCodeController.text.trim();
 
     if (referCode.isNotEmpty && (!isReferralValid || isCheckingReferral)) {
-      Get.snackbar(
-        "Error",
-        referralErrorMessage ?? "Please enter a valid referral code",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-      );
+      UtilsFunctions.showError(referralErrorMessage ?? "Please enter a valid referral code");
       return;
     }
 
     if (firstName.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "enter_first_name".tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-      );
+      UtilsFunctions.showError("enter_first_name".tr);
       return;
     }
 
     if (lastName.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "enter_last_name".tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-      );
+      UtilsFunctions.showError("enter_last_name".tr);
       return;
     }
 
     if (mobile.length != 10) {
-      Get.snackbar(
-        "Error",
-        "enter_valid_mobile".tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-      );
+      UtilsFunctions.showError("enter_valid_mobile".tr);
       return;
     }
 
@@ -197,36 +171,34 @@ class SignupController extends GetxController {
       isSendingOtp = true;
       update();
 
-      UserModel userModel = await authService.sendOtp(mobile);
+      // Check if mobile number is already registered via verifyMobile
+      final checkMobile = await authService.verifyMobile(mobile);
 
-      if (userModel.statusCode == 200) {
+      if (checkMobile.statusCode == 201) {
+        // Mobile already registered
+        isSendingOtp = false;
+        update();
+        UtilsFunctions.showError(checkMobile.message ?? "Mobile number is already registered. Please login.");
+        return;
+      }
+
+      if (checkMobile.statusCode == 200) {
+        // Mobile not used -> Auto-generate 4-digit OTP and send via SMS
+        final otp = (1000 + Random().nextInt(9000)).toString();
+        generatedOtp = otp;
+        print("Generated Signup OTP: $otp");
+
+        await authService.sendDirectOtp(mobile, otp);
+
         isOtpSent = true;
         _startCountdown();
-        Get.snackbar(
-          "Success",
-          "Otp sent successfully",
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        UtilsFunctions.showSuccess("OTP sent successfully");
       } else {
-        Get.snackbar(
-          "Error",
-          userModel.message ?? "Failed to send OTP",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade400,
-          colorText: Colors.white,
-        );
+        UtilsFunctions.showError(checkMobile.message ?? "Failed to send OTP");
       }
     } catch (e) {
       debugPrint("Error sending OTP: $e");
-      Get.snackbar(
-        "Error",
-        "Something went wrong. Please try again.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-      );
+      UtilsFunctions.showError("Something went wrong. Please try again.");
     } finally {
       isSendingOtp = false;
       update();
@@ -244,13 +216,12 @@ class SignupController extends GetxController {
     print("verifyAndSignUp called");
     final otp = otpController.text.trim();
     if (otp.length != 4) {
-      Get.snackbar(
-        "Error",
-        "enter_valid_otp".tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-      );
+      UtilsFunctions.showError("enter_valid_otp".tr);
+      return;
+    }
+
+    if (generatedOtp != null && otp != generatedOtp) {
+      UtilsFunctions.showError("Invalid OTP. Please enter the correct OTP.");
       return;
     }
 
@@ -258,82 +229,53 @@ class SignupController extends GetxController {
       isVerifying = true;
       update();
 
-      final deviceId = await NotificationService.instance.getDeviceToken();
       final mobile = mobileController.text.trim();
-      final response = await authService.verifyOtp(
+      final firstName = firstNameController.text.trim();
+      final lastName = lastNameController.text.trim();
+      final referCode = referralCodeController.text.trim();
+      final deviceId = await NotificationService.instance.getDeviceToken();
+
+      // Call register API: /auth/register
+      final registerResponse = await authService.registerUser(
         mobile: mobile,
-        otp: otp,
-        deviceId: deviceId,
-        
+        firstName: firstName,
+        lastName: lastName,
+        parentReferralCode: referCode.isNotEmpty ? referCode : null,
       );
 
-      if (response.data != null) {
-        // Update user profile with name and optional parent referral code
-        final userId = response.data?.userId;
-        if (userId != null && userId.isNotEmpty) {
-          final Map<String, dynamic> profileBody = {
-            "firstName": firstNameController.text.trim(),
-            "lastName": lastNameController.text.trim(),
-            "userMobile": mobile,
-          };
-          if (referralCodeController.text.trim().isNotEmpty) {
-            profileBody["parentUserReferralCode"] = referralCodeController.text.trim();
+      print("Register response: ${registerResponse.toJson()}");
+
+      if (registerResponse.statusCode == 201 || registerResponse.status == 'success') {
+        // Fetch created user details via /auth/verifyMobile
+        final userResponse = await authService.verifyMobile(mobile);
+
+        if (userResponse.data != null) {
+          final userId = userResponse.data?.userId;
+          if (deviceId != null && userId != null) {
+            await authService.setDeviceToken(userId, deviceId);
           }
-          print("profileBody: ${profileBody}");
-          try {
-            await authService.updateProfile(profileBody, userId);
-            // Fetch updated profile so local storage has complete info
-            final updatedProfile = await authService.getProfile(userId);
-            if (updatedProfile.data != null) {
-              await SecurePreferenceStorage().setLoginUser(
-                jsonEncode(updatedProfile.toJson()).toString(),
-              );
-            } else {
-              await SecurePreferenceStorage().setLoginUser(
-                jsonEncode(response.toJson()).toString(),
-              );
-            }
-          } catch (e) {
-            debugPrint("Error updating profile during signup: $e");
-            await SecurePreferenceStorage().setLoginUser(
-              jsonEncode(response.toJson()).toString(),
-            );
-          }
-        } else {
+
+          await SecurePreferenceStorage().setLoginStatus(true);
           await SecurePreferenceStorage().setLoginUser(
-            jsonEncode(response.toJson()).toString(),
+            jsonEncode(userResponse.toJson()).toString(),
           );
+
+          UtilsFunctions.showSuccess("Account created and logged in successfully");
+          Get.offAllNamed(AppRoutes.home);
+        } else {
+          await SecurePreferenceStorage().setLoginStatus(true);
+          await SecurePreferenceStorage().setLoginUser(
+            jsonEncode(registerResponse.toJson()).toString(),
+          );
+          UtilsFunctions.showSuccess("Account created and logged in successfully");
+          Get.offAllNamed(AppRoutes.home);
         }
-
-        await SecurePreferenceStorage().setLoginStatus(true);
-
-        Get.snackbar(
-          "Success",
-          "Account created and logged in successfully",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-
-        Get.offAllNamed(AppRoutes.home);
       } else {
-        Get.snackbar(
-          "Error",
-          response.message ?? "Invalid OTP",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade400,
-          colorText: Colors.white,
-        );
+        UtilsFunctions.showError(registerResponse.message ?? "Registration failed. Please try again.");
       }
     } catch (e) {
       debugPrint("Error during verify and signup: $e");
-      Get.snackbar(
-        "Error",
-        "Failed to verify OTP. Please try again.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-      );
+      UtilsFunctions.showError("Failed to register. Please try again.");
     } finally {
       isVerifying = false;
       update();

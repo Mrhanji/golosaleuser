@@ -694,7 +694,7 @@ class AddressScreen extends StatelessWidget {
                             .trim()
                             .isEmpty) {
 
-                          UtilsFunctions().showSnackBar(
+                          UtilsFunctions.showSnackBar(
                             title: "error".tr,
                             message:
                             "first_name_required".tr,
@@ -708,7 +708,7 @@ class AddressScreen extends StatelessWidget {
                             .trim()
                             .isEmpty) {
 
-                          UtilsFunctions().showSnackBar(
+                          UtilsFunctions.showSnackBar(
                             title: "error".tr,
                             message:
                             "building_required".tr,
@@ -722,7 +722,7 @@ class AddressScreen extends StatelessWidget {
                             .trim()
                             .isEmpty) {
 
-                          UtilsFunctions().showSnackBar(
+                          UtilsFunctions.showSnackBar(
                             title: "error".tr,
                             message:
                             "landmark_required".tr,
@@ -735,7 +735,7 @@ class AddressScreen extends StatelessWidget {
                         if (controller.selectedPinCode ==
                             0) {
 
-                          UtilsFunctions().showSnackBar(
+                          UtilsFunctions.showSnackBar(
                             title: "error".tr,
                             message:
                             "pincode_required".tr,

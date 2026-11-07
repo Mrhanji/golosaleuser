@@ -19,56 +19,92 @@ class UtilsFunctions {
     return DateFormat('dd-MM-yyyy').format(date);
   }
 
-   showSnackBar({
+  static void showSnackBar({
     required String title,
     required String message,
     bool isError = false,
+    Duration duration = const Duration(seconds: 3),
+    SnackPosition snackPosition = SnackPosition.TOP,
   }) {
-
-    //Get.closeAllSnackbars();
+    if (Get.isSnackbarOpen) {
+      Get.closeCurrentSnackbar();
+    }
 
     Get.snackbar(
       title,
       message,
-
-      snackPosition: SnackPosition.TOP,
-
-      margin: const EdgeInsets.all(14),
-
+      snackPosition: snackPosition,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       borderRadius: 14,
-
-      duration: const Duration(seconds: 2),
-
-      backgroundColor:
-      isError
-          ? const Color(0xffE53935)
-          : const Color(0xff4FC83F),
-
+      duration: duration,
+      animationDuration: const Duration(milliseconds: 300),
+      backgroundColor: isError ? const Color(0xFFE53935) : const Color(0xFF2E7D32),
       colorText: Colors.white,
-
       snackStyle: SnackStyle.FLOATING,
-
       boxShadows: [
         BoxShadow(
-          color: Colors.black.withOpacity(.12),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        )
+          color: (isError ? const Color(0xFFE53935) : const Color(0xFF2E7D32)).withValues(alpha: 0.3),
+          blurRadius: 16,
+          offset: const Offset(0, 6),
+          spreadRadius: 0,
+        ),
       ],
-
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 14,
       ),
-
-      icon: Icon(
-        isError
-            ? Icons.error_outline_rounded
-            : Icons.check_circle_outline_rounded,
-        color: Colors.white,
+      icon: Container(
+        margin: const EdgeInsets.only(left: 4),
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.2),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
+          color: Colors.white,
+          size: 22,
+        ),
       ),
-
+      titleText: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+          fontSize: 15,
+          letterSpacing: 0.2,
+        ),
+      ),
+      messageText: Text(
+        message,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w400,
+          height: 1.3,
+        ),
+      ),
       shouldIconPulse: false,
+      isDismissible: true,
+      forwardAnimationCurve: Curves.easeOutCubic,
+      reverseAnimationCurve: Curves.easeInCubic,
+    );
+  }
+
+  static void showError(String message, {String title = "Error"}) {
+    showSnackBar(
+      title: title,
+      message: message,
+      isError: true,
+    );
+  }
+
+  static void showSuccess(String message, {String title = "Success"}) {
+    showSnackBar(
+      title: title,
+      message: message,
+      isError: false,
     );
   }
 }
+

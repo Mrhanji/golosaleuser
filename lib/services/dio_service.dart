@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:golosaleuser/utils/end_points.dart';
 import '/utils/app_constants.dart';
 
 class DioService {

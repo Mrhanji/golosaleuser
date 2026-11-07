@@ -3,6 +3,8 @@ import '/utils/app_constants.dart';
 class EndPoints{
   static const String sendOtp="/auth/sendOtp";
   static const String verifyOtp="/auth/verifyOtp";
+  static const String verifyMobile="/auth/verifyMobile";
+  static const String registerUser="/auth/register";
   static const String getCities="/cities/getAllCities"; 
   static const String popularProduct="/product/popular";
 

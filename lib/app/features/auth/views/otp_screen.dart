@@ -169,14 +169,7 @@ class OtpScreen extends StatelessWidget {
                                         // Resend Code
                                         TextButton(
                                           onPressed: () {
-                                            Get.back();
-                                            Get.snackbar(
-                                              "Info",
-                                              "Please request OTP again from login screen",
-                                              snackPosition: SnackPosition.BOTTOM,
-                                              backgroundColor: Colors.blueGrey,
-                                              colorText: Colors.white,
-                                            );
+                                            authController.sendOtp();
                                           },
                                           child: Text(
                                             "resend_otp".tr,
