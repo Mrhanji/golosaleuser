@@ -19,6 +19,7 @@ class EndPoints{
   static const String updateSubscriptionStatus="/subscriptions/addStatus";
   static const String removeSubscriptionStatus="/subscriptions/removeStatus";
   static const String setDeviceToken="/auth/setDeviceToken";
+  static const String validateCoupon="/coupon/validate";
 
   static String getCategory(String cityId)=>"/category/getCategories?cityId=$cityId&status=active";
   static String getOrderHistory(String userId,int page,limit)=>"/orders/order-history?userId=$userId&page=$page&limit=$limit";
@@ -33,6 +34,7 @@ class EndPoints{
   static String getWalletTransactions(String userId, int page, int limit)=>"/wallet/userWalletTransaction?userId=$userId&page=$page&limit=$limit";
   static String getUserProfile(String userId)=>'/auth/userProfile?userId=$userId';
   static String getCouponInfo(String couponCode)=>'/coupon/search?couponCode=$couponCode';
+  static String getAvailableCoupons(String userId, double orderAmount)=>'/coupon/available?userId=$userId&orderAmount=$orderAmount';
   static String updateProfile(String userId)=>'/auth/updateProfile?userId=$userId';
   static String deleteAddress(String addressId)=>"/address/delete?addressId=$addressId";
   static String getSubscriptionInfo(String subscriptionId)=>"/subscriptions/list?subscriptionId=$subscriptionId";

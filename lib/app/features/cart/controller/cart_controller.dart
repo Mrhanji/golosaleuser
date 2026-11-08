@@ -29,8 +29,11 @@ class CartController extends GetxController {
   /// ✅ Coupon
   bool couponApplied = false;
   bool couponSearching = false;
+  String couponErrorMessage = '';
   CouponModel couponModel = CouponModel();
   TextEditingController couponController = TextEditingController();
+  List<Data> availableCoupons = [];
+  bool loadingAvailableCoupons = false;
 
   PaymentType paymentType = PaymentType.online;
 
@@ -80,84 +83,75 @@ class CartController extends GetxController {
 
   /// ---------------- COUPON ----------------
 
-  Future<void> applyCoupon() async {
-    if (couponController.text.trim().isEmpty) return;
+  Future<void> applyCoupon([String? code]) async {
+    final couponCode = (code ?? couponController.text).trim().toUpperCase();
+    if (couponCode.isEmpty) {
+      couponErrorMessage = "Please enter a coupon code";
+      update();
+      Get.snackbar(
+        "Coupon Required",
+        "Please enter a coupon code",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
 
+    couponController.text = couponCode;
     couponSearching = true;
+    couponErrorMessage = '';
     update();
 
-    await fetchCouponInfo();
+    await fetchCouponInfo(couponCode);
   }
 
-  Future<void> fetchCouponInfo() async {
+  Future<void> fetchCouponInfo(String code) async {
     try {
-      couponModel =
-      await HomeServices().getCoupon(couponController.text.trim());
+      final currentUserId = userId?.toString() ?? home.userModel.data?.userId?.toString() ?? '';
+      final response = await HomeServices().validateCoupon(
+        couponCode: code,
+        userId: currentUserId,
+        orderAmount: subTotal,
+      );
 
-      if (couponModel.data != null && couponModel.data!.isNotEmpty) {
-        final coupon = couponModel.data![0];
+      couponSearching = false;
 
-        couponSearching = false;
-
-        /// ✅ Min Cap Check
-        if (coupon.minCap != null && subTotal < coupon.minCap!) {
-          print("Subtotal is less than MinCap");
-
-          Get.snackbar(
-            "Coupon Not Applicable",
-            "Minimum order should be ₹${coupon.minCap}",
-            snackPosition: SnackPosition.BOTTOM,
-          );
-
-          _resetCoupon();
-          return;
-        }
-
-        /// ✅ Max Cap Check
-        if (coupon.maxCap != null && subTotal > coupon.maxCap!) {
-          print("Subtotal is greater than MaxCap");
-
-          Get.snackbar(
-            "Coupon Not Applicable",
-            "Coupon valid only up to ₹${coupon.maxCap}",
-            snackPosition: SnackPosition.BOTTOM,
-          );
-
-          _resetCoupon();
-          return;
-        }
-
-        /// ✅ Apply only if valid
+      if (response.status == "success" && response.data != null && response.data!.isNotEmpty) {
+        couponModel = response;
         couponApplied = true;
+        couponErrorMessage = '';
+        final validated = response.data![0];
 
-        discount =
-            double.tryParse(coupon.discountPercentage.toString()) ?? 0;
+        // Backend returns exact calculated discount amount!
+        discount = validated.discount ?? (validated.discountAmount ?? 0.0);
 
-        /// show coupon code back in field
-        couponController.text = coupon.couponCode ?? '';
+        couponController.text = validated.couponCode ?? code;
 
-        /// ✅ Success Snackbar
         Get.snackbar(
-          "Success",
-          "Coupon applied successfully",
+          "Coupon Applied 🎉",
+          validated.message ?? response.message ?? "Coupon applied successfully! You saved ₹${discount.toStringAsFixed(discount % 1 == 0 ? 0 : 2)}",
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.shade600,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
         );
-
       } else {
         _resetCoupon();
-
+        couponErrorMessage = response.message ?? "Invalid or expired coupon code";
         Get.snackbar(
-          "Invalid Coupon",
-          "Please enter a valid coupon code",
+          "Coupon Not Applicable",
+          couponErrorMessage,
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade600,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
         );
       }
     } catch (e) {
       _resetCoupon();
-
+      couponErrorMessage = "Failed to validate coupon. Please try again.";
       Get.snackbar(
         "Error",
-        "Something went wrong. Try again",
+        couponErrorMessage,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -165,9 +159,74 @@ class CartController extends GetxController {
     update();
   }
 
+  Future<void> _revalidateAppliedCoupon() async {
+    if (!couponApplied || couponModel.data == null || couponModel.data!.isEmpty) return;
+
+    final code = couponModel.data![0].couponCode;
+    if (code == null || code.isEmpty) return;
+
+    try {
+      final currentUserId = userId?.toString() ?? home.userModel.data?.userId?.toString() ?? '';
+      final response = await HomeServices().validateCoupon(
+        couponCode: code,
+        userId: currentUserId,
+        orderAmount: subTotal,
+      );
+
+      if (response.status == "success" && response.data != null && response.data!.isNotEmpty) {
+        couponModel = response;
+        final validated = response.data![0];
+        discount = validated.discount ?? (validated.discountAmount ?? 0.0);
+      } else {
+        // Order subtotal changed and coupon is no longer applicable
+        _resetCoupon();
+        couponController.clear();
+        couponErrorMessage = response.message ?? "Coupon no longer meets requirements.";
+        Get.snackbar(
+          "Coupon Removed",
+          couponErrorMessage,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (_) {}
+  }
+
+  Future<void> fetchAvailableCoupons() async {
+    final currentUserId = userId?.toString() ?? home.userModel.data?.userId?.toString() ?? '';
+    if (currentUserId.isEmpty) return;
+
+    loadingAvailableCoupons = true;
+    update();
+
+    try {
+      final response = await HomeServices().getAvailableCoupons(
+        userId: currentUserId,
+        orderAmount: subTotal,
+      );
+
+      if (response.status == "success" && response.data != null) {
+        availableCoupons = response.data!;
+      } else {
+        availableCoupons = [];
+      }
+    } catch (e) {
+      availableCoupons = [];
+    } finally {
+      loadingAvailableCoupons = false;
+      update();
+    }
+  }
+
   void removeCoupon() {
     _resetCoupon();
     couponController.clear();
+    couponErrorMessage = '';
+    Get.snackbar(
+      "Coupon Removed",
+      "Coupon has been removed from your cart",
+      snackPosition: SnackPosition.BOTTOM,
+    );
     update();
   }
 
@@ -187,7 +246,10 @@ class CartController extends GetxController {
     update();
   }
 
-  double get total => subTotal + deliveryCharge - discount;
+  double get total {
+    final t = subTotal + deliveryCharge - discount;
+    return t < 0 ? 0.0 : double.parse(t.toStringAsFixed(2));
+  }
 
   bool get hasInsufficientBalanceForOnlinePayment =>
       userCurrentBalance != 0 &&
@@ -215,6 +277,9 @@ class CartController extends GetxController {
 
     if (cartModel.data!.isEmpty) {
       currentCartState = CartState.noItem;
+      _resetCoupon();
+      couponController.clear();
+      availableCoupons = [];
     } else {
       currentCartState = CartState.itemFound;
 
@@ -229,6 +294,11 @@ class CartController extends GetxController {
       });
 
       subTotal = double.parse(sum.toStringAsFixed(2));
+
+      if (couponApplied) {
+        await _revalidateAppliedCoupon();
+      }
+      fetchAvailableCoupons();
     }
 
     update();
@@ -362,11 +432,11 @@ class CartController extends GetxController {
       "isSubscriptionOrder": "no",
       "subTotal": subTotal,
       "grandTotal": total,
-      "couponId": couponApplied
+      "couponId": couponApplied && couponModel.data != null && couponModel.data!.isNotEmpty
           ? couponModel.data![0].couponId ?? ''
           : '',
-      "couponPercent": couponApplied
-          ? couponModel.data![0].discountPercentage ?? 0
+      "couponPercent": couponApplied && couponModel.data != null && couponModel.data!.isNotEmpty
+          ? (couponModel.data![0].discountPercentage?.round() ?? 0)
           : 0,
       "deliveryFee": deliveryCharge,
       "paymentMode": paymentType.name,
@@ -494,7 +564,10 @@ class CartController extends GetxController {
       barrierDismissible: false,
     );
 
-    /// 🔄 Refresh data
+    /// 🔄 Refresh data & reset coupon
+    _resetCoupon();
+    couponController.clear();
+    couponErrorMessage = '';
     getCart();
     Get.put(HomeController()).getUser();
   }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '/app/features/cart/model/coupon_model.dart';
 
 import '../../order/model/order_details_model.dart';
@@ -126,6 +127,62 @@ Future<SettingsModel>getAppSettings()async{
   Future<CouponModel>getCoupon(couponCode)async{
     var response=await DioService().getService(endPoint: EndPoints.getCouponInfo(couponCode));
     return CouponModel.fromJson(response.data);
+  }
 
+  Future<CouponModel> validateCoupon({
+    required String couponCode,
+    required String userId,
+    required double orderAmount,
+  }) async {
+    try {
+      final response = await DioService().dio.post(
+        EndPoints.validateCoupon,
+        data: {
+          "couponCode": couponCode.trim().toUpperCase(),
+          "userId": userId,
+          "orderAmount": orderAmount,
+        },
+      );
+      return CouponModel.fromJson(response.data);
+    } on DioException catch (e) {
+      String errorMessage = "Failed to validate coupon.";
+      if (e.response?.data != null && e.response?.data is Map) {
+        errorMessage = e.response?.data['message']?.toString() ?? errorMessage;
+      } else if (e.message != null) {
+        errorMessage = e.message!;
+      }
+      return CouponModel(
+        status: "error",
+        statusCode: e.response?.statusCode ?? 400,
+        message: errorMessage,
+        data: null,
+      );
+    } catch (e) {
+      return CouponModel(
+        status: "error",
+        statusCode: 500,
+        message: e.toString(),
+        data: null,
+      );
+    }
+  }
+
+  Future<CouponModel> getAvailableCoupons({
+    required String userId,
+    required double orderAmount,
+  }) async {
+    try {
+      final response = await DioService().dio.get(
+        EndPoints.getAvailableCoupons(userId, orderAmount),
+      );
+      return CouponModel.fromJson(response.data);
+    } catch (e) {
+      return CouponModel(
+        status: "error",
+        statusCode: 500,
+        message: e.toString(),
+        data: [],
+      );
+    }
   }
 }
